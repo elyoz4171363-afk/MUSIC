@@ -1,0 +1,1257 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>אמנות המקצוע — המפיק בתעשיית המוזיקה</title>
+<meta name="description" content="קורס ההשלמה למפיקים מוזיקליים: תעשייה, זכויות, חוזים, לייבלים, עסק וקריירה.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;500;600;700;800&family=Rubik:wght@400;500;600;700;800&family=Heebo:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --display-font:'Assistant'; --body-font:'Heebo';
+    --bg:#0a1813; --panel:#102620; --panel2:#0c1d18; --line:#22463a;
+    --gold:#b8893f; --gold-l:#d8b878; --gold-deep:#9a6f2e; --green:#15705a; --green-deep:#0f5a47;
+    --ink:#f0f4f1; --ink2:#9bb3a8; --ink3:#5f7d70;
+  }
+  html { scroll-behavior:smooth; }
+  body {
+    background:var(--bg); color:var(--ink);
+    font-family:var(--body-font),'Assistant',-apple-system,system-ui,sans-serif;
+    font-weight:400; letter-spacing:-0.1px;
+    line-height:1.75; overflow-x:hidden; -webkit-font-smoothing:antialiased; word-spacing:1px;
+  }
+
+  /* ====== top bar ====== */
+  .topbar {
+    position:sticky; top:0; z-index:100;
+    background:rgba(10,24,19,0.94); backdrop-filter:blur(12px);
+    border-bottom:1px solid var(--line);
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 22px; box-shadow:0 1px 0 rgba(184,137,63,0.15); gap:12px;
+  }
+  .topbar-title { font-family:var(--display-font),sans-serif; font-size:21px; font-weight:800; color:var(--gold-l); letter-spacing:-0.5px; }
+  .topbar-title .sub { color:var(--ink2); font-size:15px; font-family:'Assistant',sans-serif; font-weight:400; }
+  .back-btn {
+    background:var(--panel); border:1px solid var(--line); color:var(--gold-l);
+    padding:9px 18px; border-radius:10px; font-size:15px; cursor:pointer; font-weight:500;
+    font-family:'Assistant',sans-serif; display:none; align-items:center; gap:6px; transition:0.2s; white-space:nowrap;
+  }
+  .back-btn:hover { background:var(--green); color:#fff; }
+  .back-btn.show { display:inline-flex; }
+
+  /* ====== views ====== */
+  .view { display:none; }
+  .view.active { display:block; animation:fadeView 0.55s cubic-bezier(0.16,1,0.3,1); }
+  @keyframes fadeView {
+    0% { opacity:0; transform:translateY(20px) scale(0.98); }
+    60% { opacity:1; }
+    100% { opacity:1; transform:translateY(0) scale(1); }
+  }
+
+  /* ====== hero / home ====== */
+  .home-hero {
+    text-align:center; padding:80px 24px 46px;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% -10%, rgba(184,137,63,0.10) 0%, transparent 60%),
+      radial-gradient(ellipse at 50% 0%, #16302a 0%, #0a1813 72%);
+    border-bottom:1px solid var(--line); position:relative; overflow:hidden;
+  }
+  .home-hero .frame-corner { position:absolute; width:60px; height:60px; border:1px solid rgba(184,137,63,0.3); }
+  .home-hero .fc-tr { top:24px; right:24px; border-left:none; border-bottom:none; }
+  .home-hero .fc-tl { top:24px; left:24px; border-right:none; border-bottom:none; }
+  .home-hero .crest { font-size:30px; color:var(--gold); margin-bottom:8px; display:inline-block; filter:drop-shadow(0 0 8px rgba(216,184,120,0.4)); }
+  .home-hero::after { content:''; position:absolute; bottom:0; left:50%; transform:translateX(-50%); width:160px; height:2px; background:linear-gradient(90deg,transparent,var(--gold-l),transparent); }
+  .home-hero .eyebrow { color:var(--gold); letter-spacing:5px; font-size:15px; font-weight:700; }
+  .home-hero h1 { font-family:var(--display-font),sans-serif; font-weight:800; font-size:60px; color:var(--gold-l); margin:18px 0; line-height:1.0; letter-spacing:-0.5px; }
+  .home-hero h1 em { color:var(--ink); font-style:normal; }
+  .home-hero p { color:var(--ink2); font-size:17px; max-width:600px; margin:0 auto; }
+  @media(max-width:600px){ .home-hero h1 { font-size:40px; } .home-hero { padding:56px 18px 36px; } }
+
+  .section-label {
+    max-width:1000px; margin:38px auto 8px; padding:0 22px;
+    font-family:var(--display-font),sans-serif; font-weight:700; font-size:24px; color:var(--gold-l); letter-spacing:-0.5px;
+    display:flex; align-items:center; gap:14px;
+  }
+  .section-label::after { content:''; flex:1; height:1px; background:var(--line); }
+  .world-blurb { max-width:1000px; margin:0 auto 18px; padding:0 22px; color:var(--ink2); font-size:16px; }
+
+  /* ====== volume grid ====== */
+  .vol-grid {
+    max-width:1000px; margin:0 auto 34px; padding:0 22px;
+    display:grid; grid-template-columns:repeat(auto-fill,minmax(290px,1fr)); gap:18px;
+  }
+  .vol-card {
+    background:linear-gradient(160deg,var(--panel),var(--panel2)); border:1px solid var(--line); border-radius:18px;
+    padding:28px; cursor:pointer; transition:transform cubic-bezier(0.22,1,0.36,1) 0.35s, box-shadow 0.35s, border-color 0.35s; position:relative; overflow:hidden;
+    animation:cardIn 0.5s backwards; text-align:right;
+  }
+  @keyframes cardIn { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+  .vol-card:hover { transform:translateY(-6px); border-color:var(--vc); box-shadow:0 16px 40px rgba(0,0,0,0.4); }
+  .vol-card:focus-visible { outline:2px solid var(--gold-l); outline-offset:3px; }
+  .vol-card::before { content:''; position:absolute; top:0; right:0; width:5px; height:100%; background:var(--vc); }
+  .vol-letter {
+    width:60px; height:60px; border-radius:50%; background:var(--vc);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--display-font),sans-serif; font-size:30px; font-weight:800; color:#0a1813; margin-bottom:16px;
+    box-shadow:0 4px 16px rgba(0,0,0,0.25);
+  }
+  .vol-card h3 { font-family:var(--display-font),sans-serif; font-weight:700; font-size:23px; color:var(--ink); margin-bottom:7px; letter-spacing:-0.5px; }
+  .vol-card .vol-desc { color:var(--ink2); font-size:16px; margin-bottom:14px; }
+  .vol-card .vol-meta { color:var(--vc); font-size:15px; font-weight:600; }
+  .vol-card .vol-cta { position:absolute; bottom:18px; left:20px; color:var(--ink3); font-size:18px; opacity:0.5; }
+
+  /* ====== chapter list ====== */
+  .chapter-head { max-width:860px; margin:0 auto; padding:44px 22px 10px; text-align:center; }
+  .chapter-head .vol-badge { display:inline-block; padding:6px 18px; border-radius:20px; color:#0f1f1a; font-weight:700; font-size:14px; margin-bottom:14px; }
+  .chapter-head h2 { font-family:var(--display-font),sans-serif; font-weight:800; font-size:40px; color:var(--gold-l); line-height:1.05; letter-spacing:-0.4px; }
+  .chapter-head p { color:var(--ink2); margin-top:8px; }
+  @media(max-width:600px){ .chapter-head h2 { font-size:30px; } }
+  .chap-list { max-width:760px; margin:24px auto 60px; padding:0 22px; }
+  .chap-item {
+    background:var(--panel); border:1px solid var(--line); border-radius:14px;
+    padding:18px 22px; margin-bottom:12px; cursor:pointer; transition:0.2s;
+    display:flex; align-items:center; gap:16px; animation:cardIn 0.4s backwards; text-align:right; width:100%;
+  }
+  .chap-item:hover { background:#1a382f; border-color:var(--gold); transform:translateX(4px); }
+  .chap-item:focus-visible { outline:2px solid var(--gold-l); outline-offset:3px; }
+  .chap-num {
+    flex:0 0 auto; width:50px; height:50px; border-radius:50%;
+    background:linear-gradient(160deg,var(--green),var(--green-deep)); color:var(--gold-l);
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--display-font),sans-serif; font-size:22px; font-weight:800; border:1px solid var(--line);
+  }
+  .chap-info { flex:1; }
+  .chap-info h4 { font-size:18px; color:var(--ink); font-weight:600; font-family:'Assistant',sans-serif; }
+  .chap-info .ci-sub { font-size:15px; color:var(--ink2); margin-top:3px; }
+  .chap-arrow { color:var(--ink3); font-size:22px; }
+  .chap-check { flex:0 0 auto; width:26px; height:26px; border-radius:50%; background:var(--green); color:#fff; display:none; align-items:center; justify-content:center; font-size:14px; margin-right:4px; }
+  .chap-item.read .chap-check { display:flex; }
+  .chap-item.read .chap-num { background:linear-gradient(160deg,#2a5648,#1d4136); }
+
+  /* ====== reader ====== */
+  .reader { max-width:760px; margin:0 auto; padding:0 22px 80px; }
+  .reader-hero {
+    background:linear-gradient(160deg,#16302a,#13261f);
+    border:1px solid var(--line); border-radius:16px;
+    padding:36px 30px; margin:28px 0; text-align:center;
+  }
+  .reader-hero .eyebrow { color:var(--gold); letter-spacing:3px; font-size:15px; font-weight:700; }
+  .reader-hero h1 { font-family:var(--display-font),sans-serif; font-weight:800; font-size:46px; color:var(--gold-l); margin:10px 0; line-height:1.08; letter-spacing:-0.4px; }
+  .reader-hero p { color:var(--ink2); font-size:16px; max-width:540px; margin:10px auto 0; }
+  @media(max-width:600px){ .reader-hero h1 { font-size:32px; } .reader-hero { padding:26px 20px; } }
+  .r-stats { display:flex; justify-content:center; gap:24px; margin-top:22px; flex-wrap:wrap; }
+  .r-stat .n { font-family:var(--display-font),sans-serif; font-weight:800; font-size:28px; color:var(--gold-l); }
+  .r-stat .l { font-size:14px; color:var(--ink2); margin-top:2px; }
+
+  .reader h2.sec {
+    font-family:var(--display-font),sans-serif; font-weight:700; font-size:29px; color:var(--gold-l); letter-spacing:-0.2px;
+    margin:46px 0 20px; padding-bottom:14px; position:relative; display:flex; align-items:center; gap:14px;
+  }
+  .reader h2.sec::after { content:''; position:absolute; bottom:0; right:0; left:0; height:1px; background:linear-gradient(90deg,var(--gold-deep),transparent); }
+  .reader h2.sec .ic { width:38px; height:38px; flex:0 0 auto; background:var(--green); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0; }
+  @media(max-width:600px){ .reader h2.sec { font-size:23px; } }
+  .reader h3.sub { font-family:var(--display-font),sans-serif; font-weight:700; font-size:21px; color:var(--ink); margin:30px 0 10px; }
+  .reader p { font-size:17.5px; color:#dde6e0; margin:16px 0; line-height:1.9; }
+  .reader p b, .reader li b { color:var(--gold-l); }
+  .reader ul, .reader ol { margin:14px 26px 18px 0; color:#dde6e0; font-size:17px; line-height:1.85; }
+  .reader li { margin-bottom:7px; }
+  .reader .lead { font-size:19px; color:var(--ink); }
+
+  .box { border-radius:10px; padding:18px 22px; margin:20px 0; font-size:16px; line-height:1.78; }
+  .box .bt { font-family:var(--display-font),sans-serif; font-weight:700; margin-bottom:9px; font-size:17px; color:inherit; }
+  .box ul, .box ol { margin:10px 22px 4px 0; font-size:16px; }
+  .box-gold { background:#1f2a16; border:1px solid #4a5226; border-right:5px solid var(--gold); }
+  .box-gold .bt { color:var(--gold-l); }
+  .box-blue { background:#16242c; border:1px solid #2a4150; border-right:5px solid #5aa0d0; }
+  .box-blue .bt { color:#8cc4ec; }
+  .box-green { background:#16261c; border:1px solid #2a4a36; border-right:5px solid #4cc488; }
+  .box-green .bt { color:#5cd49a; }
+  .box-red { background:#2a1a18; border:1px solid #4a2e28; border-right:5px solid #d07a5a; }
+  .box-red .bt { color:#f0a585; }
+  .box b { color:#fff; }
+  .box-gold b, .box-blue b, .box-green b, .box-red b { color:#fff; }
+
+  .mini-sum { border-right:3px solid var(--gold-deep); padding-right:14px; color:var(--ink2); font-style:italic; margin:22px 0; font-size:16.5px; }
+  .mini-sum b { color:var(--gold-l); font-style:normal; }
+
+  /* tables */
+  .tbl-wrap { overflow-x:auto; margin:22px 0; border:1px solid var(--line); border-radius:12px; }
+  table.t { width:100%; border-collapse:collapse; font-size:16px; min-width:460px; }
+  table.t th { background:var(--panel); color:var(--gold-l); font-family:var(--display-font),sans-serif; font-weight:700; text-align:right; padding:13px 16px; border-bottom:1px solid var(--line); font-size:16px; }
+  table.t td { padding:12px 16px; border-bottom:1px solid rgba(34,70,58,0.6); color:#dde6e0; vertical-align:top; }
+  table.t tr:last-child td { border-bottom:none; }
+  table.t tbody tr:nth-child(even) { background:rgba(16,38,32,0.45); }
+  table.t td b { color:var(--gold-l); }
+
+  /* term pills */
+  .terms { display:flex; flex-wrap:wrap; gap:9px; margin:18px 0; }
+  .term { background:rgba(184,137,63,0.09); border:1px solid rgba(184,137,63,0.32); color:var(--gold-l); padding:7px 15px; border-radius:24px; font-size:15px; font-weight:600; }
+
+  /* checklist widget */
+  .chk { background:var(--panel2); border:1px solid var(--line); border-radius:14px; padding:20px 22px; margin:24px 0; }
+  .chk-title { font-family:var(--display-font),sans-serif; font-weight:700; font-size:19px; color:var(--gold-l); margin-bottom:6px; }
+  .chk-note { color:var(--ink2); font-size:15px; margin-bottom:14px; }
+  .chk-row { display:flex; align-items:flex-start; gap:12px; padding:9px 0; border-bottom:1px solid rgba(34,70,58,0.5); cursor:pointer; }
+  .chk-row:last-of-type { border-bottom:none; }
+  .chk-box { flex:0 0 auto; width:23px; height:23px; border-radius:6px; border:1px solid var(--line); background:var(--panel); display:flex; align-items:center; justify-content:center; font-size:14px; color:transparent; transition:0.18s; margin-top:2px; }
+  .chk-row.on .chk-box { background:var(--green); border-color:var(--green); color:#fff; }
+  .chk-row.on .chk-tx { color:var(--ink3); text-decoration:line-through; }
+  .chk-tx { font-size:16.5px; color:#dde6e0; line-height:1.6; }
+  .chk-score { margin-top:14px; font-family:var(--display-font),sans-serif; font-weight:700; color:var(--gold-l); font-size:17px; }
+
+  /* generic tool panel */
+  .tool { background:linear-gradient(160deg,#16302a,#12241e); border:1px solid var(--line); border-radius:16px; padding:24px; margin:28px 0; }
+  .tool-h { font-family:var(--display-font),sans-serif; font-weight:800; font-size:21px; color:var(--gold-l); margin-bottom:4px; }
+  .tool-sub { color:var(--ink2); font-size:15px; margin-bottom:18px; }
+  .fld { display:flex; flex-direction:column; gap:5px; margin-bottom:12px; }
+  .fld label { font-size:15px; color:var(--ink2); font-weight:500; }
+  .fld input, .fld select, .fld textarea {
+    background:var(--panel); border:1px solid var(--line); color:var(--ink);
+    padding:11px 13px; border-radius:9px; font-family:inherit; font-size:16px; width:100%;
+  }
+  .fld input:focus, .fld select:focus, .fld textarea:focus { outline:none; border-color:var(--gold-deep); }
+  .btn {
+    background:var(--green); color:#fff; border:1px solid var(--green); padding:12px 22px;
+    border-radius:10px; font-family:'Assistant',sans-serif; font-size:16px; font-weight:600; cursor:pointer; transition:0.2s;
+  }
+  .btn:hover { background:#1d8a6d; }
+  .btn.ghost { background:var(--panel); color:var(--gold-l); border-color:var(--line); }
+  .btn.ghost:hover { background:#1a382f; }
+  .btn-row { display:flex; gap:10px; flex-wrap:wrap; margin-top:6px; }
+  .out { margin-top:18px; padding:16px 18px; background:var(--panel2); border:1px solid var(--line); border-radius:11px; font-size:16px; color:#dde6e0; line-height:1.8; }
+  .out .big { font-family:var(--display-font),sans-serif; font-weight:800; font-size:26px; color:var(--gold-l); }
+  .out.warn { border-color:#4a2e28; background:#2a1a18; }
+  .out.ok { border-color:#2a4a36; background:#16261c; }
+  .split-row { display:grid; grid-template-columns:1fr 1fr 110px 44px; gap:9px; margin-bottom:9px; align-items:center; }
+  @media(max-width:620px){ .split-row { grid-template-columns:1fr 1fr; } .split-row .sr-del { grid-column:2; justify-self:end; } }
+  .split-row input, .split-row select { background:var(--panel); border:1px solid var(--line); color:var(--ink); padding:10px 12px; border-radius:9px; font-family:inherit; font-size:15px; width:100%; }
+  .sr-del { background:none; border:1px solid var(--line); color:#d07a5a; border-radius:8px; width:40px; height:40px; cursor:pointer; font-size:17px; }
+  .sr-del:hover { background:#2a1a18; }
+
+  .mark-read-btn {
+    display:flex; align-items:center; justify-content:center; gap:10px;
+    width:100%; background:var(--panel); border:1px solid var(--line); color:var(--gold-l);
+    padding:15px; border-radius:12px; margin:28px 0 8px; font-size:16px; font-weight:600;
+    cursor:pointer; font-family:'Assistant',sans-serif; transition:0.25s;
+  }
+  .mark-read-btn:hover { background:var(--green); color:#fff; border-color:var(--green); }
+  .mark-read-btn.done { background:var(--green); color:#fff; border-color:var(--green); }
+
+  .chap-nav { display:flex; justify-content:space-between; gap:12px; margin-top:26px; }
+  .chap-nav button { flex:1; background:var(--panel); border:1px solid var(--line); color:var(--ink); padding:14px; border-radius:10px; cursor:pointer; font-family:inherit; font-size:15px; transition:0.2s; }
+  .chap-nav button:hover:not(:disabled) { background:var(--green); color:#fff; }
+  .chap-nav button:disabled { opacity:0.3; cursor:not-allowed; }
+
+  footer { text-align:center; padding:40px 22px; color:var(--ink2); font-size:15px; border-top:1px solid var(--line); }
+  footer b { color:var(--gold-l); }
+
+  .gold-divider { display:flex; align-items:center; justify-content:center; gap:14px; margin:0 auto; max-width:340px; padding:18px 0; }
+  .gold-divider::before, .gold-divider::after { content:''; height:1px; flex:1; background:linear-gradient(90deg,transparent,var(--gold)); }
+  .gold-divider::after { background:linear-gradient(90deg,var(--gold),transparent); }
+  .gold-divider .note { color:var(--gold); font-size:18px; }
+
+  .learn-progress { max-width:1000px; margin:28px auto 0; padding:0 22px; }
+  .lp-head { display:flex; align-items:center; gap:16px; }
+  .lp-label { font-size:16px; color:var(--ink2); font-weight:500; }
+  .lp-pct { font-family:var(--display-font),sans-serif; font-weight:800; font-size:22px; color:var(--gold-l); letter-spacing:-0.5px; flex:0 0 auto; min-width:54px; text-align:left; }
+  .lp-track { flex:1; height:7px; background:var(--panel); border-radius:10px; overflow:hidden; border:1px solid var(--line); }
+  .lp-fill { height:100%; border-radius:10px; width:0%; background:linear-gradient(90deg,var(--gold-deep),var(--gold-l)); transition:width 0.9s cubic-bezier(0.22,1,0.36,1); box-shadow:0 0 12px rgba(216,184,120,0.4); }
+
+  .progress-bar { position:fixed; top:0; right:0; height:3px; width:0%; background:linear-gradient(90deg,var(--gold-deep),var(--gold-l)); z-index:200; transition:width 0.1s linear; }
+  .to-top { position:fixed; bottom:24px; left:24px; width:48px; height:48px; border-radius:50%; background:var(--green); color:var(--gold-l); border:1px solid var(--line); font-size:22px; cursor:pointer; opacity:0; pointer-events:none; transition:0.3s; z-index:150; box-shadow:0 6px 20px rgba(0,0,0,0.4); font-family:'Assistant',sans-serif; }
+  .to-top.show { opacity:1; pointer-events:auto; }
+  .to-top:hover { background:var(--green-deep); transform:translateY(-3px); }
+
+  .reveal { opacity:0; transform:translateY(24px); transition:cubic-bezier(0.22,1,0.36,1) 0.6s; }
+  .reveal.in { opacity:1; transform:translateY(0); }
+
+  .world-tag { display:inline-block; font-size:13px; font-weight:700; letter-spacing:1px; color:var(--ink3); border:1px solid var(--line); border-radius:20px; padding:4px 12px; margin-bottom:10px; }
+
+  .disclaimer { max-width:1000px; margin:10px auto 40px; padding:0 22px; }
+  .disclaimer .box { margin:0; }
+  @media print { .topbar, .to-top, .progress-bar, .chap-nav, .mark-read-btn, .btn-row { display:none !important; } body { background:#fff; color:#111; } }
+</style>
+</head>
+<body>
+<div class="progress-bar" id="pbar"></div>
+
+<div class="topbar">
+  <div class="topbar-title">אמנות המקצוע <span class="sub">· המפיק בתעשיית המוזיקה</span></div>
+  <button class="back-btn" id="backBtn" onclick="goBack()">→ חזרה</button>
+</div>
+
+<!-- ============ HOME ============ -->
+<div class="view active" id="viewHome">
+  <div class="home-hero">
+    <div class="frame-corner fc-tr"></div><div class="frame-corner fc-tl"></div>
+    <div class="crest">◈</div>
+    <div class="eyebrow">קורס ההשלמה למפיקים</div>
+    <h1>אמנות <em>המקצוע</em></h1>
+    <p>אתם כבר יודעים לעשות מוזיקה. הקורס הזה הוא על כל מה שקורה סביב המוזיקה — מול מי אתם עובדים, על מה אתם חותמים, מי מחזיק בזכויות, מאיפה מגיע הכסף ואיך בונים מזה קריירה.</p>
+    <div class="learn-progress" style="margin-top:28px">
+      <div class="lp-head">
+        <span class="lp-label">ההתקדמות שלך</span>
+        <div class="lp-track"><div class="lp-fill" id="lpFill"></div></div>
+        <span class="lp-pct" id="lpPct">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer" style="margin-top:26px">
+    <div class="box box-red">
+      <div class="bt">⚖ הבהרה משפטית — קראו לפני שממשיכים</div>
+      הקורס הזה הוא חומר לימודי, לא ייעוץ משפטי ולא ייעוץ מס. הוא נועד ללמד אתכם <b>לזהות</b> מה אתם קוראים, <b>לשאול</b> את השאלות הנכונות ו<b>לדעת מתי לעצור</b>. לפני חתימה על חוזה, העברת זכויות או כל החלטה עם משמעות כספית — התייעצו עם עורך דין שמתמחה בדיני בידור ומוזיקה, ועם רואה חשבון לעניינים פיננסיים. דיני זכויות היוצרים והמיסוי משתנים בין מדינות ומתעדכנים עם הזמן.
+    </div>
+  </div>
+
+  <div id="worldsWrap"></div>
+
+  <div class="gold-divider"><span class="note">♪</span></div>
+  <footer>
+    <b>אמנות המקצוע</b> — קורס ההשלמה למפיקים מוזיקליים<br>
+    ארבעה עולמות, שבעה כרכים, <span id="chCount">29</span> פרקים.
+  </footer>
+</div>
+
+<!-- ============ VOLUME ============ -->
+<div class="view" id="viewVol">
+  <div class="chapter-head" id="volHead"></div>
+  <div class="chap-list" id="volList"></div>
+</div>
+
+<!-- ============ READER ============ -->
+<div class="view" id="viewRead">
+  <div class="reader" id="readerBody"></div>
+</div>
+
+<button class="to-top" id="toTop" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<script>
+/* ============ DATA (injected) ============ */
+const WORLDS = [{"id": "w2", "title": "עולם 2 — תעשיית המוזיקה", "blurb": "איך אתם עובדים מול אמנים, כותבים, נגנים, טכנאים, לייבלים, מפיצים וגופי זכויות — ומי מחזיק במה."}, {"id": "w3", "title": "עולם 3 — עסק וכסף", "blurb": "תמחור, גבייה, חשבוניות, הוצאות, מיסוי וניהול העסק שלכם כמפיקים."}, {"id": "w4", "title": "עולם 4 — קריירה ושיווק", "blurb": "מיתוג, נטוורקינג, שיווק, השגת לקוחות, בניית מוניטין וצמיחה מקצועית."}];
+const VOLUMES = [{"id": "a", "world": "w2", "letter": "א", "color": "#5cd49a", "title": "האמן ואנשי המקצוע", "desc": "עם מי אתם עובדים, מי אחראי על מה, ואיך מנהלים את הקשר"}, {"id": "b", "world": "w2", "letter": "ב", "color": "#6eafd9", "title": "זכויות וקרדיטים", "desc": "מי הבעלים של מה, איך מחלקים את זה ואיך מתעדים"}, {"id": "c", "world": "w2", "letter": "ג", "color": "#c9a857", "title": "חוזים וכסף מהמוזיקה", "desc": "לקרוא חוזה, לזהות סעיפים, ולהבין מאיפה מגיעים תמלוגים"}, {"id": "d", "world": "w2", "letter": "ד", "color": "#d98ec9", "title": "לייבלים, הפצה וסינכרון", "desc": "איך שיר מגיע לעולם, ומי משלם עליו בדרך"}, {"id": "e", "world": "w2", "letter": "ה", "color": "#50cdc0", "title": "מסירה, ניהול ואתיקה", "desc": "איך נראית עבודה מקצועית כשהמוזיקה כבר מוכנה"}, {"id": "f", "world": "w3", "letter": "ו", "color": "#e0b85a", "title": "העסק שלך", "desc": "תמחור, גבייה, חשבוניות, הוצאות ותזרים"}, {"id": "g", "world": "w4", "letter": "ז", "color": "#af91dc", "title": "קריירה, שיווק ולקוחות", "desc": "איך בונים שם, משיגים עבודה ומחזיקים מעמד לאורך זמן"}];
+const CHAPTERS = {"a": [{"n": 1, "title": "עבודה מקצועית מול אמן", "sub": "תיאום ציפיות, בריף, גבולות ותקשורת"}, {"n": 2, "title": "תהליך הפקת שיר מול אמן", "sub": "מדמו ועד מסירה — כל התחנות"}, {"n": 3, "title": "מפת אנשי המקצוע בתעשייה", "sub": "26 תפקידים, מי אחראי על מה ומי משלם למי"}, {"n": 4, "title": "עבודה עם נגני סשן", "sub": "בריף, תעריף, זכויות הנגן ו-Buyout"}, {"n": 5, "title": "עבודה עם כותבי שירים", "sub": "Co-Writing, Topline, ומתי אתם נחשבים כותבים"}], "b": [{"n": 6, "title": "קרדיטים", "sub": "מי מקבל מה, איך מתעדים ואיך מתקנים טעות"}, {"n": 7, "title": "זכויות יוצרים", "sub": "יצירה מול מאסטר — ההבחנה שהכל תלוי בה"}, {"n": 8, "title": "חלוקת זכויות בשיר", "sub": "Split Sheet — כולל מחשבון חלוקה"}, {"n": 9, "title": "סמפלים, לופים ורישוי", "sub": "Clearance, Interpolation, Royalty-Free"}, {"n": 10, "title": "הוצאה לאור מוזיקלית", "sub": "Publishing, PRO, Writer's Share"}], "c": [{"n": 11, "title": "חוזים והסכמים", "sub": "סוגי הסכמים ו-24 סעיפים שצריך לזהות"}, {"n": 12, "title": "תמלוגים", "sub": "מאיפה מגיע הכסף — כולל מחשבון Recoupment"}], "d": [{"n": 13, "title": "עבודה עם לייבלים", "sub": "A&R, סוגי עסקאות וסימני אזהרה בחוזה"}, {"n": 14, "title": "מפיצים ופלטפורמות סטרימינג", "sub": "Release, ISRC, UPC ומטא-דאטה"}, {"n": 15, "title": "מוזיקה לקולנוע, טלוויזיה ופרסומות", "sub": "Sync, Music Supervisor ו-Deliverables"}], "e": [{"n": 16, "title": "מסירת חומרים מקצועית", "sub": "גרסאות, Stems, שמות קבצים ותיקיית מסירה"}, {"n": 17, "title": "ניהול פרויקט מוזיקלי", "sub": "Timeline, ניהול גרסאות, גיבוי וארכיון"}, {"n": 18, "title": "אתיקה ומקצוענות", "sub": "סודיות, קרדיט אמיתי וניגוד עניינים"}], "f": [{"n": 19, "title": "תמחור שירותים", "sub": "איך קובעים מחיר — כולל מחשבון תמחור"}, {"n": 20, "title": "ניהול העסק", "sub": "חשבוניות, הוצאות, מיסוי ותזרים מזומנים"}], "g": [{"n": 21, "title": "בניית קריירה", "sub": "נישה, מיצוב, תיק עבודות ומוניטין"}, {"n": 22, "title": "נטוורקינג", "sub": "פנייה ראשונה, Follow-Up ואיך לא להיראות ספאמר"}, {"n": 23, "title": "שיווק עצמי", "sub": "מיתוג אישי, רשתות ואסטרטגיית תוכן"}, {"n": 24, "title": "השגת לקוחות", "sub": "פנייה יזומה, הצעת מחיר וסגירת עסקה"}, {"n": 25, "title": "מקורות הכנסה נוספים", "sub": "Ghost Production, Sample Packs, Sync ועוד"}, {"n": 26, "title": "קבלת החלטות מקצועית", "sub": "איזה פרויקט לקחת ומתי לסרב — כולל מד Red Flags"}, {"n": 27, "title": "ניהול מערכות יחסים בתעשייה", "sub": "משא ומתן, קונפליקטים ושמירה על קשרים"}, {"n": 28, "title": "ניהול סיכונים", "sub": "מה יכול להשתבש ואיך מגינים על עצמכם מראש"}, {"n": 29, "title": "סיכום — ארבע היכולות", "sub": "איך כל מה שלמדתם מתחבר לקריירה אחת"}]};
+const CONTENT = {
+  1: `<p class="lead">רוב הפרויקטים שנתקעים לא נתקעים בגלל המיקס. הם נתקעים כי שני אנשים ישבו באותו חדר, אמרו את אותה מילה, והתכוונו לשני דברים שונים לגמרי.</p>
+
+<p>אמן אומר לכם "אני רוצה משהו חם". אתם שומעים סינתי אנלוגי, טייפ סאטורציה ובס עגול. הוא מתכוון לגיטרה אקוסטית ועוגב. אף אחד לא טעה, פשוט אף אחד לא בדק. שלושה שבועות אחר כך, כששני הצדדים כבר מתוסכלים, מתברר שהפער היה שם מהיום הראשון והיה אפשר לסגור אותו בשיחה של עשרים דקות.</p>
+
+<p>העבודה מול אמן היא מקצוע בפני עצמו, והיא מתחילה הרבה לפני שפותחים DAW. הפרק הזה הוא על <b>איך מנהלים את הקשר</b> — מהפגישה הראשונה ועד הרגע שבו הקובץ עובר, ואיך לוודא שהתוצאה היא מה ששניכם ראיתם בראש.</p>
+
+<h2 class="sec"><span class="ic">◈</span>פגישת ההיכרות — מה באמת קורה בה</h2>
+
+<p>הפגישה הראשונה נראית כמו שיחת היכרות נעימה, אבל תכלס היא ראיון דו־כיווני. האמן בודק אם אתם האדם הנכון לשיר שלו, ואתם בודקים אם זה פרויקט שאתם רוצים לקחת. שתי הבדיקות חשובות באותה מידה, וזאת נקודה שמפיקים בתחילת הדרך נוטים לפספס — הם כל כך רוצים את העבודה שהם שוכחים לבדוק אם הם רוצים אותה.</p>
+
+<p>הכלל הוא פשוט: <b>בפגישה הראשונה אתם מקשיבים יותר משאתם מדברים</b>. לא בגלל נימוס, אלא כי כל מה שתגידו על עצמכם לא ישנה את התוצאה, וכל מה שהוא יגיד על עצמו כן. אמן שמדבר עשרים דקות על מה הוא רוצה נותן לכם מפת דרכים. מפיק שמדבר עשרים דקות על הציוד שלו נותן לעצמו הרגשה טובה.</p>
+
+<div class="box box-gold">
+  <div class="bt">◆ השאלות שפותחות פרויקט</div>
+  <ul>
+    <li><b>מה השיר הזה אמור לעשות?</b> — להשמיע ברדיו, לפתוח הופעה, להיות הסינגל הראשון, או פשוט להתקיים?</li>
+    <li><b>למי אתה מנגן את זה קודם כל?</b> — מי הקהל שאתה רואה בראש כשאתה שר את זה.</li>
+    <li><b>תן לי שלושה שירים שזה צריך להישמע לידם.</b> — לא "כמו", אלא לידם, באותה פלייליסט.</li>
+    <li><b>מה בדמו אתה הכי אוהב, ומה מפריע לך?</b> — התשובה השנייה שווה יותר מהראשונה.</li>
+    <li><b>מה אסור לי לשנות?</b> — הקו האדום האמנותי שלו.</li>
+    <li><b>מי עוד מעורב, ומי מחליט בסוף?</b> — מנהל, לייבל, חבר, בן/בת זוג. עדיף לדעת עכשיו.</li>
+    <li><b>מתי זה צריך להיות מוכן, ולמה דווקא אז?</b> — דדליין בלי סיבה הוא בדרך כלל דדליין שיזוז.</li>
+    <li><b>מה התקציב?</b> — לא בסוף הפגישה. באמצע, בטון רגיל, כמו כל שאלה אחרת.</li>
+  </ul>
+</div>
+
+<p>שימו לב לשאלה על מי מחליט בסוף. יש פרויקטים שבהם האמן יושב מולכם, מאשר הכל בהתלהבות, ואז שולח את הגרסה לאדם שלישי שלא היה בשום פגישה — ופתאום הכל חוזר אחורה. <b>מי שמאשר הוא מי שצריך להיות בשיחה</b>, או לפחות מי שהציפיות שלו צריכות להיות מתואמות מראש.</p>
+
+<h2 class="sec"><span class="ic">◈</span>בריף מוזיקלי — להפוך תחושה למסמך</h2>
+
+<p>אחרי פגישת ההיכרות אתם כותבים <b>בריף</b>. לא חוזה, לא מסמך משפטי — דף אחד שמסכם במילים שלכם מה הבנתם, ונשלח לאמן לאישור. זה הכלי הכי זול ביחס לכמות הצרות שהוא חוסך.</p>
+
+<div class="box box-blue">
+  <div class="bt">▸ מה נכנס לבריף</div>
+  <ul>
+    <li>שם השיר, אמן, תאריך.</li>
+    <li>מטרת השיר וקהל היעד.</li>
+    <li>שלושה עד חמישה רפרנסים — ולצד כל אחד, <b>מה בדיוק לוקחים ממנו</b>: "מהשיר הזה — הגרוב של התופים. לא הסאונד, לא הווקאל."</li>
+    <li>סגנון, טמפו משוער, סולם, טון שירה.</li>
+    <li>מה כלול בעבודה: הפקה, הקלטות, מיקס, מאסטרינג — מה מזה עליכם ומה לא.</li>
+    <li>מספר סבבי התיקונים הכלולים.</li>
+    <li>לוח זמנים עם אבני דרך, לא רק תאריך סופי.</li>
+    <li>מחיר ותנאי תשלום.</li>
+  </ul>
+</div>
+
+<p>הסעיף של הרפרנסים הוא הלב של המסמך. רפרנס בלי הסבר הוא מלכודת — אמן שולח לכם שיר ואתם לא יודעים אם הוא התכוון לסאונד, למבנה, לאווירה או פשוט אוהב את השיר. <b>לכל רפרנס תצמידו משפט שמסביר מה לוקחים ממנו ומה לא.</b> זה הופך אוסף שירים למסמך עבודה.</p>
+
+<div class="mini-sum"><b>מיני־סיכום:</b> פגישה → בריף כתוב → אישור האמן. רק אחרי האישור פותחים פרויקט.</div>
+
+<h2 class="sec"><span class="ic">◈</span>חלוקת אחריות — מי מחליט על מה</h2>
+
+<p>שאלה שכמעט אף אחד לא שואל בקול רם, ולכן היא מתפוצצת באמצע: <b>מי בעל הדעה האחרונה על מה?</b></p>
+
+<p>התשובה הבריאה ברוב הפרויקטים היא חלוקה לפי תחום. לאמן יש את המילה האחרונה על <b>מה השיר אומר</b> — מילים, מסר, פרשנות רגשית, איך הקול שלו נשמע. לכם יש את המילה האחרונה על <b>איך זה נשמע מבחינה טכנית</b> — בחירות מיקס, שרשרת סיגנל, פתרונות עיצוב סאונד. באמצע יש אזור משותף — עיבוד, מבנה, בחירת כלים — ושם מחליטים יחד, כשהבריף הוא הבורר.</p>
+
+<p>כשמישהו נכנס לתחום של השני, זה לא סוף העולם וזה קורה כל הזמן. אבל כשזה קורה, אתם רוצים שתהיה מסגרת מוסכמת לחזור אליה, במקום ויכוח על טעם. "בוא נחזור לבריף — כתבנו שם שהמטרה היא X, והבחירה הזאת מרחיקה אותנו מזה" זה משפט שאפשר לענות עליו. "אני חושב שזה פחות טוב" זה לא.</p>
+
+<div class="box box-green">
+  <div class="bt">✓ איך נותנים ביקורת לאמן</div>
+  <p style="margin:0 0 8px">ביקורת מקצועית מתייחסת <b>למטרה, לא לטעם</b>. ההבדל הוא בין "השורה הזאת חלשה" לבין "השורה הזאת מורידה את האנרגיה בדיוק לפני הפזמון, ואמרנו שהפזמון צריך לעוף". הראשון הוא שיפוט. השני הוא מידע שאפשר לעבוד איתו.</p>
+  <p style="margin:0">וכשהביקורת באה עליכם — תקשיבו עד הסוף לפני שאתם מסבירים. הרבה פעמים האמן מתאר נכון את הבעיה ולא נכון את הפתרון. "תוריד את הגיטרות" יכול להיות תרגום שגוי של "הווקאל לא בולט מספיק", ואת זה אתם יודעים לפתור טוב ממנו.</p>
+</div>
+
+<h2 class="sec"><span class="ic">◈</span>ניהול תיקונים — הנקודה שבה פרויקטים מתים</h2>
+
+<p>תיקונים אינסופיים הם הדרך הכי נפוצה שבה פרויקט טוב הופך לפרויקט מפסיד. לא בגלל שהאמן רע, אלא כי בלי גבול מוסכם, אין שום רגע טבעי שבו עוצרים. תמיד אפשר לשפר עוד משהו.</p>
+
+<p>הפתרון הוא להגדיר את זה מראש, בבריף, בשפה יבשה: <b>מספר סבבי התיקונים הכלולים במחיר, ומה נחשב סבב</b>. סבב אחד הוא רשימת הערות מרוכזת, לא הודעה כל שעתיים. וכשאמן שולח הערה שלישית ביום, אתם לא מתעצבנים — אתם אוספים אותה לרשימה ואומרים "מעולה, אני מרכז את כל ההערות שלך ומטפל בהן ביחד בסבב הקרוב".</p>
+
+<div class="box box-red">
+  <div class="bt">⚠ Scope Creep — איך זה נראה בפועל</div>
+  <p style="margin:0">סוכם על הפקה ומיקס. באמצע מגיעה בקשה "רק תוסיף גם מאסטרינג". אחר כך "אפשר גם גרסה אינסטרומנטלית?". ואז "יש לי עוד שיר קטן, זה יקח לך חצי שעה". כל בקשה בנפרד נשמעת קטנה, וביחד הן פרויקט שלם שלא שילמו עליו. <b>התשובה הנכונה היא כן — בתוספת תשלום.</b> לא "לא", ולא "בסדר, זה בכיף". פשוט: "בטח, זה תוספת של X, אשלח לך עדכון להצעה."</p>
+</div>
+
+<h2 class="sec"><span class="ic">◈</span>תקשורת, זמינות וגבולות</h2>
+
+<p>אתם עובדים מול אמנים דרך וואטסאפ, וזה בסדר גמור — זו התעשייה. אבל וואטסאפ מטשטש את הגבול בין קשר אישי לקשר מקצועי, ואם לא תשימו את הגבול הזה בעצמכם, אף אחד לא ישים אותו בשבילכם.</p>
+
+<ul>
+  <li><b>זמני תגובה מוגדרים.</b> "אני עונה על הודעות בימים א׳–ה׳, בין 10:00 ל-19:00" זה משפט לגיטימי שאפשר להגיד פעם אחת בתחילת הפרויקט, וממנו והלאה הכל פשוט יותר.</li>
+  <li><b>החלטות עוברות בכתב.</b> שיחת טלפון היא נהדרת לליבון, אבל בסופה נשלחת הודעה: "סיכמנו ש...". זה לא חוסר אמון, זה זיכרון משותף.</li>
+  <li><b>אישור גרסה הוא אירוע.</b> לא "יפה!" בתגובה לסטורי, אלא הודעה מפורשת: "מאשר את גרסה 4 כגרסה סופית."</li>
+  <li><b>ביטולים ואיחורים מסוכמים מראש.</b> מה קורה אם האמן לא מגיע לסשן שנקבע? אם אין תשובה מראש, התשובה תיקבע בכעס.</li>
+</ul>
+
+<h3 class="sub">איך אומרים "לא" בצורה מקצועית</h3>
+
+<p>מפיקים חדשים מפחדים להגיד לא, כי זה מרגיש כמו לאבד עבודה. בפועל קורה ההפך — מפיק שאומר לא כשצריך נתפס כמישהו שיודע מה הוא עושה. הנוסחה שעובדת היא <b>לא, סיבה, חלופה</b>:</p>
+
+<p>"את הגרסה הזאת אני לא יכול לספק עד יום חמישי, כי הקלטת הווקאל עוד לא נסגרה ואני לא רוצה למסור משהו שאני לא עומד מאחוריו. אני יכול או למסור ביום ראשון בגרסה מלאה, או למסור ביום חמישי מיקס גס לצורך אישור כיוון. מה עדיף לך?"</p>
+
+<p>שימו לב מה קרה שם — לא אמרתם רק לא, נתתם לאמן שתי אפשרויות שאתם יכולים לעמוד בשתיהן. הוא לא מרגיש שדחו אותו, הוא מרגיש שהוא בוחר. ואתם לא נתתם הבטחה שתשרוף אתכם. <b>הרוב המוחלט של המשברים בין מפיק לאמן מתחילים בהבטחה שניתנה כי היה נעים להגיד כן.</b></p>
+
+<div class="chk">
+  <div class="chk-title">צ׳קליסט — לפני שפותחים פרויקט חדש</div>
+  <div class="chk-note">אם משהו כאן לא מסומן, אתם עוד לא מוכנים להתחיל.</div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">נפגשתי עם האמן ושמעתי את החזון שלו במילים שלו</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">יש רפרנסים, ולכל אחד כתוב מה לוקחים ממנו</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">כתבתי בריף ושלחתי לאישור</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">האמן אישר את הבריף בכתב</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">מוגדר בדיוק מה כלול בעבודה ומה לא</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">מספר סבבי התיקונים כתוב במספר</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">ידוע מי נותן את האישור הסופי</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">מחיר ותנאי תשלום סוכמו בכתב</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">התקבלה מקדמה</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">סוכם מה קורה אם הפרויקט מבוטל באמצע</div></div>
+  <div class="chk-score"></div>
+</div>
+
+<div class="mini-sum"><b>סיכום הפרק:</b> הפגישה מייצרת הבנה, הבריף הופך אותה למסמך, והתקשורת השוטפת שומרת עליה. כל השאר — הגבולות, התיקונים, הלא־ים — נגזר מזה שיש מסמך אחד ששני הצדדים אישרו.</div>`,
+  2: `<p class="lead">לכל מפיק מנוסה יש אותו דבר, גם אם הוא אף פעם לא כתב אותו: סדר קבוע של תחנות שהשיר עובר. לא בגלל שהוא אוהב בירוקרטיה, אלא כי הסדר הזה הוא מה שמונע מהפרויקט לרוץ במעגלים.</p>
+
+<p>מפיק בלי תהליך עובד על כל שיר מחדש. הוא מקליט ווקאל לפני שהמבנה סגור, ואז מגלה שצריך להקליט שוב. הוא מתחיל למקסס כשעוד מוסיפים כלים, ואז מוחק חצי עבודה. הוא שולח לאמן לשמוע בדיוק ברגע שהכי קל לקבל הערות שיהרסו את הלו״ז. <b>התהליך הוא לא כבל — הוא מה שמאפשר לכם לעבוד מהר.</b></p>
+
+<p>הפרק הזה הוא על התחנות עצמן, ובעיקר על <b>מה עובר בין תחנה לתחנה בשיחה עם האמן</b> — כי חלק גדול מהתהליך הוא לא מוזיקלי, הוא ניהולי.</p>
+
+<h2 class="sec"><span class="ic">◈</span>שלב 1 — קדם־הפקה (Pre-Production)</h2>
+
+<p>קדם־הפקה היא השלב הכי זול והכי משתלם בכל הפרויקט, והיא השלב שהכי הרבה מפיקים מדלגים עליו. כל החלטה שנסגרת כאן חוסכת שעות בהמשך, וכל החלטה שלא נסגרת כאן חוזרת בגרסה יקרה יותר.</p>
+
+<div class="box box-gold">
+  <div class="bt">◆ מה חייב להיסגר בקדם־הפקה</div>
+  <ul>
+    <li><b>סולם</b> — לא הסולם של הדמו, אלא הסולם שבו האמן שר הכי טוב את הפזמון. בדקו את זה בפועל, בקול, לפני שבונים משהו.</li>
+    <li><b>טמפו</b> — כולל הבדיקה שהטמפו עובד גם לווקאל וגם לגרוב, לא רק לאחד מהם.</li>
+    <li><b>מבנה השיר</b> — כמה בתים, איפה הפזמון, יש גשר או אין. על דף, לא בראש.</li>
+    <li><b>הטון של השירה</b> — נקי, צרוד, קרוב, רחוק. זה משפיע על בחירת מיקרופון ועל כל שרשרת ההפקה.</li>
+    <li><b>מי מנגן מה</b> — אתם, נגני סשן, ספריות, או שילוב.</li>
+    <li><b>תקציב וזמן</b> — כמה סשנים, כמה נגנים, מה זה עולה.</li>
+  </ul>
+</div>
+
+<p>הכלל החשוב ביותר כאן: <b>אל תקליטו ווקאל סופי לפני שהמבנה והסולם נעולים.</b> ווקאל הוא הדבר הכי יקר להקליט מחדש — לא בכסף בלבד, אלא באנרגיה של האמן. הביצוע הכי טוב בדרך כלל קורה בפעם השנייה או השלישית, ואם בזבזתם אותו על גרסה שתיזרק, לא תקבלו אותו חזרה.</p>
+
+<h2 class="sec"><span class="ic">◈</span>שלב 2 — בניית הבסיס</h2>
+
+<p>עכשיו בונים. גרוב, בס, הרמוניה, ושכבה ראשונה של עיבוד. המטרה כאן היא <b>שלד שאפשר לשיר עליו</b> — לא הפקה מוגמרת.</p>
+
+<p>בנקודה הזאת שולחים לאמן את מה שנקרא <b>Rough</b>: גרסה גסה, לא ממוקססת, עם ווקאל מדריך. וכאן נכנסת עבודה של ניהול ציפיות — כי אמן שמקבל גרסה גסה בלי הסבר ישמע אותה כאילו זו התוצאה. לכן ההודעה שמלווה אותה חשובה לא פחות מהקובץ:</p>
+
+<div class="box box-blue">
+  <div class="bt">▸ איך שולחים Rough</div>
+  <p style="margin:0">"מצורף מיקס גס לשלב הזה. הכל עוד פתוח והסאונד לא מעובד — אני שולח כדי שתאשר <b>מבנה וכיוון בלבד</b>. שים לב בעיקר ל: האם המבנה עובד, האם האנרגיה בפזמון נכונה, האם הטמפו מרגיש נכון לשירה. על סאונד, בלנס ופרטים נדבר בשלב המיקס."</p>
+</div>
+
+<p>שמתם לב מה קרה כאן? הגדרתם לאמן <b>על מה לתת הערות</b>. בלי זה תקבלו הערה על צליל הסנייר בגרסה שבכלל לא ממוקססת, ותבזבזו סבב תיקונים שלם על משהו שממילא היה משתנה.</p>
+
+<h2 class="sec"><span class="ic">◈</span>שלב 3 — הקלטות והפקת שירה</h2>
+
+<p>הקלטת ווקאל היא לא לחיצה על REC. זאת עבודה של הפקה קולית (Vocal Production), והיא מורכבת משלושה דברים שקורים במקביל: לתפוס ביצוע טוב, לשמור על האמן, ולנהל את הזמן.</p>
+
+<ul>
+  <li><b>חממו לפני, לא תוך כדי.</b> עשר דקות של שירה קלה לפני שמתחילים מחזירות את עצמן.</li>
+  <li><b>הקליטו הכל.</b> גם את החזרה. הרבה מהטייקים הכי טובים קורים כשהאמן חושב שזה עוד לא נחשב.</li>
+  <li><b>אל תתקנו תוך כדי.</b> אמן שמקבל הערה אחרי כל שורה מפסיק לשיר ומתחיל לבדוק את עצמו, ומהרגע הזה הביצוע ייצא זהיר. אספו הערות, עצרו בין טייקים, תנו שתיים־שלוש בכל פעם.</li>
+  <li><b>נהלו יומן טייקים.</b> מספר טייק, מה היה טוב בו, איפה. אחרי שעתיים יש לכם ארבעים טייקים ואפס זיכרון.</li>
+  <li><b>דעו מתי לעצור.</b> כשהקול מתעייף, כל טייק נוסף הוא טייק גרוע יותר. עוד שעה בסטודיו לא תציל טייק שהיה צריך להיות מחר.</li>
+</ul>
+
+<div class="mini-sum"><b>מיני־סיכום:</b> ההבדל בין טכנאי הקלטה למפיק קולי הוא שהראשון אחראי על הקובץ והשני אחראי על הביצוע.</div>
+
+<h2 class="sec"><span class="ic">◈</span>שלב 4 — עריכה, הפקה מלאה ומיקס</h2>
+
+<p>אחרי ההקלטות מגיע רצף שהוא כבר יותר טכני מניהולי: עריכת שירה, תיקון תזמון ותיקון גובה, השלמת העיבוד, ואז מיקס. את הפרטים הטכניים אתם מכירים — מה שחשוב כאן הוא <b>מתי מערבים את האמן ומתי לא</b>.</p>
+
+<div class="tbl-wrap">
+<table class="t">
+  <thead><tr><th>שלב</th><th>מה נשלח לאמן</th><th>על מה הוא מתבקש להגיב</th></tr></thead>
+  <tbody>
+    <tr><td><b>קדם־הפקה</b></td><td>מבנה על דף + הקלטה עם גיטרה/פסנתר</td><td>מבנה, סולם, טמפו</td></tr>
+    <tr><td><b>בסיס</b></td><td>Rough גס</td><td>כיוון ואנרגיה בלבד</td></tr>
+    <tr><td><b>אחרי הקלטות</b></td><td>Comp של הווקאל</td><td>בחירת ביצוע, מילים, פרשנות</td></tr>
+    <tr><td><b>הפקה מלאה</b></td><td>Pre-mix</td><td>עיבוד, כלים, פרטים</td></tr>
+    <tr><td><b>מיקס</b></td><td>מיקס 1</td><td>בלנס, סאונד, גובה ווקאל</td></tr>
+    <tr><td><b>מיקס סופי</b></td><td>מיקס מתוקן</td><td>אישור סופי בכתב</td></tr>
+    <tr><td><b>מאסטרינג</b></td><td>מאסטר</td><td>אישור בלבד — לא שלב לשינויים</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box box-red">
+  <div class="bt">⚠ הכלל שחוסך הכי הרבה כאב</div>
+  <p style="margin:0">אחרי אישור המיקס לא חוזרים לעיבוד. אם בשלב המאסטרינג האמן מבקש להוסיף כלי, זה לא תיקון מאסטרינג — זה חזרה לשלב ההפקה, והוא גורר מיקס מחדש ומאסטרינג מחדש. תגידו את זה בנימוס, תגידו את זה מראש, ותכתבו את זה בבריף: <b>"אישור המיקס הוא נקודת הסגירה של העיבוד."</b></p>
+</div>
+
+<h2 class="sec"><span class="ic">◈</span>שלב 5 — מסירה וארכוב</h2>
+
+<p>הפרויקט לא נגמר כשהמאסטר יוצא. הוא נגמר כששני דברים קרו: <b>האמן קיבל את כל מה שהוא צריך</b>, ו<b>אתם שמרתם את כל מה שאתם תצטרכו</b>.</p>
+
+<p>המסירה היא חבילה מסודרת — מאסטרים בכל הפורמטים, גרסאות נלוות, קרדיטים, מטא־דאטה. יש על זה פרק שלם בהמשך (פרק 16), ושם גם מחולל תיקיות שיחסוך לכם את ההחלטה הזאת בכל פרויקט מחדש.</p>
+
+<p>הארכוב הוא מה שאתם עושים לעצמכם. קובץ פרויקט מוקפא, Stems, רשימת סמפלים, גרסת המאסטר. למה? כי בעוד שנתיים תגיע בקשה לגרסה אינסטרומנטלית לסינכרון בפרסומת, ואם אין לכם ארכיון — הפכתם הכנסה קלה לעבודה מחדש. <b>ארכיון טוב הוא כסף שישן.</b></p>
+
+<div class="chk">
+  <div class="chk-title">צ׳קליסט סגירת פרויקט</div>
+  <div class="chk-note">עוברים עליו בכל פרויקט, בלי יוצא מן הכלל.</div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">יש אישור סופי בכתב על גרסת המאסטר</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">כל התשלום התקבל</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">Split Sheet חתום על ידי כל המשתתפים</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">רשימת קרדיטים מדויקת נמסרה לאמן</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">כל הסמפלים מתועדים עם מקור ורישיון</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">חבילת מסירה מלאה נשלחה</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">Stems יוצאו ונשמרו</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">קובץ הפרויקט מוקפא ומגובה בשני מקומות</div></div>
+  <div class="chk-score"></div>
+</div>
+
+<div class="mini-sum"><b>סיכום הפרק:</b> התהליך הוא שבע תחנות — קדם־הפקה, בסיס, הקלטות, עריכה, הפקה מלאה, מיקס, מאסטרינג — ובכל אחת מהן יש שאלה אחת לאמן ושלב אחד שנסגר. מה שנסגר לא נפתח.</div>`,
+  3: `<p class="lead">בסטודיו קטן אתם עושים הכל — מפיקים, מקליטים, מנגנים, ממקססים, ולפעמים גם עונים למיילים. ברגע שהפרויקט גדל, פתאום יש בחדר עשרה אנשים עם עשרה תפקידים, ומי שלא יודע מי עושה מה מגלה את זה בדרך הקשה.</p>
+
+<p>הפרק הזה הוא מפה. לא רשימת הגדרות יבשה, אלא ארבע שאלות שאתם צריכים לדעת לענות עליהן בכל פרויקט: <b>מי אחראי על מה, מי מחליט, מי משלם למי, ומי מחזיק בזכויות.</b></p>
+
+<h2 class="sec"><span class="ic">◈</span>אנשי היצירה</h2>
+
+<div class="tbl-wrap">
+<table class="t">
+  <thead><tr><th>תפקיד</th><th>אחראי על</th><th>מה הוא מקבל</th></tr></thead>
+  <tbody>
+    <tr><td><b>אמן / זמר</b><br><span style="color:var(--ink2);font-size:15px">Artist</span></td><td>הביצוע, הפרשנות, הזהות האמנותית של השיר</td><td>זכויות מבצע במאסטר, לרוב גם חלק ביצירה אם כתב</td></tr>
+    <tr><td><b>מלחין</b><br><span style="color:var(--ink2);font-size:15px">Composer</span></td><td>הלחן — המלודיה וההרמוניה</td><td>חלק ביצירה (Composition)</td></tr>
+    <tr><td><b>כותב מילים</b><br><span style="color:var(--ink2);font-size:15px">Lyricist</span></td><td>הטקסט</td><td>חלק ביצירה</td></tr>
+    <tr><td><b>כותב שירים</b><br><span style="color:var(--ink2);font-size:15px">Songwriter</span></td><td>לחן ומילים ביחד</td><td>חלק ביצירה</td></tr>
+    <tr><td><b>מעבד</b><br><span style="color:var(--ink2);font-size:15px">Arranger</span></td><td>איך הלחן מתלבש על כלים — תפקידים, שכבות, דינמיקה</td><td>קרדיט; חלק ביצירה רק אם סוכם במפורש</td></tr>
+    <tr><td><b>מפיק מוזיקלי</b><br><span style="color:var(--ink2);font-size:15px">Producer</span></td><td>התוצאה הכוללת — הסאונד, הכיוון, הובלת התהליך</td><td>תשלום ו/או אחוזי מפיק במאסטר; לפעמים גם ביצירה</td></tr>
+    <tr><td><b>מפיק קולי</b><br><span style="color:var(--ink2);font-size:15px">Vocal Producer</span></td><td>הביצוע הקולי — הכוונה, בחירת טייקים, Comping</td><td>תשלום וקרדיט</td></tr>
+    <tr><td><b>נגן סשן</b><br><span style="color:var(--ink2);font-size:15px">Session Musician</span></td><td>ביצוע כלי בתוך העיבוד</td><td>תעריף; בדרך כלל Buyout ללא תמלוגים</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box box-gold">
+  <div class="bt">◆ ההבחנה שהכי מבלבלת: מעבד מול מפיק</div>
+  <p style="margin:0">המעבד קובע <b>מה מנגנים</b> — אילו כלים, אילו תפקידים, מתי נכנסים ומתי יוצאים. המפיק קובע <b>איך הכל נשמע ולאן זה הולך</b>, כולל בחירות שאינן נוטות — סאונד, מרקם, אנרגיה, ומה בסוף מתפרסם. ברוב ההפקות המודרניות אותו אדם עושה את שני התפקידים, ובדיוק בגלל זה חשוב להגדיר בכתב באיזה כובע אתם, כי מהכובע נגזרות הזכויות.</p>
+</div>
+
+<h2 class="sec"><span class="ic">◈</span>אנשי הטכניקה</h2>
+
+<ul>
+  <li><b>טכנאי הקלטה (Recording Engineer)</b> — אחראי על איכות הקליטה: מיקרופונים, מיקום, שרשרת סיגנל, ניהול הסשן הטכני. הוא לא מחליט על הביצוע, הוא אחראי שהוא ייתפס נכון.</li>
+  <li><b>טכנאי מיקס (Mixing Engineer)</b> — מקבל את כל הערוצים ובונה מהם יצירה אחת מאוזנת. בפרויקטים גדולים זה כמעט תמיד אדם אחר מהמפיק, וזה בכוונה — אוזן טרייה שומעת מה שהאוזן שעבדה חודש כבר לא שומעת.</li>
+  <li><b>טכנאי מאסטרינג (Mastering Engineer)</b> — השלב האחרון. עוצמה, איזון סופי, עקביות בין רצועות, הכנה לפורמטים. הוא לא מתקן מיקס, והוא גם לא אמור.</li>
+</ul>
+
+<h2 class="sec"><span class="ic">◈</span>אנשי העסקים והניהול</h2>
+
+<div class="tbl-wrap">
+<table class="t">
+  <thead><tr><th>תפקיד</th><th>מה הוא עושה</th><th>מתי פונים אליו</th></tr></thead>
+  <tbody>
+    <tr><td><b>מנהל אמן</b><br><span style="color:var(--ink2);font-size:15px">Artist Manager</span></td><td>מנהל את הקריירה הכוללת — החלטות, הזדמנויות, אנשי מקצוע, כסף</td><td>הוא לרוב איש הקשר שלכם בפועל, גם כשהאמן בחדר</td></tr>
+    <tr><td><b>סוכן הזמנות</b><br><span style="color:var(--ink2);font-size:15px">Booking Agent</span></td><td>הופעות ותאריכים</td><td>כמעט אף פעם לא רלוונטי לכם כמפיקים</td></tr>
+    <tr><td><b>A&amp;R</b><br><span style="color:var(--ink2);font-size:15px">Artists &amp; Repertoire</span></td><td>איש הלייבל שמאתר אמנים, מחבר בין אמנים למפיקים ומלווה יצירתית</td><td>כשרוצים להגיע ללייבל, או כשלייבל מחפש מפיק לפרויקט</td></tr>
+    <tr><td><b>מפיץ</b><br><span style="color:var(--ink2);font-size:15px">Distributor</span></td><td>מעלה את השיר לפלטפורמות ומעביר את הכסף</td><td>בשלב ההוצאה</td></tr>
+    <tr><td><b>מו״ל מוזיקלי</b><br><span style="color:var(--ink2);font-size:15px">Publisher</span></td><td>מנהל את זכויות היצירה, גובה תמלוגים, מקדם שימושים</td><td>כשיש קטלוג יצירות שצריך לנהל</td></tr>
+    <tr><td><b>מפקח מוזיקלי</b><br><span style="color:var(--ink2);font-size:15px">Music Supervisor</span></td><td>בוחר מוזיקה לסרט, סדרה, פרסומת או משחק</td><td>בעולם הסינכרון (פרק 15)</td></tr>
+    <tr><td><b>עו״ד בידור</b><br><span style="color:var(--ink2);font-size:15px">Entertainment Lawyer</span></td><td>מנסח ובודק חוזים, מייצג במשא ומתן</td><td>לפני כל חתימה משמעותית. בלי יוצא מן הכלל.</td></tr>
+    <tr><td><b>יחסי ציבור / שיווק</b><br><span style="color:var(--ink2);font-size:15px">PR / Marketing</span></td><td>חשיפה תקשורתית וקמפיינים</td><td>סביב תאריך ההוצאה</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 class="sec"><span class="ic">◈</span>מי משלם למי — שרשרת הכסף</h2>
+
+<p>זאת השאלה שמפיקים הכי פחות שואלים והכי מתחרטים שלא שאלו. בואו נעשה סדר לפי שלושה תרחישים נפוצים:</p>
+
+<div class="box box-blue">
+  <div class="bt">▸ תרחיש א׳ — אמן עצמאי</div>
+  <p style="margin:0">האמן משלם לכם ישירות. אתם משלמים לנגנים ולטכנאים אם גייסתם אותם, אלא אם סוכם שהאמן משלם להם ישירות. <b>זה הבדל קריטי:</b> אם אתם משלמים להם, זה חלק מהעלות שלכם וצריך להיות מתומחר. אם הם "בתוך המחיר" בלי שחישבתם, אתם ממנים את ההפקה מהכיס.</p>
+</div>
+
+<div class="box box-blue">
+  <div class="bt">▸ תרחיש ב׳ — לייבל מממן</div>
+  <p style="margin:0">הלייבל משלם לכם, ישירות או דרך תקציב הפקה שמנוהל על ידי המנהל. התשלום שלכם לרוב מורכב ממקדמה (Advance) ואחוזים במאסטר (Points). שימו לב — המקדמה היא לעיתים קרובות <b>ניתנת להחזר מתוך התמלוגים שלכם</b>, כלומר לא תראו אחוזים עד שהיא הוחזרה. יש על זה פרק שלם (פרק 12).</p>
+</div>
+
+<div class="box box-blue">
+  <div class="bt">▸ תרחיש ג׳ — אתם שותפים</div>
+  <p style="margin:0">אין תשלום מראש, ואתם לוקחים אחוזים בשיר. זה יכול להיות מצוין וזה יכול להיות אסון, והשאלה היחידה שקובעת היא: <b>האם יש מישהו שמשקיע בשיווק?</b> אחוזים משיר שאף אחד לא דוחף הם אחוזים מאפס. ואם כבר נכנסים לזה — חובה Split Sheet חתום ומסמך שמגדיר את חלקכם במאסטר.</p>
+</div>
+
+<h2 class="sec"><span class="ic">◈</span>מי מוסמך לאשר שימוש בחומרים</h2>
+
+<p>זאת שאלה שתחזור אליכם שוב ושוב: מישהו מבקש להשתמש בשיר, בגרסה אינסטרומנטלית, בסמפל מתוך ההפקה שלכם. מי בכלל יכול להגיד כן?</p>
+
+<ul>
+  <li><b>שימוש בהקלטה (המאסטר)</b> — צריך אישור מבעל המאסטר. זה האמן, הלייבל, או מי שסוכם בחוזה. לא אתם, אלא אם כתוב במפורש שאתם.</li>
+  <li><b>שימוש ביצירה (לחן ומילים)</b> — צריך אישור מכל בעלי היצירה, לפי חלוקת ה-Split. כל אחד מהם, לא רק הגדול ביותר.</li>
+  <li><b>שימוש בסינכרון</b> — צריך <b>את שניהם</b>. זאת הטעות הנפוצה ביותר בעולם הזה: רישיון למאסטר בלי רישיון ליצירה הוא חצי רישיון, כלומר הפרה.</li>
+</ul>
+
+<div class="box box-red">
+  <div class="bt">⚠ המשפט שחוסך תביעות</div>
+  <p style="margin:0">כשמישהו מבקש מכם אישור לשימוש שאינכם בטוחים שהוא שלכם לתת, התשובה היא: <b>"אני לא הגורם שמוסמך לאשר את זה. אני אשמח לחבר אותך למי שכן."</b> אתם לא מאבדים שום דבר, ואתם לא נכנסים למקום שלא שלכם.</p>
+</div>
+
+<div class="mini-sum"><b>סיכום הפרק:</b> בכל פרויקט, לפני שמתחילים, ענו לעצמכם בכתב על ארבע השאלות — מי אחראי, מי מחליט, מי משלם למי, ומי מחזיק בזכויות. אם אתם לא יודעים לענות על אחת מהן, זאת השיחה הבאה שלכם.</div>`,
+  4: `<p class="lead">נגן סשן טוב יכול להפוך עיבוד סביר לעיבוד שזוכרים. אבל בדיוק בגלל שזה כל כך משמעותי, זה גם המקום שבו מפיקים מייצרים לעצמם בעיות זכויות בלי לשים לב.</p>
+
+<p>העסקה מול נגן נשמעת פשוטה — הוא בא, מנגן, מקבל כסף, הולך. בפועל יש כאן שלושה דברים שצריכים להיות ברורים לפני שהוא לוחץ על הקלטה: <b>מה הוא מנגן, כמה הוא מקבל, ומה קורה עם ההקלטה שלו מכאן והלאה.</b> השלישי הוא זה שמפספסים.</p>
+
+<h2 class="sec"><span class="ic">◈</span>למצוא את הנגן הנכון</h2>
+
+<p>הטעות הנפוצה היא לחפש "גיטריסט טוב". גיטריסט טוב הוא לא קטגוריה — יש גיטריסט שיודע לנגן סולו שישרוף את השיר ולא יודע לנגן ליווי שקוף שמחזיק אותו, ויש בדיוק ההפך. <b>אתם מחפשים נגן שמתאים לתפקיד, לא נגן שמתאים לכלי.</b></p>
+
+<ul>
+  <li><b>תיק עבודות לפני המלצה.</b> תשמעו בפועל שלוש דקות מהעבודות שלו בסגנון שאתם צריכים.</li>
+  <li><b>בדקו אמינות, לא רק נגינה.</b> נגן מדהים שמאחר בשבוע הוא נגן גרוע לפרויקט שלכם.</li>
+  <li><b>שאלו איך הוא עובד מרחוק.</b> באיזה פורמט הוא מוסר, האם הוא שולח גרסאות חלופיות, כמה תיקונים כלולים.</li>
+</ul>
+
+<h2 class="sec"><span class="ic">◈</span>הבריף לנגן</h2>
+
+<p>נגן שמקבל רק קובץ MP3 והודעה "תנגן משהו" יחזיר לכם משהו. כנראה לא את מה שרציתם. בריף טוב לנגן לוקח חמש דקות לכתוב וחוסך שני סבבי תיקונים.</p>
+
+<div class="box box-gold">
+  <div class="bt">◆ מה נכנס לבריף לנגן</div>
+  <ul>
+    <li><b>הקובץ</b> — מיקס גס עם קליק, בטמפו ובסולם הסופיים. כולל טמפו וסולם כתובים בטקסט, לא רק בקובץ.</li>
+    <li><b>התפקיד</b> — "ליווי שמחזיק את הבית, בלי למשוך תשומת לב" זה תפקיד. "תנגן גיטרה" זה לא.</li>
+    <li><b>רפרנס</b> — שיר אחד או שניים, ולצידם מה לוקחים מהם.</li>
+    <li><b>איפה הוא נכנס ויוצא</b> — במספרי תיבות או בדקות ושניות, לא ב"בערך בפזמון".</li>
+    <li><b>מה לא לעשות</b> — "בלי סולו", "בלי פיקים", "בלי דיסטורשן". חיסכון עצום בזמן.</li>
+    <li><b>פורמט מסירה</b> — WAV, 24 ביט, אותו Sample Rate של הפרויקט, יבש ולא מעובד, עם Take נוסף חלופי אם אפשר.</li>
+    <li><b>דדליין ותעריף</b> — בכתב.</li>
+  </ul>
+</div>
+
+<p>הסעיף של "מה לא לעשות" הוא הכי לא אינטואיטיבי והכי יעיל. נגן רוצה להרשים אתכם, ולכן ברירת המחדל שלו היא לנגן יותר. אם אתם צריכים פחות, תגידו את זה מראש — אחרת תקבלו טייק צפוף ותבקשו ממנו להקליט שוב, והוא ירגיש שדחיתם אותו.</p>
+
+<h2 class="sec"><span class="ic">◈</span>תעריפים ומודלים של תשלום</h2>
+
+<div class="tbl-wrap">
+<table class="t">
+  <thead><tr><th>מודל</th><th>איך זה עובד</th><th>מתי מתאים</th></tr></thead>
+  <tbody>
+    <tr><td><b>לפי שיר</b></td><td>סכום קבוע לכלי אחד בשיר אחד, כולל מספר תיקונים מוגדר</td><td>הכי נפוץ בהקלטה מרחוק. פשוט וצפוי לשני הצדדים.</td></tr>
+    <tr><td><b>לפי שעה</b></td><td>תעריף שעתי בסשן בסטודיו</td><td>כשמקליטים כמה שירים ברצף או כשהיקף העבודה לא ידוע</td></tr>
+    <tr><td><b>לפי יום</b></td><td>תעריף יומי (Day Rate), לרוב 8 שעות</td><td>הקלטות תופים, סשנים של הרכב מלא</td></tr>
+    <tr><td><b>Buyout</b></td><td>תשלום חד־פעמי תמורת ויתור על תמלוגים עתידיים</td><td>ברירת המחדל בתעשייה לנגני סשן</td></tr>
+    <tr><td><b>אחוזים</b></td><td>הנגן מקבל חלק בהכנסות במקום או בנוסף לתשלום</td><td>נדיר, ורק כשהתרומה שלו יצירתית ומהותית</td></tr>
+  </tbody>
+</table>
+</div>
+
+<h2 class="sec"><span class="ic">◈</span>זכויות הנגן — החלק שמפספסים</h2>
+
+<p>וכאן הדבר החשוב באמת. כשנגן מקליט, נוצרות לו פוטנציאלית שתי זכויות שונות, ורוב האנשים בחדר לא מודעים לשנייה:</p>
+
+<ul>
+  <li><b>זכויות מבצע בהקלטה</b> — עצם זה שהביצוע שלו נמצא במאסטר. במדינות רבות נגן מבצע זכאי ל<b>זכויות מבצעים נלוות (Neighboring Rights)</b> מהשמעות פומביות, גם כשהוא לא בעל המאסטר.</li>
+  <li><b>חלק ביצירה</b> — אם מה שניגן הוא לא ביצוע של משהו שנכתב לו, אלא <b>חלק מלחין</b>. ריף מקורי שהנגן המציא והפך לחוט השדרה של השיר הוא בדיוק זה.</li>
+</ul>
+
+<div class="box box-red">
+  <div class="bt">⚠ הסיטואציה שחוזרת שוב ושוב</div>
+  <p style="margin:0">הזמנתם גיטריסט "לנגן על הבית". הוא אלתר ריף שהפך להיות הפתיח של השיר, האמן התאהב, והריף נשאר. שנה אחר כך השיר מצליח, והגיטריסט אומר: "רגע, הריף הזה שלי." <b>והוא לא טועה.</b> אם הוא המציא חומר מוזיקלי מקורי שהפך לחלק מהיצירה, יש לו טענה לגיטימית לחלק בה — גם אם קיבל תשלום על הסשן, כי התשלום היה על הביצוע, לא על ההלחנה.</p>
+  <p style="margin:8px 0 0">איך מונעים? מדברים על זה <b>ביום ההקלטה</b>, כשכולם רגועים. או שמסכמים שזה Buyout שכולל גם חומר מקורי, או שמסכמים אחוז וכותבים אותו ב-Split Sheet. שתי האפשרויות בסדר. מה שלא בסדר זה לא לדבר.</p>
+</div>
+
+<h2 class="sec"><span class="ic">◈</span>מה חייב להיות בהסכם עם נגן</h2>
+
+<p>זה לא צריך להיות חוזה של עשרה עמודים. במקרים רבים מספיק מייל אחד מסודר שהנגן משיב עליו "מאשר" — העיקר שהדברים כתובים ושיש לשניכם עותק.</p>
+
+<div class="chk">
+  <div class="chk-title">הסכם נגן — הסעיפים המינימליים</div>
+  <div class="chk-note">כל סעיף שלא מסומן הוא שאלה פתוחה שתחזור אליכם בעוד שנתיים.</div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">שם הנגן, שם השיר, שם האמן, תאריך</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">מה הוא מנגן ובאיזה היקף</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">התעריף ומועד התשלום</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">כמה סבבי תיקונים כלולים</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">האם זה Buyout או שיש תמלוגים — במפורש</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">האם חומר מוזיקלי מקורי שהמציא נכלל בתשלום או מזכה בחלק ביצירה</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">מי בעל ההקלטה שנוצרה</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">אישור לשימוש עתידי — רמיקסים, גרסאות, סינכרון</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">איך יופיע הקרדיט שלו</div></div>
+  <div class="chk-row"><div class="chk-box">✓</div><div class="chk-tx">פורמט המסירה ומה הוא מוסר (Stems, קבצי מקור)</div></div>
+  <div class="chk-score"></div>
+</div>
+
+<div class="box box-green">
+  <div class="bt">✓ למה כדאי לתת קרדיט גם כשלא חייבים</div>
+  <p style="margin:0">קרדיט לנגן הוא הדבר הכי זול שאתם יכולים לתת ואחד הכי יקרים שהוא מקבל — זה התיק עבודות שלו. מפיק שנותן קרדיט בקביעות הופך למפיק שנגנים טובים רוצים לעבוד איתו, ומפיק שנגנים טובים רוצים לעבוד איתו מקבל גישה לצלילים שאחרים לא מקבלים. <b>תתנו קרדיט. זה מחזיר את עצמו.</b></p>
+</div>
+
+<div class="mini-sum"><b>סיכום הפרק:</b> בריף מדויק, תעריף כתוב, והחלטה מפורשת על Buyout מול אחוזים — כולל השאלה מה קורה אם הנגן המציא חומר מקורי. שלושת אלה ביום ההקלטה, לא אחרי ההצלחה.</div>`,
+  5: `<p class="lead">יש רגע בסשן כתיבה שבו המפיק יושב ליד המחשב, מנגן פרוגרסיה, וכותב מזמזם מעליה מלודיה. שניהם חושבים שהם עושים את מה שבאו לעשות. שניהם צודקים. והשאלה מי בדיוק כתב את השיר הזה כבר נולדה, גם אם אף אחד לא אמר עליה מילה.</p>
+
+<p>עבודה מול כותבים היא המקום שבו הגבול בין "הפקה" ל"כתיבה" הכי מטושטש, ולכן זה המקום שבו הכי הרבה מפיקים מגלים אחרי שנה שהם ויתרו על משהו בלי לדעת. הפרק הזה הוא על <b>איך לעבוד בסשן כתיבה, ומתי אתם עוברים את הקו שהופך אתכם לשותפים ביצירה.</b></p>
+
+<h2 class="sec"><span class="ic">◈</span>מה קורה בסשן כתיבה</h2>
+
+<p>סשן כתיבה (Writing Session) הוא מפגש שבו שניים או יותר יוצרים בונים שיר מאפס. החלוקה הנפוצה היא שמישהו אחראי על ה<b>Topline</b> — המלודיה והמילים שמעל המוזיקה — ומישהו אחראי על ה<b>Track</b>, כלומר הבסיס המוזיקלי. במודל הזה אתם, כמפיקים, לרוב בצד של הטראק.</p>
+
+<p>אבל בפועל זה כמעט אף פעם לא נשאר מסודר ככה. אתם מציעים שינוי במלודיה כי היא לא יושבת על ההרמוניה. אתם מזיזים שורה מהבית לפזמון. אתם משנים את ההרמוניה ובעקבות זה המלודיה משתנה. <b>כל אחת מהפעולות האלה היא, בפוטנציה, כתיבה.</b></p>
+
+<h2 class="sec"><span class="ic">◈</span>מתי המפיק הופך לכותב, למלחין או למעבד</h2>
+
+<p>אין כאן חוק בינלאומי אחיד, וזה בדיוק העניין — זה עניין של הסכמה בין הצדדים. אבל יש הבחנה מקובלת שכדאי להכיר, כי היא השפה שבה מנהלים את השיחה הזאת:</p>
+
+<div class="tbl-wrap">
+<table class="t">
+  <thead><tr><th>מה עשיתם</th><th>איך זה נחשב בדרך כלל</th><th>מה זה אומר בפועל</th></tr></thead>
+  <tbody>
+    <tr><td>בניתם ביט, בחרתם סאונדים, עיצבתם את המרקם</td><td><b>הפקה</b></td><td>זכות במאסטר / תשלום. בדרך כלל לא חלק ביצירה.</td></tr>
+    <tr><td>כתבתם את הפרוגרסיה שעליה נבנה השיר</td><td><b>הלחנה</b> (לרוב)</td><td>טענה לגיטימית לחלק ביצירה</td></tr>
+    <tr><td>המצאתם את המלודיה או שינוי מהותי בה</td><td><b>הלחנה</b></td><td>חלק ביצירה</td></tr>
+    <tr><td>כתבתם שורה, שורות או את הפזמון</td><td><b>כתיבת מילים</b></td><td>חלק ביצירה</td></tr>
+    <tr><td>שינית מבנה — העברתם חלקים, קיצרתם, הוספתם גשר</td><td><b>עיבוד</b> (לפעמים כתיבה)</td><td>תלוי במהותיות השינוי ובהסכמה</td></tr>
+    <tr><td>חילקתם תפקידים לכלים על לחן קיים</td><td><b>עיבוד</b></td><td>קרדיט; חלק ביצירה רק אם סוכם</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="box box-gold">
+  <div class="bt">◆ הכלל המעשי</div>
+  <p style="margin:0">אם מה שתרמתם אפשר <b>לנגן על פסנתר לבד והשיר עדיין מזוהה</b> — קרוב לוודאי שזאת הלחנה. אם מה שתרמתם נעלם ברגע שמנגנים את השיר על פסנתר — קרוב לוודאי שזאת הפקה או עיבוד. זה לא מבחן משפטי, זה כלי מחשבה שעוזר לנהל את השיחה בלי להתווכח על אגו.</p>
+</div>
+
+<h2 class="sec"><span class="ic">◈</span>לנהל את השיחה — לפני, לא אחרי</h2>
+
+<p>השיחה על אחוזים היא לא שיחה נעימה, ובדיוק בגלל זה כולם דוחים אותה. הבעיה היא שככל שדוחים אותה, היא נעשית קשה יותר — כי עכשיו יש שיר שכולם אוהבים, ולכל אחד יש כבר סיפור בראש על כמה הוא תרם.</p>
+
+<p><b>הזמן הנכון לדבר על חלוקה הוא בתחילת הסשן, לפני שיש שיר.</b> בשלב הזה אף אחד לא מגן על כלום, כי אין עדיין על מה. שתי דקות, בטון רגיל, בערך ככה:</p>
+
+<div class="box box-blue">
+  <div class="bt">▸ איך פותחים סשן כתיבה</div>
+  <p style="margin:0">"לפני שמתחילים — בואו נסכם איך אנחנו עובדים. אני מציע שכל מי שתורם ללחן או למילים נכנס לחלוקה שווה ביצירה, ואם מישהו רק מנגן או רק מפיק, זה לא נכנס. בסוף הסשן נמלא Split Sheet ונחתום, גם אם השיר לא ייצא לשום מקום. מקובל?"</p>
+</div>
+
+<p>שימו לב מה עשה המשפט הזה: הוא הפך את השיחה מ"כמה מגיע לי" ל"מה הכלל אצלנו". וכלל שנקבע לפני שיודעים מי ירוויח ממנו הוא כמעט תמיד כלל הוגן. <b>זה בדיוק למה מסכמים מראש.</b></p>
+
+<h3 class="sub">שיטות חלוקה נפוצות</h3>
+
+<ul>
+  <li><b>חלוקה שווה בין כל מי שהיה בחדר ותרם.</b> ארבעה אנשים — 25% כל אחד. פשוט, שקוף, ובאופן מפתיע זה מה שקורה ברוב הסשנים המקצועיים בעולם. היתרון: אין ויכוח. החיסרון: לא תמיד משקף תרומה בפועל.</li>
+  <li><b>50/50 בין לחן למילים.</b> חצי מהיצירה ללחן, חצי למילים, וכל צד מתחלק פנימה. מסורתי, ועדיין נפוץ.</li>
+  <li><b>לפי תרומה מוסכמת.</b> יושבים, מדברים, מגיעים למספרים. הכי מדויק, הכי קשה, והכי מועד לוויכוח — אלא אם עושים את זה מיד בסוף הסשן.</li>
+</ul>
+
+<div class="box box-red">
+  <div class="bt">⚠ מה שלא עושים</div>
+  <p style="margin:0">לא "נסגור את זה אחר כך". לא "בוא נראה קודם אם השיר יוצא". לא לסמוך על הזיכרון. שיר יכול לשבת במגירה שלוש שנים ואז להיות מושמע בסדרה — ואז פתאום יש ארבעה אנשים עם ארבע גרסאות למה שקרה באותו יום. <b>Split Sheet ממלאים בסוף הסשן, כשכולם עוד בחדר.</b></p>
+</div>
+
+<h2 class="sec"><span class="ic">◈</span>המקרה המיוחד: הביט קיים מראש</h2>
+
+<p>מצב שכיח מאוד — יש לכם ביט מוכן, כותב שומע אותו וכותב עליו Topline. כאן יש שאלה נוספת: <b>האם הביט הוא יצירה או הפקה?</b></p>
+
+<p>אם הביט מכיל פרוגרסיה ומוטיב מלודי שאתם כתבתם, יש לכם טענה חזקה לחלק ביצירה. אם הביט הוא בעיקר גרוב, מרקם וסאונד בלי חומר מלודי־הרמוני מקורי, הטענה חלשה יותר. וככל שהמוזיקה בז׳אנר מבוסס־פרודקשן — היפ־הופ, טראפ, EDM — כך מקובל יותר שהמפיק מקבל חלק משמעותי ביצירה, לפעמים 50%, כי בז׳אנרים האלה הטראק <b>הוא</b> השיר.</p>
+
+<div class="box box-green">
+  <div class="bt">✓ נוסחה שעובדת</div>
+  <p style="margin:0">בז׳אנרים מבוססי־טראק, חלוקה של <b>50% לטראק / 50% ל-Topline</b> היא נקודת פתיחה מקובלת ומכובדת למשא ומתן. היא לא חוק, אבל היא מספר שאפשר להתחיל ממנו בלי שאף צד ירגיש שמנסים לעבוד עליו.</p>
+</div>
+
+<h2 class="sec"><span class="ic">◈</span>אחרי הסשן — מה עושים באותו יום</h2>
+
+<ol>
+  <li><b>ממלאים וחותמים Split Sheet</b> — שמות מלאים, תעודת זהות או מזהה, תפקיד, אחוז, חתימה. על זה יש פרק שלם עם מחשבון (פרק 8).</li>
+  <li><b>שולחים לכולם את קובץ העבודה</b> — כדי שלכל אחד יהיה תיעוד מתוארך של מה שנוצר באותו יום.</li>
+  <li><b>מתעדים מי תרם מה</b> — שתי שורות במייל. לא בשביל משפט, בשביל זיכרון.</li>
+  <li><b>מסכמים מה קורה עם השיר</b> — מי מנסה לקדם אותו, למי מותר להציע אותו לאמנים, ומה קורה אם אחד הצדדים רוצה לצאת.</li>
+  <li><b>רישום היצירה</b> — בהמשך, כשהשיר יוצא, היצירה נרשמת אצל גוף גבייה ומו״ל לפי אותה חלוקה בדיוק. אם הרישום לא תואם ל-Split Sheet, הכסף הולך למקום הלא נכון.</li>
+</ol>
+
+<div class="mini-sum"><b>סיכום הפרק:</b> בסשן כתיבה אתם לא רק מפיקים — אתם פוטנציאלית שותפים ביצירה. תחליטו על הכלל בתחילת הסשן, תמלאו Split Sheet בסופו, ואל תיתנו לשיר לצאת מהחדר בלי חתימות.</div>`,
+};
+/* ============ INTERACTIVE TOOLS ============ */
+const TOOLS = {};
+
+const nf = n => new Intl.NumberFormat('he-IL', {maximumFractionDigits:2}).format(n);
+const money = n => '₪' + new Intl.NumberFormat('he-IL', {maximumFractionDigits:0}).format(Math.round(n));
+
+/* ---------- Split Sheet calculator (ch. 8) ---------- */
+TOOLS.splitSheet = function(el){
+  const ROLES = ['מלחין (לחן)','כותב מילים','מעבד','מפיק','אמן מבצע','נגן','אחר'];
+  el.innerHTML = `
+    <div class="tool-h">מחשבון חלוקת זכויות — Split Sheet</div>
+    <div class="tool-sub">מלאו את כל המשתתפים ביצירה. הסכום חייב להגיע ל־100% בדיוק, אחרת אין הסכם.</div>
+    <div class="fld"><label>שם השיר</label><input type="text" id="ss-song" placeholder="שם היצירה"></div>
+    <div id="ss-rows"></div>
+    <div class="btn-row">
+      <button class="btn ghost" id="ss-add">+ הוספת משתתף</button>
+      <button class="btn ghost" id="ss-even">חלוקה שווה</button>
+      <button class="btn" id="ss-copy">העתקת הטופס כטקסט</button>
+    </div>
+    <div class="out" id="ss-out"></div>`;
+
+  const rowsEl = el.querySelector('#ss-rows');
+  const outEl = el.querySelector('#ss-out');
+
+  function addRow(name = '', role = ROLES[0], pct = ''){
+    const d = document.createElement('div');
+    d.className = 'split-row';
+    d.innerHTML = `
+      <input type="text" class="sr-name" placeholder="שם מלא" value="${name}">
+      <select class="sr-role">${ROLES.map(r => `<option ${r === role ? 'selected' : ''}>${r}</option>`).join('')}</select>
+      <input type="number" class="sr-pct" min="0" max="100" step="0.01" placeholder="%" value="${pct}">
+      <button class="sr-del" title="מחיקה" aria-label="מחיקת שורה">✕</button>`;
+    d.querySelector('.sr-del').onclick = () => { d.remove(); calc(); };
+    d.querySelectorAll('input,select').forEach(i => i.oninput = calc);
+    rowsEl.appendChild(d);
+    calc();
+  }
+
+  function rows(){
+    return [...rowsEl.querySelectorAll('.split-row')].map(r => ({
+      name: r.querySelector('.sr-name').value.trim(),
+      role: r.querySelector('.sr-role').value,
+      pct: parseFloat(r.querySelector('.sr-pct').value) || 0
+    }));
+  }
+
+  function calc(){
+    const rs = rows();
+    const total = rs.reduce((s, r) => s + r.pct, 0);
+    const diff = +(100 - total).toFixed(2);
+    const unnamed = rs.filter(r => r.pct > 0 && !r.name).length;
+    let cls = 'out', msg;
+    if(Math.abs(diff) < 0.005 && rs.length){
+      cls = 'out ok';
+      msg = `<span class="big">100%</span> — החלוקה סגורה.<br>עכשיו: להדפיס, לחתום על ידי <b>כל</b> המשתתפים, ולשמור עותק חתום אצל כל אחד.`;
+      if(unnamed) { cls = 'out warn'; msg = `הסכום 100%, אבל ${unnamed} שורות בלי שם. הסכם חלוקה בלי שמות מלאים לא שווה כלום.`; }
+    } else if(!rs.length){
+      msg = 'הוסיפו משתתפים כדי להתחיל.';
+    } else if(diff > 0){
+      cls = 'out warn';
+      msg = `סך הכל <span class="big">${nf(total)}%</span> — חסרים <b>${nf(diff)}%</b>. כל אחוז שלא הוקצה הוא אחוז שמישהו יטען עליו בעתיד.`;
+    } else {
+      cls = 'out warn';
+      msg = `סך הכל <span class="big">${nf(total)}%</span> — חריגה של <b>${nf(-diff)}%</b>. אי אפשר לחלק יותר ממאה.`;
+    }
+    outEl.className = cls;
+    outEl.innerHTML = msg;
+  }
+
+  el.querySelector('#ss-add').onclick = () => addRow();
+  el.querySelector('#ss-even').onclick = () => {
+    const n = rowsEl.querySelectorAll('.split-row').length;
+    if(!n) return;
+    const base = Math.floor(10000 / n) / 100;
+    const rest = +(100 - base * n).toFixed(2);
+    rowsEl.querySelectorAll('.sr-pct').forEach((i, k) => i.value = (k === 0 ? +(base + rest).toFixed(2) : base));
+    calc();
+  };
+  el.querySelector('#ss-copy').onclick = () => {
+    const song = el.querySelector('#ss-song').value.trim() || '(ללא שם)';
+    const rs = rows().filter(r => r.name || r.pct);
+    const total = rs.reduce((s, r) => s + r.pct, 0);
+    const txt = [
+      'הסכם חלוקת זכויות ביצירה (Split Sheet)',
+      'שם היצירה: ' + song,
+      'תאריך: ' + new Date().toLocaleDateString('he-IL'),
+      '',
+      ...rs.map(r => `${r.name || '____________'} — ${r.role} — ${nf(r.pct)}%   חתימה: ____________`),
+      '',
+      `סך הכל: ${nf(total)}%`,
+      '',
+      'החתימה מאשרת שהחלוקה לעיל מוסכמת על כל הצדדים.'
+    ].join('\n');
+    navigator.clipboard?.writeText(txt).then(
+      () => { outEl.className = 'out ok'; outEl.textContent = 'הטופס הועתק. הדביקו במסמך, הדפיסו והחתימו.'; },
+      () => { outEl.className = 'out'; outEl.innerHTML = '<pre style="white-space:pre-wrap;font-family:inherit">' + txt + '</pre>'; }
+    );
+  };
+
+  addRow(); addRow();
+};
+
+/* ---------- Pricing calculator (ch. 19) ---------- */
+TOOLS.pricing = function(el){
+  el.innerHTML = `
+    <div class="tool-h">מחשבון תמחור פרויקט</div>
+    <div class="tool-sub">המספר שיוצא הוא רצפה, לא תקרה. הוא אומר לכם מתחת לאיזה מחיר אתם מפסידים כסף.</div>
+    <div class="fld"><label>כמה אתם רוצים להרוויח בחודש (נטו, לפני מס)</label><input type="number" id="p-goal" value="12000" min="0" step="500"></div>
+    <div class="fld"><label>הוצאות קבועות לחודש (סטודיו, תוכנות, ציוד, אינטרנט)</label><input type="number" id="p-fixed" value="2500" min="0" step="100"></div>
+    <div class="fld"><label>שעות עבודה בפועל בחודש (רק שעות מחויבות — לא שיווק ולא מיילים)</label><input type="number" id="p-hours" value="90" min="1" step="5"></div>
+    <div class="fld"><label>שעות עבודה שהפרויקט הזה ייקח (כולל תיקונים ופגישות)</label><input type="number" id="p-proj" value="25" min="1" step="1"></div>
+    <div class="fld"><label>מורכבות / דחיפות</label>
+      <select id="p-mult">
+        <option value="1">רגיל — לוח זמנים סביר</option>
+        <option value="1.25">מורכב — הרבה תיקונים צפויים</option>
+        <option value="1.5">דחוף — דדליין קצר, דוחף פרויקטים אחרים</option>
+        <option value="2">אקספרס — סופ״ש / לילות</option>
+      </select>
+    </div>
+    <div class="out" id="p-out"></div>`;
+
+  const out = el.querySelector('#p-out');
+  function calc(){
+    const goal = +el.querySelector('#p-goal').value || 0;
+    const fixed = +el.querySelector('#p-fixed').value || 0;
+    const hours = Math.max(1, +el.querySelector('#p-hours').value || 1);
+    const proj = Math.max(1, +el.querySelector('#p-proj').value || 1);
+    const mult = +el.querySelector('#p-mult').value;
+    const rate = (goal + fixed) / hours;
+    const price = rate * proj * mult;
+    out.className = 'out ok';
+    out.innerHTML = `
+      תעריף השעה שלכם: <b>${money(rate)}</b> לשעה<br>
+      מחיר הפרויקט: <span class="big">${money(price)}</span><br><br>
+      מקדמה מומלצת (50%): <b>${money(price * 0.5)}</b> · תשלום סופי לפני מסירה: <b>${money(price * 0.5)}</b><br>
+      <span style="color:var(--ink2);font-size:15px">כלול: ${Math.round(proj)} שעות ו-2 סבבי תיקונים. סבב נוסף: ${money(rate * 2)}.</span>`;
+  }
+  el.querySelectorAll('input,select').forEach(i => i.oninput = calc);
+  calc();
+};
+
+/* ---------- Recoupment / royalty calculator (ch. 12) ---------- */
+TOOLS.recoup = function(el){
+  el.innerHTML = `
+    <div class="tool-h">מחשבון מקדמה והחזר השקעה</div>
+    <div class="tool-sub">המקדמה היא לא מתנה — היא הלוואה על חשבון התמלוגים שלכם. זה המחשבון שמראה מתי היא נגמרת.</div>
+    <div class="fld"><label>מקדמה שקיבלתם (Advance)</label><input type="number" id="r-adv" value="20000" min="0" step="1000"></div>
+    <div class="fld"><label>עלויות נוספות שניתנות לקיזוז (הקלטות, קליפ, שיווק)</label><input type="number" id="r-cost" value="15000" min="0" step="1000"></div>
+    <div class="fld"><label>אחוז התמלוגים שלכם מההכנסות (Producer Points)</label><input type="number" id="r-pts" value="4" min="0" max="50" step="0.5"></div>
+    <div class="fld"><label>הכנסה צפויה מהשיר (ברוטו, לאורך חיי העסקה)</label><input type="number" id="r-rev" value="400000" min="0" step="10000"></div>
+    <div class="out" id="r-out"></div>`;
+
+  const out = el.querySelector('#r-out');
+  function calc(){
+    const adv = +el.querySelector('#r-adv').value || 0;
+    const cost = +el.querySelector('#r-cost').value || 0;
+    const pts = (+el.querySelector('#r-pts').value || 0) / 100;
+    const rev = +el.querySelector('#r-rev').value || 0;
+    const pool = adv + cost;
+    const earned = rev * pts;
+    const net = earned - pool;
+    const breakeven = pts > 0 ? pool / pts : Infinity;
+    if(net >= 0){
+      out.className = 'out ok';
+      out.innerHTML = `
+        החשבון התאזן. סך התמלוגים שנצברו: <b>${money(earned)}</b>, מול ${money(pool)} שצריך להחזיר.<br>
+        מה שיגיע אליכם בפועל מעבר למקדמה: <span class="big">${money(net)}</span><br>
+        <span style="color:var(--ink2);font-size:15px">נקודת האיזון (Break-even): הכנסה של ${money(breakeven)} מהשיר.</span>`;
+    } else {
+      out.className = 'out warn';
+      out.innerHTML = `
+        עדיין לא הוחזרה ההשקעה (Unrecouped). נצברו <b>${money(earned)}</b> מתוך ${money(pool)} שצריך להחזיר.<br>
+        חסר עוד: <span class="big">${money(-net)}</span><br>
+        <span style="color:var(--ink2);font-size:15px">כלומר צריך הכנסה של ${money(breakeven)} מהשיר לפני שתראו שקל נוסף מעבר למקדמה. ${adv ? 'המקדמה כבר בכיס — זה לא כסף אבוד, זה כסף שכבר קיבלתם.' : ''}</span>`;
+    }
+  }
+  el.querySelectorAll('input').forEach(i => i.oninput = calc);
+  calc();
+};
+
+/* ---------- Red flags meter (ch. 26) ---------- */
+TOOLS.redFlags = function(el){
+  const FLAGS = [
+    ['אין חוזה, ו"נסדר את זה אחר כך"', 3],
+    ['מסרב לשלם מקדמה', 3],
+    ['"אני אשלם לך כשהשיר ייצא"', 3],
+    ['מציע חשיפה במקום תשלום', 2],
+    ['לא מוכן להגדיר בכתב מה כלול בעבודה', 3],
+    ['לא מסכים להגביל את מספר סבבי התיקונים', 2],
+    ['משנה כיוון אמנותי כל פגישה', 2],
+    ['לא מוכן לחתום על Split Sheet', 3],
+    ['התמקח על המחיר לפני ששמע מה העבודה כוללת', 1],
+    ['מדבר רע על כל מי שעבד איתו לפניכם', 2],
+    ['מבקש קבצי פרויקט מלאים בלי שסוכם על כך', 2],
+    ['מבקש להשתמש בסמפל שהוא "בטוח שזה בסדר"', 2],
+    ['דורש בלעדיות בלי תמורה מתאימה', 2],
+    ['לוח זמנים בלתי אפשרי ולא מוכן לזוז ממנו', 2],
+    ['לא עונה לימים ואז דורש תשובה מיידית', 1]
+  ];
+  el.innerHTML = `
+    <div class="tool-h">מד סימני אזהרה — לפני שאתם אומרים כן</div>
+    <div class="tool-sub">סמנו כל מה שקורה בפועל בפרויקט שעל הפרק. אין כאן ציון עובר — יש כאן החלטה.</div>
+    <div id="rf-rows"></div>
+    <div class="out" id="rf-out"></div>`;
+
+  const rowsEl = el.querySelector('#rf-rows');
+  const out = el.querySelector('#rf-out');
+  FLAGS.forEach(([txt, w], i) => {
+    const d = document.createElement('div');
+    d.className = 'chk-row'; d.dataset.w = w; d.tabIndex = 0;
+    d.innerHTML = `<div class="chk-box">✓</div><div class="chk-tx">${txt}</div>`;
+    const t = () => { d.classList.toggle('on'); calc(); };
+    d.onclick = t;
+    d.onkeydown = e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); t(); } };
+    rowsEl.appendChild(d);
+  });
+
+  function calc(){
+    const on = [...rowsEl.querySelectorAll('.chk-row.on')];
+    const score = on.reduce((s, r) => s + +r.dataset.w, 0);
+    const critical = on.filter(r => +r.dataset.w === 3).length;
+    let cls, msg;
+    if(score === 0){ cls = 'out ok'; msg = 'נקי לגמרי. תעלו את זה על הכתב ותתחילו לעבוד.'; }
+    else if(critical >= 2 || score >= 9){ cls = 'out warn'; msg = `<span class="big">${score} נקודות · ${critical} דגלים אדומים</span><br>זה לא פרויקט שכדאי לקחת כמו שהוא. או שהתנאים משתנים בכתב, או שאתם מוותרים — ואין בזה שום דבר אישי.`; }
+    else if(critical >= 1 || score >= 5){ cls = 'out warn'; msg = `<span class="big">${score} נקודות</span><br>יש כאן משהו לתקן לפני שמתחילים. אל תתחילו לעבוד עד שכל סעיף שסימנתם סגור בכתב.`; }
+    else { cls = 'out'; msg = `<span class="big">${score} נקודות</span><br>סביר. שימו לב לנקודות שסימנתם, סגרו אותן בהודעה כתובה, ותתקדמו.`; }
+    out.className = cls; out.innerHTML = msg;
+  }
+  calc();
+};
+
+/* ---------- Delivery folder generator (ch. 16) ---------- */
+TOOLS.delivery = function(el){
+  el.innerHTML = `
+    <div class="tool-h">מחולל תיקיית מסירה</div>
+    <div class="tool-sub">הזינו את פרטי הפרויקט וקבלו מבנה תיקיות ושמות קבצים אחידים — אותו דבר בכל פרויקט, בלי לחשוב על זה שוב.</div>
+    <div class="fld"><label>שם האמן</label><input type="text" id="d-art" value="Artist Name"></div>
+    <div class="fld"><label>שם השיר</label><input type="text" id="d-song" value="Song Title"></div>
+    <div class="fld"><label>גרסה</label><input type="text" id="d-ver" value="v1.0"></div>
+    <div class="out" id="d-out"></div>
+    <div class="btn-row"><button class="btn" id="d-copy">העתקת המבנה</button></div>`;
+
+  const out = el.querySelector('#d-out');
+  const clean = s => s.trim().replace(/\s+/g, '_').replace(/[^\w֐-׿_-]/g, '') || 'Untitled';
+
+  function build(){
+    const a = clean(el.querySelector('#d-art').value);
+    const s = clean(el.querySelector('#d-song').value);
+    const v = clean(el.querySelector('#d-ver').value);
+    const base = `${a}_-_${s}_${v}`;
+    return [
+      `${base}/`,
+      `├─ 01_MASTERS/`,
+      `│   ├─ ${base}_MASTER_24bit_48k.wav`,
+      `│   ├─ ${base}_MASTER_16bit_44k.wav`,
+      `│   ├─ ${base}_MASTER_320.mp3`,
+      `│   ├─ ${base}_INSTRUMENTAL.wav`,
+      `│   ├─ ${base}_ACAPELLA.wav`,
+      `│   ├─ ${base}_CLEAN.wav`,
+      `│   └─ ${base}_TV_MIX.wav`,
+      `├─ 02_STEMS/`,
+      `│   ├─ ${base}_STEM_Drums.wav`,
+      `│   ├─ ${base}_STEM_Bass.wav`,
+      `│   ├─ ${base}_STEM_Keys.wav`,
+      `│   ├─ ${base}_STEM_Guitars.wav`,
+      `│   ├─ ${base}_STEM_LeadVox.wav`,
+      `│   ├─ ${base}_STEM_BackVox.wav`,
+      `│   └─ ${base}_STEM_FX.wav`,
+      `├─ 03_SOURCE/`,
+      `│   ├─ ${base}_DryVocals.wav`,
+      `│   ├─ ${base}_MIDI.mid`,
+      `│   └─ ${base}_PROJECT/   (רק אם סוכם בכתב שהוא נמסר)`,
+      `├─ 04_ARTWORK/`,
+      `│   └─ ${base}_COVER_3000x3000.jpg`,
+      `└─ 05_DOCS/`,
+      `    ├─ ${base}_CREDITS.txt`,
+      `    ├─ ${base}_METADATA.txt   (ISRC, UPC, כותבים, שנה)`,
+      `    ├─ ${base}_LYRICS.txt`,
+      `    ├─ ${base}_SAMPLES.txt    (כל סמפל, מקורו והרישיון שלו)`,
+      `    └─ ${base}_SPLIT_SHEET.pdf (חתום)`
+    ].join('\n');
+  }
+  function render(){
+    out.className = 'out';
+    out.innerHTML = '<pre style="white-space:pre;overflow-x:auto;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:14px;line-height:1.7;direction:ltr;text-align:left">' +
+      build().replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])) + '</pre>';
+  }
+  el.querySelectorAll('input').forEach(i => i.oninput = render);
+  el.querySelector('#d-copy').onclick = () => navigator.clipboard?.writeText(build());
+  render();
+};
+
+
+/* ============ STATE ============ */
+const LS_KEY = 'amanut-hamiktzoa-read-v1';
+let readSet = new Set();
+try { readSet = new Set(JSON.parse(localStorage.getItem(LS_KEY) || '[]')); } catch(e) { readSet = new Set(); }
+function persist(){ try { localStorage.setItem(LS_KEY, JSON.stringify([...readSet])); } catch(e){} }
+
+let curVol = null, curCh = null;
+const allChapters = () => VOLUMES.flatMap(v => CHAPTERS[v.id].map(c => ({...c, vol:v.id})));
+
+/* ============ HOME ============ */
+function renderHome(){
+  const wrap = document.getElementById('worldsWrap');
+  let html = '';
+  WORLDS.forEach(w => {
+    html += `<div class="section-label">${w.title}</div>`;
+    html += `<div class="world-blurb">${w.blurb}</div>`;
+    html += '<div class="vol-grid">';
+    VOLUMES.filter(v => v.world === w.id).forEach(v => {
+      const list = CHAPTERS[v.id];
+      const done = list.filter(c => readSet.has(c.n)).length;
+      html += `<div class="vol-card" style="--vc:${v.color}" tabindex="0" role="button"
+                    onclick="openVol('${v.id}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openVol('${v.id}')}">
+        <div class="vol-letter">${v.letter}</div>
+        <h3>${v.title}</h3>
+        <div class="vol-desc">${v.desc}</div>
+        <div class="vol-meta">${list.length} פרקים${done ? ` · ${done} נקראו` : ''}</div>
+        <div class="vol-cta">←</div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  wrap.innerHTML = html;
+  updateProgress();
+  document.getElementById('chCount').textContent = allChapters().length;
+}
+
+function updateProgress(){
+  const total = allChapters().length;
+  const pct = total ? Math.round(readSet.size / total * 100) : 0;
+  const f = document.getElementById('lpFill'), p = document.getElementById('lpPct');
+  if(f) f.style.width = pct + '%';
+  if(p) p.textContent = pct + '%';
+}
+
+/* ============ VOLUME ============ */
+function openVol(id){
+  curVol = id;
+  const v = VOLUMES.find(x => x.id === id);
+  document.getElementById('volHead').innerHTML = `
+    <span class="vol-badge" style="background:${v.color}">כרך ${v.letter}</span>
+    <h2>${v.title}</h2>
+    <p>${v.desc}</p>`;
+  const list = CHAPTERS[id];
+  document.getElementById('volList').innerHTML = list.map((c, i) => `
+    <div class="chap-item ${readSet.has(c.n) ? 'read' : ''}" tabindex="0" role="button" style="animation-delay:${i * 0.04}s"
+         onclick="openCh(${c.n})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCh(${c.n})}">
+      <div class="chap-num">${c.n}</div>
+      <div class="chap-info"><h4>${c.title}</h4><div class="ci-sub">${c.sub}</div></div>
+      <div class="chap-check">✓</div>
+      <div class="chap-arrow">←</div>
+    </div>`).join('');
+  show('viewVol');
+}
+
+/* ============ READER ============ */
+function openCh(n){
+  const all = allChapters();
+  const c = all.find(x => x.n === n);
+  if(!c) return;
+  curCh = n; curVol = c.vol;
+  const v = VOLUMES.find(x => x.id === c.vol);
+  const body = CONTENT[n] || '<p>הפרק הזה עדיין בכתיבה.</p>';
+  const idx = all.findIndex(x => x.n === n);
+  const prev = all[idx - 1], next = all[idx + 1];
+  document.getElementById('readerBody').innerHTML = `
+    <div class="reader-hero">
+      <div class="eyebrow">כרך ${v.letter} · פרק ${c.n}</div>
+      <h1>${c.title}</h1>
+      <p>${c.sub}</p>
+    </div>
+    ${body}
+    <button class="mark-read-btn ${readSet.has(n) ? 'done' : ''}" id="mrBtn" onclick="toggleRead(${n})">
+      ${readSet.has(n) ? '✓ הפרק סומן כנקרא' : 'סמנו את הפרק כנקרא'}
+    </button>
+    <div class="chap-nav">
+      <button ${prev ? `onclick="openCh(${prev.n})"` : 'disabled'}>${prev ? '→ ' + prev.title : 'תחילת הקורס'}</button>
+      <button ${next ? `onclick="openCh(${next.n})"` : 'disabled'}>${next ? next.title + ' ←' : 'סוף הקורס'}</button>
+    </div>`;
+  show('viewRead');
+  initWidgets();
+  initReveal();
+}
+
+function toggleRead(n){
+  if(readSet.has(n)) readSet.delete(n); else readSet.add(n);
+  persist();
+  const b = document.getElementById('mrBtn');
+  if(b){
+    b.classList.toggle('done', readSet.has(n));
+    b.textContent = readSet.has(n) ? '✓ הפרק סומן כנקרא' : 'סמנו את הפרק כנקרא';
+  }
+  renderHome();
+}
+
+/* ============ NAV ============ */
+function show(id){
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.getElementById('backBtn').classList.toggle('show', id !== 'viewHome');
+  window.scrollTo({top:0, behavior:'instant'});
+}
+function goBack(){
+  if(document.getElementById('viewRead').classList.contains('active')) { openVol(curVol); }
+  else { renderHome(); show('viewHome'); }
+}
+
+/* ============ WIDGETS ============ */
+function initWidgets(){
+  /* checklists */
+  document.querySelectorAll('.chk').forEach(chk => {
+    const rows = chk.querySelectorAll('.chk-row');
+    const score = chk.querySelector('.chk-score');
+    const upd = () => {
+      const on = chk.querySelectorAll('.chk-row.on').length;
+      if(score) score.textContent = `${on} מתוך ${rows.length} סומנו`;
+    };
+    rows.forEach(r => {
+      r.onclick = () => { r.classList.toggle('on'); upd(); };
+      r.setAttribute('tabindex','0');
+      r.onkeydown = e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); r.click(); } };
+    });
+    upd();
+  });
+  /* tool initialisers declared in content */
+  document.querySelectorAll('[data-tool]').forEach(el => {
+    const fn = TOOLS[el.getAttribute('data-tool')];
+    if(fn) fn(el);
+  });
+}
+
+function initReveal(){
+  const els = document.querySelectorAll('.reader .box, .reader .tool, .reader .chk, .reader .tbl-wrap');
+  if(!('IntersectionObserver' in window)){ els.forEach(e => e.classList.add('in')); return; }
+  els.forEach(e => e.classList.add('reveal'));
+  const io = new IntersectionObserver(ent => ent.forEach(x => { if(x.isIntersecting){ x.target.classList.add('in'); io.unobserve(x.target); } }), {threshold:0.08});
+  els.forEach(e => io.observe(e));
+}
+
+/* ============ SCROLL CHROME ============ */
+window.addEventListener('scroll', () => {
+  const h = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('pbar').style.width = (h > 0 ? window.scrollY / h * 100 : 0) + '%';
+  document.getElementById('toTop').classList.toggle('show', window.scrollY > 500);
+}, {passive:true});
+
+renderHome();
+</script>
+</body>
+</html>
