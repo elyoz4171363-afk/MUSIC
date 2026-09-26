@@ -16,11 +16,42 @@ ROOT = pathlib.Path(__file__).parent
 SRC = ROOT / "src"
 DIST = ROOT / "dist"
 OUT_NAME = "אמנות-המקצוע.html"
+ARTIFACT_NAME = "artifact.html"
 
 
 def js_string(text: str) -> str:
     """Wrap an HTML fragment as a JS template literal, escaping what would break it."""
     return "`" + text.replace("\\", "\\\\").replace("`", "\\`").replace("${", "\\${") + "`"
+
+
+def to_artifact(html: str) -> str:
+    """Strip the outer document wrapper for the Artifact publish skeleton,
+    which supplies its own <!doctype>/<html>/<head>/<body> and pins
+    color-scheme:light on :root. Everything else is left untouched."""
+    head = re.search(r"<head>(.*?)</head>", html, re.S).group(1)
+    body = re.search(r"<body>(.*?)</body>", html, re.S).group(1)
+
+    keep = []
+    for pat in (r"<title>.*?</title>", r'<link[^>]+fonts\.(?:googleapis|gstatic)\.com[^>]*>', r"<style>.*?</style>"):
+        keep += re.findall(pat, head, re.S)
+    out = "\n".join(keep) + "\n" + body.strip() + "\n"
+
+    # the page is deliberately single-theme dark, so say so for form controls
+    # and scrollbars, and keep the sticky bar clear of the phone's status bar
+    out = out.replace("  :root {\n", "  :root {\n    color-scheme: dark;\n", 1)
+    out = out.replace("position:sticky; top:0; z-index:100;",
+                      "position:sticky; top:env(safe-area-inset-top, 0px); z-index:100;", 1)
+
+    # dir="rtl" lived on the <html> tag the skeleton now supplies, so the whole
+    # page would render left-to-right without this
+    out = out.replace("  body {\n    background:var(--bg);",
+                      "  body {\n    direction:rtl;\n    background:var(--bg);", 1)
+    if "direction:rtl;\n    background" not in out:
+        raise SystemExit("to_artifact: could not set direction:rtl on body")
+
+    # the gallery wants a name; the subtitle goes in the publish description
+    out = re.sub(r"<title>[^<]*</title>", "<title>אמנות המקצוע</title>", out, count=1)
+    return out
 
 
 def check_js(html: str) -> str:
@@ -108,12 +139,16 @@ def main() -> int:
         print(f"ERROR: generated JS is invalid\n{syntax_error}", file=sys.stderr)
         return 2
 
+    art = DIST / ARTIFACT_NAME
+    art.write_text(to_artifact(html), encoding="utf-8")
+
     words = sum(len(re.sub(r"<[^>]+>", " ", c).split()) for c in content.values())
     print(f"built {out}")
     used = sum(c.count("<figure") for c in content.values())
     print(f"  {len(structure['volumes'])} volumes · {len(declared)} chapters "
           f"· {len(content)} written · ~{words:,} words")
     print(f"  {len(figures)} figures ({used} placed) · {out.stat().st_size / 1024:.0f} KB")
+    print(f"  artifact build: {art} ({art.stat().st_size / 1024:.0f} KB)")
     return 1 if missing else 0
 
 
