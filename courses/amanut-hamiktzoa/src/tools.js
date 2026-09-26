@@ -289,3 +289,162 @@ TOOLS.delivery = function(el){
   el.querySelector('#d-copy').onclick = () => navigator.clipboard?.writeText(build());
   render();
 };
+
+/* ---------- Document templates (ch. 31) ---------- */
+TOOLS.templates = function(el){
+  const groups = [...new Set(TEMPLATES.map(t => t.group))];
+  el.innerHTML = `
+    <div class="tool-h">תבניות מסמכים</div>
+    <div class="tool-sub">${TEMPLATES.length} מסמכים מוכנים. בוחרים, מעתיקים, ממלאים את מה שבסוגריים.</div>
+    <div class="tab-row" id="tp-tabs">${groups.map((g,i) =>
+      `<button class="tab${i?'':' on'}" data-g="${g}">${g}</button>`).join('')}</div>
+    <div id="tp-list"></div>`;
+
+  const list = el.querySelector('#tp-list');
+  function render(group){
+    list.innerHTML = TEMPLATES.filter(t => t.group === group).map(t => `
+      <div class="tmpl" data-id="${t.id}">
+        <div class="tmpl-head" tabindex="0" role="button" aria-expanded="false">
+          <span class="tmpl-ic">${t.icon}</span>
+          <span class="tmpl-tx">
+            <b>${t.title}${t.legal ? ' <span class="tmpl-warn">דורש עו״ד</span>' : ''}</b>
+            <span>${t.when} · פרק ${t.ch}</span>
+          </span>
+          <span class="tmpl-arrow">▾</span>
+        </div>
+        <div class="tmpl-body">
+          <pre>${t.body.replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}</pre>
+          <div class="btn-row"><button class="btn tmpl-copy">העתקת התבנית</button></div>
+        </div>
+      </div>`).join('');
+
+    list.querySelectorAll('.tmpl').forEach(box => {
+      const head = box.querySelector('.tmpl-head');
+      const toggle = () => {
+        const open = box.classList.toggle('open');
+        head.setAttribute('aria-expanded', open);
+      };
+      head.onclick = toggle;
+      head.onkeydown = e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggle(); } };
+      const btn = box.querySelector('.tmpl-copy');
+      btn.onclick = e => {
+        e.stopPropagation();
+        const t = TEMPLATES.find(x => x.id === box.dataset.id);
+        navigator.clipboard?.writeText(t.body).then(
+          () => { btn.textContent = '✓ הועתק'; setTimeout(() => btn.textContent = 'העתקת התבנית', 1800); },
+          () => { btn.textContent = 'סמנו והעתיקו ידנית'; }
+        );
+      };
+    });
+  }
+
+  el.querySelectorAll('#tp-tabs .tab').forEach(b => b.onclick = () => {
+    el.querySelectorAll('#tp-tabs .tab').forEach(x => x.classList.remove('on'));
+    b.classList.add('on');
+    render(b.dataset.g);
+  });
+  render(groups[0]);
+};
+
+/* ---------- Glossary (ch. 30) ---------- */
+TOOLS.glossary = function(el){
+  const cats = [...new Set(GLOSSARY.map(g => g[4]))];
+  el.innerHTML = `
+    <div class="tool-h">מילון מונחים</div>
+    <div class="tool-sub">${GLOSSARY.length} מונחים. חפשו בעברית או באנגלית.</div>
+    <div class="fld"><input type="text" id="gl-q" placeholder="חיפוש — למשל: Recoupment, ספליט, מאסטר"></div>
+    <div class="tab-row" id="gl-tabs">
+      <button class="tab on" data-c="">הכל</button>
+      ${cats.map(c => `<button class="tab" data-c="${c}">${c}</button>`).join('')}
+    </div>
+    <div id="gl-list"></div>`;
+
+  const listEl = el.querySelector('#gl-list');
+  const qEl = el.querySelector('#gl-q');
+  let cat = '';
+
+  function render(){
+    const q = qEl.value.trim().toLowerCase();
+    const rows = GLOSSARY.filter(([he, en, def, ch, c, alias]) =>
+      (!cat || c === cat) &&
+      (!q || [he, en, def, alias || ''].some(f => f.toLowerCase().includes(q))));
+    if(!rows.length){ listEl.innerHTML = '<div class="out">לא נמצא מונח מתאים.</div>'; return; }
+    listEl.innerHTML = rows.map(([he, en, def, ch]) => `
+      <div class="gl-row">
+        <div class="gl-terms"><b>${he}</b><span class="gl-en">${en}</span></div>
+        <div class="gl-def">${def}</div>
+        <button class="gl-ch" onclick="openCh(${ch})">פרק ${ch} ←</button>
+      </div>`).join('');
+  }
+  qEl.oninput = render;
+  el.querySelectorAll('#gl-tabs .tab').forEach(b => b.onclick = () => {
+    el.querySelectorAll('#gl-tabs .tab').forEach(x => x.classList.remove('on'));
+    b.classList.add('on'); cat = b.dataset.c; render();
+  });
+  render();
+};
+
+/* ---------- Quiz engine ---------- */
+TOOLS.quiz = function(el){
+  const vol = el.getAttribute('data-vol');
+  const quiz = QUIZZES[vol];
+  if(!quiz){ el.innerHTML = '<div class="out">המבחן לכרך הזה עדיין בהכנה.</div>'; return; }
+  const answered = new Array(quiz.q.length).fill(null);
+
+  el.innerHTML = `
+    <div class="tool-h">מבחן — ${quiz.title}</div>
+    <div class="tool-sub">${quiz.q.length} שאלות. אין ציון עובר — יש רק לדעת איפה לחזור.</div>
+    <div id="qz-list"></div>
+    <div class="out" id="qz-out">ענו על כל השאלות כדי לראות סיכום.</div>
+    <div class="btn-row"><button class="btn ghost" id="qz-reset">התחלה מחדש</button></div>`;
+
+  const listEl = el.querySelector('#qz-list');
+  const outEl = el.querySelector('#qz-out');
+
+  function render(){
+    listEl.innerHTML = quiz.q.map((item, i) => `
+      <div class="qz-q" data-i="${i}">
+        <div class="qz-title"><span class="qz-n">${i + 1}</span>${item.q}</div>
+        <div class="qz-opts">${item.o.map((o, k) => {
+          let cls = 'qz-opt';
+          if(answered[i] !== null){
+            if(k === item.a) cls += ' right';
+            else if(k === answered[i]) cls += ' wrong';
+            cls += ' locked';
+          }
+          return `<button class="${cls}" data-k="${k}">${o}</button>`;
+        }).join('')}</div>
+        ${answered[i] !== null ? `<div class="qz-exp">${answered[i] === item.a ? '✓ ' : '✕ '}${item.e}</div>` : ''}
+      </div>`).join('');
+
+    listEl.querySelectorAll('.qz-opt:not(.locked)').forEach(b => b.onclick = () => {
+      const i = +b.closest('.qz-q').dataset.i;
+      answered[i] = +b.dataset.k;
+      render(); score();
+    });
+  }
+
+  function score(){
+    const done = answered.filter(a => a !== null).length;
+    if(done < quiz.q.length){
+      outEl.className = 'out';
+      outEl.textContent = `${done} מתוך ${quiz.q.length} נענו.`;
+      return;
+    }
+    const right = answered.filter((a, i) => a === quiz.q[i].a).length;
+    const missed = answered.map((a, i) => a === quiz.q[i].a ? null : i + 1).filter(Boolean);
+    const pct = Math.round(right / quiz.q.length * 100);
+    outEl.className = pct >= 75 ? 'out ok' : 'out warn';
+    outEl.innerHTML = `<span class="big">${right}/${quiz.q.length} · ${pct}%</span><br>` +
+      (missed.length
+        ? `כדאי לחזור לשאלות: ${missed.join(', ')} — ולקרוא שוב את ההסבר שמתחתיהן.`
+        : 'הכל נכון. אפשר להמשיך לכרך הבא.');
+  }
+
+  el.querySelector('#qz-reset').onclick = () => {
+    answered.fill(null); render();
+    outEl.className = 'out';
+    outEl.textContent = 'ענו על כל השאלות כדי לראות סיכום.';
+  };
+  render();
+};

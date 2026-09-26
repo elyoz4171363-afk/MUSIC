@@ -231,6 +231,79 @@
   .sr-del { background:none; border:1px solid var(--line); color:#d07a5a; border-radius:8px; width:40px; height:40px; cursor:pointer; font-size:17px; }
   .sr-del:hover { background:#2a1a18; }
 
+  /* tabs */
+  .tab-row { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+  .tab {
+    background:var(--panel); border:1px solid var(--line); color:var(--ink2);
+    padding:8px 16px; border-radius:22px; font-family:'Assistant',sans-serif;
+    font-size:15px; cursor:pointer; transition:0.18s;
+  }
+  .tab:hover { border-color:var(--gold-deep); color:var(--ink); }
+  .tab.on { background:var(--green); border-color:var(--green); color:#fff; font-weight:600; }
+
+  /* templates */
+  .tmpl { border:1px solid var(--line); border-radius:12px; margin-bottom:10px; overflow:hidden; background:var(--panel2); }
+  .tmpl-head { display:flex; align-items:center; gap:14px; padding:15px 18px; cursor:pointer; transition:0.18s; }
+  .tmpl-head:hover { background:#16302a; }
+  .tmpl-head:focus-visible { outline:2px solid var(--gold-l); outline-offset:-2px; }
+  .tmpl-ic { color:var(--gold); font-size:18px; flex:0 0 auto; }
+  .tmpl-tx { flex:1; display:flex; flex-direction:column; gap:2px; min-width:0; }
+  .tmpl-tx b { color:var(--ink); font-size:17px; font-family:'Assistant',sans-serif; font-weight:600; }
+  .tmpl-tx span { color:var(--ink2); font-size:14.5px; line-height:1.5; }
+  .tmpl-warn { background:#2a1a18; border:1px solid #4a2e28; color:#f0a585; font-size:12px; padding:2px 9px; border-radius:12px; font-weight:600; white-space:nowrap; }
+  .tmpl-arrow { color:var(--ink3); font-size:15px; transition:0.25s; flex:0 0 auto; }
+  .tmpl.open .tmpl-arrow { transform:rotate(180deg); }
+  .tmpl-body { display:none; padding:0 18px 18px; }
+  .tmpl.open .tmpl-body { display:block; }
+  .tmpl-body pre {
+    background:var(--bg); border:1px solid var(--line); border-radius:9px;
+    padding:16px; overflow-x:auto; white-space:pre; color:#dde6e0;
+    font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13.5px; line-height:1.75;
+    max-height:460px; overflow-y:auto; direction:rtl; text-align:right;
+  }
+
+  /* glossary */
+  .gl-row { display:flex; align-items:flex-start; gap:14px; padding:14px 2px; border-bottom:1px solid rgba(34,70,58,0.55); }
+  .gl-row:last-child { border-bottom:none; }
+  .gl-terms { flex:0 0 190px; display:flex; flex-direction:column; gap:1px; }
+  .gl-terms b { color:var(--gold-l); font-size:16.5px; font-family:'Assistant',sans-serif; font-weight:700; }
+  .gl-en { color:var(--ink3); font-size:14px; direction:ltr; text-align:right; }
+  .gl-def { flex:1; color:#dde6e0; font-size:16px; line-height:1.7; }
+  .gl-ch { flex:0 0 auto; background:none; border:1px solid var(--line); color:var(--ink2); border-radius:8px; padding:5px 11px; font-size:13.5px; cursor:pointer; font-family:'Assistant',sans-serif; white-space:nowrap; }
+  .gl-ch:hover { background:var(--green); color:#fff; border-color:var(--green); }
+  @media(max-width:620px){ .gl-row { flex-wrap:wrap; } .gl-terms { flex:0 0 100%; } .gl-ch { order:3; } }
+
+  /* quiz */
+  .qz-q { border-bottom:1px solid rgba(34,70,58,0.55); padding:18px 0; }
+  .qz-q:last-of-type { border-bottom:none; }
+  .qz-title { display:flex; gap:12px; align-items:flex-start; color:var(--ink); font-size:17px; font-weight:600; font-family:'Assistant',sans-serif; line-height:1.6; margin-bottom:12px; }
+  .qz-n { flex:0 0 auto; width:26px; height:26px; border-radius:50%; background:var(--green); color:var(--gold-l); display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; }
+  .qz-opts { display:flex; flex-direction:column; gap:8px; }
+  .qz-opt {
+    background:var(--panel); border:1px solid var(--line); color:#dde6e0;
+    padding:11px 15px; border-radius:9px; text-align:right; font-family:inherit;
+    font-size:16px; cursor:pointer; transition:0.18s; line-height:1.55;
+  }
+  .qz-opt:hover:not(.locked) { border-color:var(--gold-deep); background:#16302a; }
+  .qz-opt.locked { cursor:default; }
+  .qz-opt.right { background:#16261c; border-color:#4cc488; color:#bfeed4; }
+  .qz-opt.wrong { background:#2a1a18; border-color:#d07a5a; color:#f3c5b1; }
+  .qz-exp { margin-top:11px; padding-right:13px; border-right:3px solid var(--gold-deep); color:var(--ink2); font-size:15.5px; line-height:1.7; }
+
+  /* volume quiz card */
+  .quiz-card {
+    display:flex; align-items:center; gap:16px; width:100%;
+    background:linear-gradient(160deg,#16302a,#12241e); border:1px solid var(--gold-deep);
+    border-radius:14px; padding:18px 22px; margin-top:4px; cursor:pointer;
+    transition:0.2s; text-align:right; font-family:inherit;
+  }
+  .quiz-card:hover { background:#1a382f; transform:translateX(4px); }
+  .quiz-card:focus-visible { outline:2px solid var(--gold-l); outline-offset:3px; }
+  .quiz-card .qc-ic { flex:0 0 auto; width:50px; height:50px; border-radius:50%; background:linear-gradient(160deg,var(--gold-deep),var(--gold)); color:#0a1813; display:flex; align-items:center; justify-content:center; font-size:22px; }
+  .quiz-card .qc-tx { flex:1; }
+  .quiz-card .qc-tx h4 { font-size:18px; color:var(--gold-l); font-weight:700; font-family:'Assistant',sans-serif; }
+  .quiz-card .qc-tx span { font-size:15px; color:var(--ink2); }
+
   .mark-read-btn {
     display:flex; align-items:center; justify-content:center; gap:10px;
     width:100%; background:var(--panel); border:1px solid var(--line); color:var(--gold-l);
@@ -386,7 +459,7 @@ function openVol(id){
     <h2>${v.title}</h2>
     <p>${v.desc}</p>`;
   const list = CHAPTERS[id];
-  document.getElementById('volList').innerHTML = list.map((c, i) => `
+  let html = list.map((c, i) => `
     <div class="chap-item ${readSet.has(c.n) ? 'read' : ''}" tabindex="0" role="button" style="animation-delay:${i * 0.04}s"
          onclick="openCh(${c.n})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openCh(${c.n})}">
       <div class="chap-num">${c.n}</div>
@@ -394,7 +467,31 @@ function openVol(id){
       <div class="chap-check">✓</div>
       <div class="chap-arrow">←</div>
     </div>`).join('');
+  if(QUIZZES[id]){
+    html += `<button class="quiz-card" onclick="openQuiz('${id}')">
+      <div class="qc-ic">✓</div>
+      <div class="qc-tx"><h4>מבחן — ${QUIZZES[id].title}</h4>
+        <span>${QUIZZES[id].q.length} שאלות · בדקו מה נשאר</span></div>
+      <div class="chap-arrow">←</div>
+    </button>`;
+  }
+  document.getElementById('volList').innerHTML = html;
   show('viewVol');
+}
+
+function openQuiz(id){
+  curVol = id; curCh = null;
+  const v = VOLUMES.find(x => x.id === id);
+  document.getElementById('readerBody').innerHTML = `
+    <div class="reader-hero">
+      <div class="eyebrow">כרך ${v.letter} · מבחן</div>
+      <h1>${QUIZZES[id].title}</h1>
+      <p>בחרו תשובה לכל שאלה. ההסבר נפתח מיד — גם כשצדקתם.</p>
+    </div>
+    <div class="tool" data-tool="quiz" data-vol="${id}"></div>
+    <div class="chap-nav"><button onclick="openVol('${id}')">→ חזרה לכרך</button></div>`;
+  show('viewRead');
+  initWidgets();
 }
 
 /* ============ READER ============ */

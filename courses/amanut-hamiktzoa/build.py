@@ -7,7 +7,10 @@ Output: dist/אמנות-המקצוע.html
 import json
 import pathlib
 import re
+import shutil
+import subprocess
 import sys
+import tempfile
 
 ROOT = pathlib.Path(__file__).parent
 SRC = ROOT / "src"
@@ -20,10 +23,32 @@ def js_string(text: str) -> str:
     return "`" + text.replace("\\", "\\\\").replace("`", "\\`").replace("${", "\\${") + "`"
 
 
+def check_js(html: str) -> str:
+    """Syntax-check the generated script block. A stray quote in a data file
+    (e.g. an apostrophe inside a single-quoted Hebrew string) breaks the whole
+    page silently, so the build refuses to ship it."""
+    node = shutil.which("node")
+    if not node:
+        return ""
+    blocks = re.findall(r"<script>(.*?)</script>", html, re.S)
+    if not blocks:
+        return "no script block found"
+    with tempfile.NamedTemporaryFile("w", suffix=".js", encoding="utf-8", delete=False) as fh:
+        fh.write(blocks[-1])
+        tmp = fh.name
+    try:
+        r = subprocess.run([node, "--check", tmp], capture_output=True, text=True)
+        return "" if r.returncode == 0 else r.stderr.strip()
+    finally:
+        pathlib.Path(tmp).unlink(missing_ok=True)
+
+
 def main() -> int:
     structure = json.loads((SRC / "structure.json").read_text(encoding="utf-8"))
     shell = (SRC / "shell.html").read_text(encoding="utf-8")
-    tools_js = (SRC / "tools.js").read_text(encoding="utf-8")
+    # order matters: data files first, then the tools that read them
+    js_files = ["templates.js", "glossary.js", "quizzes.js", "tools.js"]
+    extra_js = "\n".join((SRC / f).read_text(encoding="utf-8") for f in js_files)
 
     chapters = structure["chapters"]
     declared = sorted(c["n"] for lst in chapters.values() for c in lst)
@@ -48,13 +73,27 @@ def main() -> int:
         if n in content:
             data.append(f"  {n}: {js_string(content[n])},")
     data.append("};")
-    data.append(tools_js)
+    data.append(extra_js)
 
-    html = shell.replace("__DATA__", "\n".join(data))
+    # counts live in one place: the data files themselves
+    counts = {
+        "{GLOSSARY_COUNT}": str(len(re.findall(r"^\['", (SRC / "glossary.js").read_text(encoding="utf-8"), re.M))),
+        "{TEMPLATE_COUNT}": str(len(re.findall(r"^  id:'", (SRC / "templates.js").read_text(encoding="utf-8"), re.M))),
+    }
+    joined = "\n".join(data)
+    for token, value in counts.items():
+        joined = joined.replace(token, value)
+
+    html = shell.replace("__DATA__", joined)
 
     DIST.mkdir(exist_ok=True)
     out = DIST / OUT_NAME
     out.write_text(html, encoding="utf-8")
+
+    syntax_error = check_js(html)
+    if syntax_error:
+        print(f"ERROR: generated JS is invalid\n{syntax_error}", file=sys.stderr)
+        return 2
 
     words = sum(len(re.sub(r"<[^>]+>", " ", c).split()) for c in content.values())
     print(f"built {out}")
