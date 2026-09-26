@@ -47,19 +47,32 @@ def main() -> int:
     structure = json.loads((SRC / "structure.json").read_text(encoding="utf-8"))
     shell = (SRC / "shell.html").read_text(encoding="utf-8")
     # order matters: data files first, then the tools that read them
-    js_files = ["templates.js", "glossary.js", "quizzes.js", "tools.js"]
+    js_files = ["templates.js", "glossary.js", "quizzes.js", "scenarios.js", "tools.js"]
     extra_js = "\n".join((SRC / f).read_text(encoding="utf-8") for f in js_files)
 
     chapters = structure["chapters"]
     declared = sorted(c["n"] for lst in chapters.values() for c in lst)
 
-    content, missing = {}, []
+    figures = {p.stem: p.read_text(encoding="utf-8").strip()
+               for p in sorted((SRC / "figures").glob("*.html"))}
+
+    content, missing, unknown_figs = {}, [], []
     for n in declared:
         frag = SRC / "chapters" / f"ch{n:02d}.html"
-        if frag.exists():
-            content[n] = frag.read_text(encoding="utf-8").strip()
-        else:
+        if not frag.exists():
             missing.append(n)
+            continue
+        text = frag.read_text(encoding="utf-8").strip()
+        for name in re.findall(r"\{\{FIG:([a-z0-9_-]+)\}\}", text):
+            if name in figures:
+                text = text.replace("{{FIG:%s}}" % name, figures[name])
+            else:
+                unknown_figs.append(f"ch{n:02d} -> {name}")
+        content[n] = text
+
+    if unknown_figs:
+        print(f"ERROR: unknown figure reference(s): {unknown_figs}", file=sys.stderr)
+        return 2
 
     if missing:
         print(f"WARNING: no content file for chapters {missing}", file=sys.stderr)
@@ -97,8 +110,10 @@ def main() -> int:
 
     words = sum(len(re.sub(r"<[^>]+>", " ", c).split()) for c in content.values())
     print(f"built {out}")
+    used = sum(c.count("<figure") for c in content.values())
     print(f"  {len(structure['volumes'])} volumes · {len(declared)} chapters "
-          f"· {len(content)} written · ~{words:,} words · {out.stat().st_size / 1024:.0f} KB")
+          f"· {len(content)} written · ~{words:,} words")
+    print(f"  {len(figures)} figures ({used} placed) · {out.stat().st_size / 1024:.0f} KB")
     return 1 if missing else 0
 
 

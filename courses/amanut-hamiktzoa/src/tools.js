@@ -448,3 +448,101 @@ TOOLS.quiz = function(el){
   };
   render();
 };
+
+/* ---------- Scenario player (ch. 32) ---------- */
+TOOLS.scenarios = function(el){
+  let active = null, step = 0, tally = {m:0,r:0,z:0}, picks = [];
+
+  function menu(){
+    active = null;
+    el.innerHTML = `
+      <div class="tool-h">תרחישים מהחיים</div>
+      <div class="tool-sub">חמישה מקרים אמיתיים. בכל אחד ארבע החלטות, ולכל החלטה יש מחיר — בכסף, במוניטין או בזכויות.</div>
+      <div id="sc-menu">${SCENARIOS.map(s => `
+        <button class="sc-card" data-id="${s.id}">
+          <span class="sc-ic">${s.icon}</span>
+          <span class="sc-tx"><b>${s.title}</b><span>${s.blurb}</span></span>
+          <span class="chap-arrow">←</span>
+        </button>`).join('')}</div>`;
+    el.querySelectorAll('.sc-card').forEach(b => b.onclick = () => start(b.dataset.id));
+  }
+
+  function start(id){
+    active = SCENARIOS.find(s => s.id === id);
+    step = 0; tally = {m:0,r:0,z:0}; picks = [];
+    render();
+  }
+
+  function meter(label, val){
+    // val ranges roughly -8..+8; map to 0..100
+    const pct = Math.max(0, Math.min(100, Math.round((val + 8) / 16 * 100)));
+    const cls = val > 1 ? 'good' : val < -1 ? 'bad' : 'mid';
+    return `<div class="sc-meter">
+      <span class="sc-ml">${label}</span>
+      <span class="sc-mt"><span class="sc-mf ${cls}" style="width:${pct}%"></span></span>
+      <span class="sc-mv ${cls}">${val > 0 ? '+' : ''}${val}</span>
+    </div>`;
+  }
+
+  // The options are authored best-first for readability, so present them
+  // rotated by a fixed per-step offset — otherwise the player learns the
+  // position instead of the judgement. Deterministic, so a replay lets you
+  // fix one decision rather than re-learn where things sit.
+  function opts(sc, i){
+    const list = sc.steps[i].o;
+    const off = (SCENARIOS.indexOf(sc) + i * 2) % list.length;
+    return list.map((_, k) => list[(k + off) % list.length]);
+  }
+
+  function render(){
+    const s = active;
+    const done = step >= s.steps.length;
+    el.innerHTML = `
+      <button class="btn ghost sc-back">→ כל התרחישים</button>
+      <div class="sc-head">
+        <div class="sc-title"><span class="sc-ic">${s.icon}</span>${s.title}</div>
+        <div class="sc-setup">${s.setup}</div>
+      </div>
+      <div class="sc-meters">${meter('כסף', tally.m)}${meter('מוניטין', tally.r)}${meter('זכויות', tally.z)}</div>
+      <div class="sc-steps">${picks.map((p, i) => `
+        <div class="sc-past">
+          <div class="sc-q"><span class="sc-n">${i + 1}</span>${s.steps[i].q}</div>
+          <div class="sc-chosen">${p.t}</div>
+          <div class="sc-res">${p.r}</div>
+        </div>`).join('')}</div>
+      ${done ? ending() : `
+        <div class="sc-now">
+          <div class="sc-q"><span class="sc-n">${step + 1}</span>${s.steps[step].q}</div>
+          <div class="sc-opts">${opts(s, step).map((o, k) =>
+            `<button class="sc-opt" data-k="${k}">${o.t}</button>`).join('')}</div>
+        </div>`}`;
+
+    el.querySelector('.sc-back').onclick = menu;
+    el.querySelectorAll('.sc-opt').forEach(b => b.onclick = () => {
+      const o = opts(active, step)[+b.dataset.k];
+      tally.m += o.s.m; tally.r += o.s.r; tally.z += o.s.z;
+      picks.push(o); step++;
+      render();
+      const now = el.querySelector('.sc-past:last-child');
+      if(now) now.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+    const again = el.querySelector('.sc-again');
+    if(again) again.onclick = () => start(active.id);
+  }
+
+  function ending(){
+    const total = tally.m + tally.r + tally.z;
+    const e = active.endings.find(x => total >= x.min) || active.endings[active.endings.length - 1];
+    const cls = total >= 8 ? 'ok' : total >= 2 ? '' : 'warn';
+    const chs = active.ch.map(n => `<button class="gl-ch" onclick="openCh(${n})">פרק ${n} ←</button>`).join(' ');
+    return `<div class="out ${cls}" style="margin-top:22px">
+        <span class="big">${e.t}</span><br>${e.x}
+        <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+          <span style="color:var(--ink2);font-size:15px">לחזרה:</span>${chs}
+        </div>
+      </div>
+      <div class="btn-row"><button class="btn sc-again">לשחק שוב</button></div>`;
+  }
+
+  menu();
+};
