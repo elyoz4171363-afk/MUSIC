@@ -78,7 +78,7 @@ def main() -> int:
     structure = json.loads((SRC / "structure.json").read_text(encoding="utf-8"))
     shell = (SRC / "shell.html").read_text(encoding="utf-8")
     # order matters: data files first, then the tools that read them
-    js_files = ["templates.js", "glossary.js", "quizzes.js", "scenarios.js", "tools.js"]
+    js_files = ["templates.js", "glossary.js", "quizzes.js", "scenarios.js", "diagnostic.js", "tools.js"]
     extra_js = "\n".join((SRC / f).read_text(encoding="utf-8") for f in js_files)
 
     chapters = structure["chapters"]

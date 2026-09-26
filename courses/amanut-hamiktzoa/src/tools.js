@@ -546,3 +546,197 @@ TOOLS.scenarios = function(el){
 
   menu();
 };
+
+/* ---------- Four-capability diagnostic + 90-day plan (ch. 29) ---------- */
+TOOLS.diagnostic = function(el){
+  const ans = new Array(DIAG.length).fill(null);
+  const LABELS = ['לא נכון לי', 'חלקית', 'נכון לי'];
+
+  el.innerHTML = `
+    <div class="tool-h">אבחון ארבע היכולות</div>
+    <div class="tool-sub">16 משפטים. תענו לפי מה שקורה אצלכם בפועל, לא לפי מה שאתם מתכוונים לעשות — אחרת האבחון יצביע על המקום הלא נכון.</div>
+    <div id="dg-list"></div>
+    <div class="out" id="dg-out"></div>`;
+
+  const listEl = el.querySelector('#dg-list');
+  const outEl = el.querySelector('#dg-out');
+
+  function render(){
+    listEl.innerHTML = CAPS.map(c => {
+      const items = DIAG.map((d, i) => ({d, i})).filter(x => x.d.cap === c.id);
+      return `<div class="dg-group">
+        <div class="dg-cap" style="--cc:${c.color}">${c.name}</div>
+        ${items.map(({d, i}) => `
+          <div class="dg-row">
+            <div class="dg-q">${d.q}${d.ch ? ` <span class="dg-ch">פרק ${d.ch}</span>` : ''}</div>
+            <div class="dg-scale">${LABELS.map((l, v) =>
+              `<button class="dg-b${ans[i] === v ? ' on' : ''}" data-i="${i}" data-v="${v}">${l}</button>`).join('')}</div>
+          </div>`).join('')}
+      </div>`;
+    }).join('');
+    listEl.querySelectorAll('.dg-b').forEach(b => b.onclick = () => {
+      ans[+b.dataset.i] = +b.dataset.v;
+      render(); score();
+    });
+  }
+
+  function score(){
+    const done = ans.filter(a => a !== null).length;
+    if(done < DIAG.length){
+      outEl.className = 'out';
+      outEl.textContent = `${done} מתוך ${DIAG.length} נענו.`;
+      return;
+    }
+    const per = CAPS.map(c => {
+      const items = DIAG.map((d, i) => ({d, i})).filter(x => x.d.cap === c.id);
+      const got = items.reduce((s, x) => s + ans[x.i], 0);
+      return {c, got, max: items.length * 2, pct: Math.round(got / (items.length * 2) * 100)};
+    });
+    const weakest = per.reduce((a, b) => b.got < a.got ? b : a);
+    const plan = PLANS[weakest.c.id];
+
+    outEl.className = 'out';
+    outEl.innerHTML = `
+      <div class="dg-bars">${per.map(p => `
+        <div class="dg-bar">
+          <span class="dg-bl">${p.c.short}</span>
+          <span class="dg-bt"><span class="dg-bf" style="width:${p.pct}%;background:${p.c.color}"></span></span>
+          <span class="dg-bv" style="color:${p.c.color}">${p.got}/${p.max}</span>
+        </div>`).join('')}</div>
+      <div class="dg-verdict">
+        <b>${plan.t}</b>
+        <p>${plan.lead}</p>
+        <p class="dg-where">איפה ללמוד: ${weakest.c.world}</p>
+      </div>
+      <div class="dg-plan">
+        <div class="dg-pt">תוכנית 90 יום</div>
+        ${plan.p.map(([phase, steps]) => `
+          <div class="dg-phase">
+            <div class="dg-ph">${phase}</div>
+            <ul>${steps.map(s => `<li>${s}</li>`).join('')}</ul>
+          </div>`).join('')}
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="dg-copy">העתקת התוכנית</button>
+        <button class="btn ghost" id="dg-reset">אבחון מחדש</button>
+      </div>`;
+
+    outEl.querySelector('#dg-reset').onclick = () => { ans.fill(null); render(); score(); };
+    outEl.querySelector('#dg-copy').onclick = () => {
+      const txt = [plan.t, '', plan.lead, '', 'הציונים שלי:',
+        ...per.map(p => `  ${p.c.short}: ${p.got}/${p.max}`), '', 'תוכנית 90 יום:',
+        ...plan.p.flatMap(([phase, steps]) => ['', phase, ...steps.map(s => '  ☐ ' + s)])
+      ].join('\n');
+      navigator.clipboard?.writeText(txt).then(
+        () => { const b = outEl.querySelector('#dg-copy'); b.textContent = '✓ הועתק'; setTimeout(() => b.textContent = 'העתקת התוכנית', 1800); },
+        () => {}
+      );
+    };
+  }
+
+  render(); score();
+};
+
+/* ---------- Flat fee vs points (ch. 12) ---------- */
+TOOLS.feeVsPoints = function(el){
+  el.innerHTML = `
+    <div class="tool-h">מחיר קבוע מול אחוזים</div>
+    <div class="tool-sub">ההחלטה הזאת חוזרת בכל פרויקט. המחשבון מראה כמה השיר צריך להכניס כדי שהאחוזים ישתלמו יותר מהמחיר הקבוע.</div>
+    <div class="fld"><label>מחיר קבוע שהייתם לוקחים על הפרויקט</label><input type="number" id="f-flat" value="12000" min="0" step="500"></div>
+    <div class="fld"><label>במסלול האחוזים: מקדמה (0 אם אין)</label><input type="number" id="f-adv" value="4000" min="0" step="500"></div>
+    <div class="fld"><label>אחוז מהכנסות המאסטר</label><input type="number" id="f-pts" value="4" min="0" max="50" step="0.5"></div>
+    <div class="fld"><label>עלויות שמקוזזות לפני שמגיע אליכם אחוז</label><input type="number" id="f-cost" value="15000" min="0" step="1000"></div>
+    <div class="out" id="f-out"></div>`;
+
+  const out = el.querySelector('#f-out');
+  function calc(){
+    const flat = +el.querySelector('#f-flat').value || 0;
+    const adv  = +el.querySelector('#f-adv').value || 0;
+    const pts  = (+el.querySelector('#f-pts').value || 0) / 100;
+    const cost = +el.querySelector('#f-cost').value || 0;
+
+    if(pts <= 0){
+      out.className = 'out warn';
+      out.innerHTML = 'בלי אחוז, מסלול האחוזים הוא פשוט המקדמה. המחיר הקבוע עדיף בכל מצב.';
+      return;
+    }
+    // points route pays adv + pts*(revenue) once adv+cost is recouped
+    const gap = flat - adv;                       // what the points have to make up
+    const need = (adv + cost + gap) / pts;        // revenue at which both routes are equal
+    const at = r => Math.max(adv, adv + (r * pts - (adv + cost)));
+
+    const rows = [need * 0.5, need, need * 2].map(r =>
+      `<tr><td>${money(r)}</td><td>${money(flat)}</td><td>${money(at(r))}</td>
+       <td style="color:${at(r) >= flat ? '#5cd49a' : '#f0a585'}">${at(r) >= flat ? 'אחוזים' : 'מחיר קבוע'}</td></tr>`).join('');
+
+    out.className = 'out';
+    out.innerHTML = `
+      נקודת ההשוואה: השיר צריך להכניס <span class="big">${money(need)}</span> כדי ששני המסלולים יישבו על אותו סכום.<br>
+      <div class="tbl-wrap" style="margin:14px 0 6px">
+        <table class="t"><thead><tr><th>הכנסת השיר</th><th>מחיר קבוע</th><th>מסלול אחוזים</th><th>מה עדיף</th></tr></thead>
+        <tbody>${rows}</tbody></table>
+      </div>
+      <span style="color:var(--ink2);font-size:15px">שימו לב ל־${money(cost)} העלויות: הן מקוזזות לפני האחוז שלכם, ולכן הן שדחפו את נקודת ההשוואה למעלה. זה בדיוק הסעיף שצריך להגביל ברשימה סגורה ובתקרה.</span>`;
+  }
+  el.querySelectorAll('input').forEach(i => i.oninput = calc);
+  calc();
+};
+
+/* ---------- What a project actually nets (ch. 20) ---------- */
+TOOLS.netProfit = function(el){
+  el.innerHTML = `
+    <div class="tool-h">כמה באמת נשאר לכם מהפרויקט</div>
+    <div class="tool-sub">הסכום שסוכם הוא לא מה שנכנס לכיס. זה החישוב שרוב המפיקים עושים בדיעבד, ואז מגלים.</div>
+    <div class="fld"><label>מה סוכם על הפרויקט</label><input type="number" id="n-rev" value="12000" min="0" step="500"></div>
+    <div class="fld"><label>תשלום לנגנים</label><input type="number" id="n-mus" value="2400" min="0" step="200"></div>
+    <div class="fld"><label>אולפן חיצוני / אורחים / עלויות ישירות</label><input type="number" id="n-out" value="1500" min="0" step="100"></div>
+    <div class="fld"><label>שעות שהפרויקט לקח בפועל (כולל פגישות ותיקונים)</label><input type="number" id="n-hrs" value="45" min="1" step="1"></div>
+    <div class="fld"><label>הוצאות קבועות שלכם לחודש</label><input type="number" id="n-fix" value="2500" min="0" step="100"></div>
+    <div class="fld"><label>שעות מחויבות בחודש</label><input type="number" id="n-cap" value="90" min="1" step="5"></div>
+    <div class="fld"><label>אחוז שאתם מפרישים למס</label><input type="number" id="n-tax" value="30" min="0" max="60" step="1"></div>
+    <div class="out" id="n-out2"></div>`;
+
+  const out = el.querySelector('#n-out2');
+  function calc(){
+    const rev = +el.querySelector('#n-rev').value || 0;
+    const mus = +el.querySelector('#n-mus').value || 0;
+    const ext = +el.querySelector('#n-out').value || 0;
+    const hrs = Math.max(1, +el.querySelector('#n-hrs').value || 1);
+    const fix = +el.querySelector('#n-fix').value || 0;
+    const cap = Math.max(1, +el.querySelector('#n-cap').value || 1);
+    const tax = (+el.querySelector('#n-tax').value || 0) / 100;
+
+    const overhead = fix / cap * hrs;      // this project's share of your fixed costs
+    const before = rev - mus - ext - overhead;
+    const taxAmt = Math.max(0, before) * tax;
+    const net = before - taxAmt;
+    const perHour = net / hrs;
+
+    const line = (l, v, neg) => `<tr><td>${l}</td><td style="text-align:left;color:${neg ? '#f0a585' : '#dde6e0'}">${neg ? '−' : ''}${money(Math.abs(v))}</td></tr>`;
+
+    // "positive" is not the same as "viable": netting less per hour than your
+    // own fixed costs run at means the project is subsidised by the others.
+    const floor = fix / cap;
+    const state = net < 0 ? 'loss' : (perHour < floor ? 'thin' : 'ok');
+    out.className = state === 'ok' ? 'out ok' : 'out warn';
+    out.innerHTML = `
+      <div class="tbl-wrap" style="margin:0 0 12px">
+        <table class="t"><tbody>
+          ${line('מה סוכם', rev)}
+          ${line('נגנים', mus, 1)}
+          ${line('עלויות ישירות', ext, 1)}
+          ${line(`חלק הפרויקט בהוצאות הקבועות (${hrs} ש׳)`, overhead, 1)}
+          ${line('הפרשה למס', taxAmt, 1)}
+        </tbody></table>
+      </div>
+      נשאר לכם: <span class="big">${money(net)}</span> — כלומר <b>${money(perHour)}</b> לשעה.
+      <br><span style="color:var(--ink2);font-size:15px">${
+        state === 'loss'
+          ? 'הפרויקט הזה הפסיד כסף. שאלו את עצמכם מה גדל מעבר למה שתומחר — השעות או העלויות הישירות.'
+        : state === 'thin'
+          ? `זה חיובי, אבל ההוצאות הקבועות שלכם רצות על ${money(floor)} לשעה — כלומר הפרויקט הזה בקושי מכסה את עצמו, והאחרים מסבסדים אותו.`
+          : 'תשוו את זה לתעריף השעה שחישבתם בפרק 19. אם המספר כאן נמוך ממנו — או שהמחיר היה נמוך מדי, או שהפרויקט לקח יותר ממה שתומחר.'}</span>`;
+  }
+  el.querySelectorAll('input').forEach(i => i.oninput = calc);
+  calc();
+};

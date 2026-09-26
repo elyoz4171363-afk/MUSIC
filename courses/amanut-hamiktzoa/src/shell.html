@@ -425,6 +425,37 @@
     .search-overlay { padding:14px 10px; }
   }
 
+  /* diagnostic */
+  .dg-group { margin-bottom:22px; }
+  .dg-cap { font-family:'Assistant',sans-serif; font-weight:700; font-size:17px; color:var(--cc);
+    padding-right:11px; border-right:3px solid var(--cc); margin-bottom:12px; }
+  .dg-row { padding:11px 0; border-bottom:1px solid rgba(34,70,58,0.45); }
+  .dg-row:last-child { border-bottom:none; }
+  .dg-q { color:#dde6e0; font-size:16px; line-height:1.65; margin-bottom:9px; }
+  .dg-ch { color:var(--ink3); font-size:13px; }
+  .dg-scale { display:flex; gap:7px; flex-wrap:wrap; }
+  .dg-b { flex:1; min-width:96px; background:var(--panel); border:1px solid var(--line); color:var(--ink2);
+    padding:8px 10px; border-radius:8px; font-family:'Assistant',sans-serif; font-size:14.5px;
+    cursor:pointer; transition:0.16s; }
+  .dg-b:hover { border-color:var(--gold-deep); color:var(--ink); }
+  .dg-b.on { background:var(--green); border-color:var(--green); color:#fff; font-weight:600; }
+  .dg-bars { display:flex; flex-direction:column; gap:9px; margin-bottom:18px; }
+  .dg-bar { display:flex; align-items:center; gap:10px; }
+  .dg-bl { flex:0 0 62px; font-size:14.5px; color:var(--ink2); }
+  .dg-bt { flex:1; height:9px; background:var(--panel); border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+  .dg-bf { display:block; height:100%; border-radius:6px; transition:width 0.7s cubic-bezier(0.22,1,0.36,1); }
+  .dg-bv { flex:0 0 42px; text-align:left; font-family:'Assistant',sans-serif; font-weight:800; font-size:15px; }
+  .dg-verdict { border-top:1px solid var(--line); padding-top:16px; }
+  .dg-verdict b { font-family:'Assistant',sans-serif; font-size:19px; color:var(--gold-l); }
+  .dg-verdict p { margin:8px 0 0; font-size:16px; line-height:1.75; color:#dde6e0; }
+  .dg-where { color:var(--ink2) !important; font-size:15px !important; }
+  .dg-plan { margin-top:20px; border-top:1px solid var(--line); padding-top:16px; }
+  .dg-pt { font-family:'Assistant',sans-serif; font-weight:700; font-size:18px; color:var(--gold-l); margin-bottom:12px; }
+  .dg-phase { margin-bottom:14px; }
+  .dg-ph { font-size:15px; font-weight:700; color:var(--gold); margin-bottom:5px; }
+  .dg-phase ul { margin:0 20px 0 0; font-size:15.5px; line-height:1.75; color:#dde6e0; }
+  .dg-phase li { margin-bottom:5px; }
+
   /* volume quiz card */
   .quiz-card {
     display:flex; align-items:center; gap:16px; width:100%;

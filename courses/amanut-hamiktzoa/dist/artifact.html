@@ -421,6 +421,37 @@
     .search-overlay { padding:14px 10px; }
   }
 
+  /* diagnostic */
+  .dg-group { margin-bottom:22px; }
+  .dg-cap { font-family:'Assistant',sans-serif; font-weight:700; font-size:17px; color:var(--cc);
+    padding-right:11px; border-right:3px solid var(--cc); margin-bottom:12px; }
+  .dg-row { padding:11px 0; border-bottom:1px solid rgba(34,70,58,0.45); }
+  .dg-row:last-child { border-bottom:none; }
+  .dg-q { color:#dde6e0; font-size:16px; line-height:1.65; margin-bottom:9px; }
+  .dg-ch { color:var(--ink3); font-size:13px; }
+  .dg-scale { display:flex; gap:7px; flex-wrap:wrap; }
+  .dg-b { flex:1; min-width:96px; background:var(--panel); border:1px solid var(--line); color:var(--ink2);
+    padding:8px 10px; border-radius:8px; font-family:'Assistant',sans-serif; font-size:14.5px;
+    cursor:pointer; transition:0.16s; }
+  .dg-b:hover { border-color:var(--gold-deep); color:var(--ink); }
+  .dg-b.on { background:var(--green); border-color:var(--green); color:#fff; font-weight:600; }
+  .dg-bars { display:flex; flex-direction:column; gap:9px; margin-bottom:18px; }
+  .dg-bar { display:flex; align-items:center; gap:10px; }
+  .dg-bl { flex:0 0 62px; font-size:14.5px; color:var(--ink2); }
+  .dg-bt { flex:1; height:9px; background:var(--panel); border:1px solid var(--line); border-radius:6px; overflow:hidden; }
+  .dg-bf { display:block; height:100%; border-radius:6px; transition:width 0.7s cubic-bezier(0.22,1,0.36,1); }
+  .dg-bv { flex:0 0 42px; text-align:left; font-family:'Assistant',sans-serif; font-weight:800; font-size:15px; }
+  .dg-verdict { border-top:1px solid var(--line); padding-top:16px; }
+  .dg-verdict b { font-family:'Assistant',sans-serif; font-size:19px; color:var(--gold-l); }
+  .dg-verdict p { margin:8px 0 0; font-size:16px; line-height:1.75; color:#dde6e0; }
+  .dg-where { color:var(--ink2) !important; font-size:15px !important; }
+  .dg-plan { margin-top:20px; border-top:1px solid var(--line); padding-top:16px; }
+  .dg-pt { font-family:'Assistant',sans-serif; font-weight:700; font-size:18px; color:var(--gold-l); margin-bottom:12px; }
+  .dg-phase { margin-bottom:14px; }
+  .dg-ph { font-size:15px; font-weight:700; color:var(--gold); margin-bottom:5px; }
+  .dg-phase ul { margin:0 20px 0 0; font-size:15.5px; line-height:1.75; color:#dde6e0; }
+  .dg-phase li { margin-bottom:5px; }
+
   /* volume quiz card */
   .quiz-card {
     display:flex; align-items:center; gap:16px; width:100%;
@@ -1911,6 +1942,12 @@ ISRC:              [קוד]
 
 <div class="tool" data-tool="recoup"></div>
 
+<h3 class="sub">ואיך בכלל בוחרים בין השניים</h3>
+
+<p>השאלה שמגיעה מיד אחרי היא לא "כמה אחוזים" אלא "האם בכלל אחוזים". והתשובה תלויה במספר אחד שאפשר לחשב: <b>כמה השיר צריך להכניס כדי שהאחוזים יעברו את המחיר הקבוע.</b> אם המספר הזה גבוה ממה שהשיר באמת יכול לעשות, קיבלתם החלטה קלה.</p>
+
+<div class="tool" data-tool="feeVsPoints"></div>
+
 <figure class="fig">
 <svg viewBox="0 0 700 400" role="img" aria-label="תרשים החזר השקעה: הכנסות המאסטר זורמות תחילה לדלי שמכיל את המקדמה ואת עלויות ההקלטה, הקליפ והשיווק. רק אחרי שהדלי מתמלא מתחילים אחוזי המפיק להגיע לכיס שלו.">
   <defs>
@@ -2696,6 +2733,14 @@ ISRC:              [קוד]
 </div>
 
 <p>ולגבי תיעוד — <b>קבלה שלא נשמרה היא הוצאה שלא הייתה.</b> הרגל אחד פותר את זה: מצלמים כל קבלה ברגע שמקבלים אותה, ישירות לתיקייה בענן, מסודרת לפי חודשים. עשר שניות במקום יום שלם של חיפוש בסוף השנה.</p>
+
+<h2 class="sec"><span class="ic">◈</span>כמה באמת נשאר לכם מפרויקט</h2>
+
+<p>לפני שמדברים על תזרים, שווה לעצור על מספר אחד שרוב המפיקים לא מחשבים: <b>כמה מתוך הסכום שסוכם באמת מגיע אליכם.</b> בין "סגרנו על 12,000" לבין מה שנכנס לכיס יש נגנים, עלויות ישירות, חלק הפרויקט בהוצאות הקבועות שלכם, והפרשה למס.</p>
+
+<div class="tool" data-tool="netProfit"></div>
+
+<p>המספר שמעניין בסוף הוא השורה האחרונה — <b>כמה יצא לשעה</b>. תשוו אותו לתעריף שחישבתם בפרק 19. אם הוא נמוך ממנו, אחת משתיים: או שהמחיר היה נמוך מדי, או שהפרויקט לקח יותר שעות ממה שתומחר. שתי הבעיות נפתרות אחרת לגמרי, ולכן חשוב לדעת איזו מהן זו.</p>
 
 <h2 class="sec"><span class="ic">◈</span>תזרים מזומנים — הדבר שבאמת הורג עסקים</h2>
 
@@ -3567,7 +3612,13 @@ ISRC:              [קוד]
 
 <h2 class="sec"><span class="ic">◈</span>אבחון עצמי — איפה החור שלכם</h2>
 
-<p>קראו את ארבע התיאורים, וסמנו איזה מהם הכי מתאר אתכם כרגע:</p>
+<p>הרשימה למטה עושה את זה בצורה מסודרת. שימו לב לניסוח של ההוראה, כי הוא מה שקובע אם האבחון שווה משהו: <b>תענו לפי מה שקורה אצלכם בפועל, לא לפי מה שאתם מתכוונים לעשות.</b> אבחון שמבוסס על כוונות מצביע תמיד על המקום הלא נכון.</p>
+
+<div class="tool" data-tool="diagnostic"></div>
+
+<h3 class="sub">ואם אתם מעדיפים בלי טופס</h3>
+
+<p>קראו את ארבעת התיאורים, וסמנו איזה מהם הכי מתאר אתכם כרגע:</p>
 
 <div class="box box-blue">
   <div class="bt">▸ אם זה מה שקורה לכם...</div>
@@ -4992,6 +5043,99 @@ const SCENARIOS = [
 },
 ];
 
+/* ============ FOUR-CAPABILITY DIAGNOSTIC ============ */
+/* Statements the producer rates 0 (not me) / 1 (partly) / 2 (yes).
+   cap: 1 create · 2 industry · 3 business · 4 career.
+   Every statement is phrased so that "yes" is the healthy answer. */
+
+const CAPS = [
+  { id:1, name:'ליצור מוזיקה',   short:'יצירה',   color:'#5cd49a', world:'עולם 1 — קורס ההפקה' },
+  { id:2, name:'לעבוד בתעשייה',  short:'תעשייה',  color:'#6eafd9', world:'עולם 2 — כרכים א׳–ה׳' },
+  { id:3, name:'לנהל עסק',       short:'עסק',     color:'#e0b85a', world:'עולם 3 — כרך ו׳' },
+  { id:4, name:'לבנות קריירה',   short:'קריירה',  color:'#af91dc', world:'עולם 4 — כרך ז׳' },
+];
+
+const DIAG = [
+  // 1 — create
+  { cap:1, q:'אני מרוצה מהתוצאה המוזיקלית שיוצאת לי, ולא רק מהתהליך.' },
+  { cap:1, q:'אני יודע לזהות מה לא עובד במיקס שלי בלי שמישהו יגיד לי.' },
+  { cap:1, q:'אני מסוגל להפיק שיר שלם מדמו ועד מאסטר בלי להיתקע טכנית.' },
+  { cap:1, q:'יש לי סאונד שאפשר לזהות בין העבודות שלי.' },
+  // 2 — industry
+  { cap:2, q:'בכל פרויקט אני יודע מי הבעלים של המאסטר ומי הבעלים של היצירה.', ch:7 },
+  { cap:2, q:'לכל שיר שיש לי בו חלק יש Split Sheet חתום.', ch:8 },
+  { cap:2, q:'אני יודע לקרוא חוזה ולזהות מתי לעצור ולהתקשר לעורך דין.', ch:11 },
+  { cap:2, q:'אני מוסר חבילה מסודרת עם קרדיטים, מטא־דאטה ורשימת סמפלים.', ch:16 },
+  // 3 — business
+  { cap:3, q:'אני יודע כמה עולה לי שעת עבודה, לפי חישוב ולא לפי תחושה.', ch:19 },
+  { cap:3, q:'אני לוקח מקדמה לפני שאני מתחיל לעבוד, כמעט תמיד.', ch:19 },
+  { cap:3, q:'יש לי הפרדה בין כסף אישי לכסף של העסק, ואני מפריש למס בזמן אמת.', ch:20 },
+  { cap:3, q:'אני יודע מי חייב לי כסף כרגע ומתי הוא אמור לשלם.', ch:20 },
+  // 4 — career
+  { cap:4, q:'אני יכול להגיד במשפט אחד למי אני עובד ומה מייחד אותי.', ch:21 },
+  { cap:4, q:'יש לי תיק עבודות מעודכן שאפשר לשלוח בלחיצה אחת.', ch:21 },
+  { cap:4, q:'אני מפרסם משהו מקצועי בקביעות, גם בחודשים שאין בהם פרויקט.', ch:23 },
+  { cap:4, q:'רוב העבודה שלי מגיעה מהמלצות ומלקוחות חוזרים.', ch:24 },
+];
+
+/* 90-day plans, one per capability. Each phase is a short list of
+   concrete moves drawn from the chapters, not general advice. */
+const PLANS = {
+  1: { t:'היכולת החסרה: יצירת מוזיקה',
+       lead:'זה המקום היחיד שבו התשובה היא באמת עוד לימוד טכני — וזה לא הקורס הזה. חזרו לקורס ההפקה, ובמקביל עשו את שלושת הדברים האלה.',
+       p:[['30 הימים הראשונים',[
+             'בחרו שיר אחד שאתם אוהבים ושחזרו אותו כמה שיותר קרוב — זה מאתר את הפערים מהר מכל קורס',
+             'בקשו מאוזן שנייה מקצועית לשמוע שני מיקסים שלכם ולהגיד מה לא עובד',
+             'תעדו את שלוש הבעיות החוזרות שעלו, ותעבדו רק עליהן']],
+           ['יום 30–60',[
+             'הפיקו שיר שלם מדמו ועד מאסטר בתוך לוח זמנים שקבעתם מראש',
+             'עבדו עם התבנית שבנה לכם Workflow קבוע, במקום להתחיל כל פרויקט מאפס']],
+           ['יום 60–90',[
+             'הוציאו שלוש עבודות שאתם עומדים מאחוריהן — זה תיק העבודות',
+             'רק עכשיו תתחילו לפנות לאמנים (פרק 24)']]] },
+  2: { t:'היכולת החסרה: עבודה בתעשייה',
+       lead:'זה הפער שהכי עולה כסף בשקט, כי הוא מתגלה רק שנה אחרי — כשהשיר מצליח ומתברר שלא סגרתם משהו. הסדר כאן הוא מהחשוף ביותר לפחות.',
+       p:[['30 הימים הראשונים',[
+             'עברו על כל שיר שיצא לכם בשנתיים האחרונות ובדקו אם יש Split Sheet חתום (פרק 8)',
+             'בדקו אם אתם רשומים בגוף גבייה, ואם כל יצירה שיש לכם בה חלק רשומה שם (פרק 10)',
+             'פתחו קובץ SAMPLES.txt בכל פרויקט פעיל, וממלאים בזמן אמת (פרק 9)']],
+           ['יום 30–60',[
+             'הכינו תבנית בריף ותבנית הצעת מחיר משלכם, עם הפרטים הקבועים כבר ממולאים (פרק 31)',
+             'הוסיפו להסכם הנגן שלכם את הסעיף על חומר מוזיקלי מקורי (פרק 4)',
+             'בנו חבילת מסירה אחידה והשתמשו בה בכל פרויקט (פרק 16)']],
+           ['יום 60–90',[
+             'מצאו עורך דין בידור והתייעצו פעם אחת, גם בלי חוזה על השולחן',
+             'העבירו כל פרויקט שנסגר לארכיון עם Stems (פרק 17)']]] },
+  3: { t:'היכולת החסרה: ניהול העסק',
+       lead:'אתם כנראה עובדים הרבה ומרוויחים מעט, והפתרון הוא לא לעבוד יותר. שלושת החודשים האלה הם על לדעת את המספרים שלכם.',
+       p:[['30 הימים הראשונים',[
+             'חשבו את תעריף השעה האמיתי שלכם לפי שעות מחויבות ריאליות (פרק 19)',
+             'פתחו חשבון עסקי נפרד, אם עוד לא',
+             'התחילו להפריש אחוז קבוע למס בכל תקבול, ביום שהוא נכנס (פרק 20)']],
+           ['יום 30–60',[
+             'קבעו מקדמה של 50% כברירת מחדל, וכתבו אותה בהצעה',
+             'הוסיפו להצעה מספר סבבי תיקונים, מחיר לסבב נוסף ותוספת דחיפות',
+             'בנו טבלת תקבולים: מי חייב, כמה, מתי — ועברו עליה פעם בשבוע']],
+           ['יום 60–90',[
+             'קבעו פגישה עם רואה חשבון עם רשימת השאלות מפרק 20',
+             'קשרו את חבילת המסירה המלאה להשלמת התשלום',
+             'התחילו לבנות קרן חירום — זו היכולת לסרב לפרויקט גרוע']]] },
+  4: { t:'היכולת החסרה: בניית קריירה',
+       lead:'אתם כנראה טובים ואף אחד לא יודע את זה. זה לא נפתר בעוד עבודה טובה — זה נפתר בכך שאנשים ידעו על מה לפנות אליכם.',
+       p:[['30 הימים הראשונים',[
+             'כתבו את המיצוב שלכם במשפט אחד ועדכנו אותו בכל פלטפורמה (פרק 21)',
+             'בנו תיק עבודות של 3–5 פריטים שמספרים סיפור אחד, עם נגן שנפתח בלחיצה',
+             'שלחו הודעה אחת לכל לקוח מהעבר — בלי לבקש כלום (פרק 24)']],
+           ['יום 30–60',[
+             'בחרו פלטפורמה אחת ושני סוגי תוכן, ופרסמו פעמיים בשבוע (פרק 23)',
+             'צלמו יומיים בחודש ותעבדו ממלאי, לא ביום שמפרסמים',
+             'בקשו המלצה מכל לקוח מרוצה, מיד אחרי שהוא הביע שביעות רצון']],
+           ['יום 60–90',[
+             'בנו רשימה של 20 אמנים שמתאימים בדיוק למיצוב שלכם',
+             'שלחו 10 פניות יזומות שמראות תוצאה במקום להציע שירות (פרק 24)',
+             'צרו קשר עם חמישה מפיקים בשלב שלכם — משם תגיע רוב העבודה (פרק 22)']]] },
+};
+
 /* ============ INTERACTIVE TOOLS ============ */
 const TOOLS = {};
 
@@ -5539,6 +5683,200 @@ TOOLS.scenarios = function(el){
   }
 
   menu();
+};
+
+/* ---------- Four-capability diagnostic + 90-day plan (ch. 29) ---------- */
+TOOLS.diagnostic = function(el){
+  const ans = new Array(DIAG.length).fill(null);
+  const LABELS = ['לא נכון לי', 'חלקית', 'נכון לי'];
+
+  el.innerHTML = `
+    <div class="tool-h">אבחון ארבע היכולות</div>
+    <div class="tool-sub">16 משפטים. תענו לפי מה שקורה אצלכם בפועל, לא לפי מה שאתם מתכוונים לעשות — אחרת האבחון יצביע על המקום הלא נכון.</div>
+    <div id="dg-list"></div>
+    <div class="out" id="dg-out"></div>`;
+
+  const listEl = el.querySelector('#dg-list');
+  const outEl = el.querySelector('#dg-out');
+
+  function render(){
+    listEl.innerHTML = CAPS.map(c => {
+      const items = DIAG.map((d, i) => ({d, i})).filter(x => x.d.cap === c.id);
+      return `<div class="dg-group">
+        <div class="dg-cap" style="--cc:${c.color}">${c.name}</div>
+        ${items.map(({d, i}) => `
+          <div class="dg-row">
+            <div class="dg-q">${d.q}${d.ch ? ` <span class="dg-ch">פרק ${d.ch}</span>` : ''}</div>
+            <div class="dg-scale">${LABELS.map((l, v) =>
+              `<button class="dg-b${ans[i] === v ? ' on' : ''}" data-i="${i}" data-v="${v}">${l}</button>`).join('')}</div>
+          </div>`).join('')}
+      </div>`;
+    }).join('');
+    listEl.querySelectorAll('.dg-b').forEach(b => b.onclick = () => {
+      ans[+b.dataset.i] = +b.dataset.v;
+      render(); score();
+    });
+  }
+
+  function score(){
+    const done = ans.filter(a => a !== null).length;
+    if(done < DIAG.length){
+      outEl.className = 'out';
+      outEl.textContent = `${done} מתוך ${DIAG.length} נענו.`;
+      return;
+    }
+    const per = CAPS.map(c => {
+      const items = DIAG.map((d, i) => ({d, i})).filter(x => x.d.cap === c.id);
+      const got = items.reduce((s, x) => s + ans[x.i], 0);
+      return {c, got, max: items.length * 2, pct: Math.round(got / (items.length * 2) * 100)};
+    });
+    const weakest = per.reduce((a, b) => b.got < a.got ? b : a);
+    const plan = PLANS[weakest.c.id];
+
+    outEl.className = 'out';
+    outEl.innerHTML = `
+      <div class="dg-bars">${per.map(p => `
+        <div class="dg-bar">
+          <span class="dg-bl">${p.c.short}</span>
+          <span class="dg-bt"><span class="dg-bf" style="width:${p.pct}%;background:${p.c.color}"></span></span>
+          <span class="dg-bv" style="color:${p.c.color}">${p.got}/${p.max}</span>
+        </div>`).join('')}</div>
+      <div class="dg-verdict">
+        <b>${plan.t}</b>
+        <p>${plan.lead}</p>
+        <p class="dg-where">איפה ללמוד: ${weakest.c.world}</p>
+      </div>
+      <div class="dg-plan">
+        <div class="dg-pt">תוכנית 90 יום</div>
+        ${plan.p.map(([phase, steps]) => `
+          <div class="dg-phase">
+            <div class="dg-ph">${phase}</div>
+            <ul>${steps.map(s => `<li>${s}</li>`).join('')}</ul>
+          </div>`).join('')}
+      </div>
+      <div class="btn-row">
+        <button class="btn" id="dg-copy">העתקת התוכנית</button>
+        <button class="btn ghost" id="dg-reset">אבחון מחדש</button>
+      </div>`;
+
+    outEl.querySelector('#dg-reset').onclick = () => { ans.fill(null); render(); score(); };
+    outEl.querySelector('#dg-copy').onclick = () => {
+      const txt = [plan.t, '', plan.lead, '', 'הציונים שלי:',
+        ...per.map(p => `  ${p.c.short}: ${p.got}/${p.max}`), '', 'תוכנית 90 יום:',
+        ...plan.p.flatMap(([phase, steps]) => ['', phase, ...steps.map(s => '  ☐ ' + s)])
+      ].join('\n');
+      navigator.clipboard?.writeText(txt).then(
+        () => { const b = outEl.querySelector('#dg-copy'); b.textContent = '✓ הועתק'; setTimeout(() => b.textContent = 'העתקת התוכנית', 1800); },
+        () => {}
+      );
+    };
+  }
+
+  render(); score();
+};
+
+/* ---------- Flat fee vs points (ch. 12) ---------- */
+TOOLS.feeVsPoints = function(el){
+  el.innerHTML = `
+    <div class="tool-h">מחיר קבוע מול אחוזים</div>
+    <div class="tool-sub">ההחלטה הזאת חוזרת בכל פרויקט. המחשבון מראה כמה השיר צריך להכניס כדי שהאחוזים ישתלמו יותר מהמחיר הקבוע.</div>
+    <div class="fld"><label>מחיר קבוע שהייתם לוקחים על הפרויקט</label><input type="number" id="f-flat" value="12000" min="0" step="500"></div>
+    <div class="fld"><label>במסלול האחוזים: מקדמה (0 אם אין)</label><input type="number" id="f-adv" value="4000" min="0" step="500"></div>
+    <div class="fld"><label>אחוז מהכנסות המאסטר</label><input type="number" id="f-pts" value="4" min="0" max="50" step="0.5"></div>
+    <div class="fld"><label>עלויות שמקוזזות לפני שמגיע אליכם אחוז</label><input type="number" id="f-cost" value="15000" min="0" step="1000"></div>
+    <div class="out" id="f-out"></div>`;
+
+  const out = el.querySelector('#f-out');
+  function calc(){
+    const flat = +el.querySelector('#f-flat').value || 0;
+    const adv  = +el.querySelector('#f-adv').value || 0;
+    const pts  = (+el.querySelector('#f-pts').value || 0) / 100;
+    const cost = +el.querySelector('#f-cost').value || 0;
+
+    if(pts <= 0){
+      out.className = 'out warn';
+      out.innerHTML = 'בלי אחוז, מסלול האחוזים הוא פשוט המקדמה. המחיר הקבוע עדיף בכל מצב.';
+      return;
+    }
+    // points route pays adv + pts*(revenue) once adv+cost is recouped
+    const gap = flat - adv;                       // what the points have to make up
+    const need = (adv + cost + gap) / pts;        // revenue at which both routes are equal
+    const at = r => Math.max(adv, adv + (r * pts - (adv + cost)));
+
+    const rows = [need * 0.5, need, need * 2].map(r =>
+      `<tr><td>${money(r)}</td><td>${money(flat)}</td><td>${money(at(r))}</td>
+       <td style="color:${at(r) >= flat ? '#5cd49a' : '#f0a585'}">${at(r) >= flat ? 'אחוזים' : 'מחיר קבוע'}</td></tr>`).join('');
+
+    out.className = 'out';
+    out.innerHTML = `
+      נקודת ההשוואה: השיר צריך להכניס <span class="big">${money(need)}</span> כדי ששני המסלולים יישבו על אותו סכום.<br>
+      <div class="tbl-wrap" style="margin:14px 0 6px">
+        <table class="t"><thead><tr><th>הכנסת השיר</th><th>מחיר קבוע</th><th>מסלול אחוזים</th><th>מה עדיף</th></tr></thead>
+        <tbody>${rows}</tbody></table>
+      </div>
+      <span style="color:var(--ink2);font-size:15px">שימו לב ל־${money(cost)} העלויות: הן מקוזזות לפני האחוז שלכם, ולכן הן שדחפו את נקודת ההשוואה למעלה. זה בדיוק הסעיף שצריך להגביל ברשימה סגורה ובתקרה.</span>`;
+  }
+  el.querySelectorAll('input').forEach(i => i.oninput = calc);
+  calc();
+};
+
+/* ---------- What a project actually nets (ch. 20) ---------- */
+TOOLS.netProfit = function(el){
+  el.innerHTML = `
+    <div class="tool-h">כמה באמת נשאר לכם מהפרויקט</div>
+    <div class="tool-sub">הסכום שסוכם הוא לא מה שנכנס לכיס. זה החישוב שרוב המפיקים עושים בדיעבד, ואז מגלים.</div>
+    <div class="fld"><label>מה סוכם על הפרויקט</label><input type="number" id="n-rev" value="12000" min="0" step="500"></div>
+    <div class="fld"><label>תשלום לנגנים</label><input type="number" id="n-mus" value="2400" min="0" step="200"></div>
+    <div class="fld"><label>אולפן חיצוני / אורחים / עלויות ישירות</label><input type="number" id="n-out" value="1500" min="0" step="100"></div>
+    <div class="fld"><label>שעות שהפרויקט לקח בפועל (כולל פגישות ותיקונים)</label><input type="number" id="n-hrs" value="45" min="1" step="1"></div>
+    <div class="fld"><label>הוצאות קבועות שלכם לחודש</label><input type="number" id="n-fix" value="2500" min="0" step="100"></div>
+    <div class="fld"><label>שעות מחויבות בחודש</label><input type="number" id="n-cap" value="90" min="1" step="5"></div>
+    <div class="fld"><label>אחוז שאתם מפרישים למס</label><input type="number" id="n-tax" value="30" min="0" max="60" step="1"></div>
+    <div class="out" id="n-out2"></div>`;
+
+  const out = el.querySelector('#n-out2');
+  function calc(){
+    const rev = +el.querySelector('#n-rev').value || 0;
+    const mus = +el.querySelector('#n-mus').value || 0;
+    const ext = +el.querySelector('#n-out').value || 0;
+    const hrs = Math.max(1, +el.querySelector('#n-hrs').value || 1);
+    const fix = +el.querySelector('#n-fix').value || 0;
+    const cap = Math.max(1, +el.querySelector('#n-cap').value || 1);
+    const tax = (+el.querySelector('#n-tax').value || 0) / 100;
+
+    const overhead = fix / cap * hrs;      // this project's share of your fixed costs
+    const before = rev - mus - ext - overhead;
+    const taxAmt = Math.max(0, before) * tax;
+    const net = before - taxAmt;
+    const perHour = net / hrs;
+
+    const line = (l, v, neg) => `<tr><td>${l}</td><td style="text-align:left;color:${neg ? '#f0a585' : '#dde6e0'}">${neg ? '−' : ''}${money(Math.abs(v))}</td></tr>`;
+
+    // "positive" is not the same as "viable": netting less per hour than your
+    // own fixed costs run at means the project is subsidised by the others.
+    const floor = fix / cap;
+    const state = net < 0 ? 'loss' : (perHour < floor ? 'thin' : 'ok');
+    out.className = state === 'ok' ? 'out ok' : 'out warn';
+    out.innerHTML = `
+      <div class="tbl-wrap" style="margin:0 0 12px">
+        <table class="t"><tbody>
+          ${line('מה סוכם', rev)}
+          ${line('נגנים', mus, 1)}
+          ${line('עלויות ישירות', ext, 1)}
+          ${line(`חלק הפרויקט בהוצאות הקבועות (${hrs} ש׳)`, overhead, 1)}
+          ${line('הפרשה למס', taxAmt, 1)}
+        </tbody></table>
+      </div>
+      נשאר לכם: <span class="big">${money(net)}</span> — כלומר <b>${money(perHour)}</b> לשעה.
+      <br><span style="color:var(--ink2);font-size:15px">${
+        state === 'loss'
+          ? 'הפרויקט הזה הפסיד כסף. שאלו את עצמכם מה גדל מעבר למה שתומחר — השעות או העלויות הישירות.'
+        : state === 'thin'
+          ? `זה חיובי, אבל ההוצאות הקבועות שלכם רצות על ${money(floor)} לשעה — כלומר הפרויקט הזה בקושי מכסה את עצמו, והאחרים מסבסדים אותו.`
+          : 'תשוו את זה לתעריף השעה שחישבתם בפרק 19. אם המספר כאן נמוך ממנו — או שהמחיר היה נמוך מדי, או שהפרויקט לקח יותר ממה שתומחר.'}</span>`;
+  }
+  el.querySelectorAll('input').forEach(i => i.oninput = calc);
+  calc();
 };
 
 
