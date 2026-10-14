@@ -1,0 +1,62 @@
+<figure class="fig">
+<svg viewBox="0 0 700 400" role="img" aria-label="שלושה תרחישי מימון של פרויקט הפקה: אמן עצמאי משלם למפיק ישירות, לייבל משלם למפיק במקדמה ואחוזים, ובשותפות אין תשלום מראש והמפיק לוקח אחוזים. בכל תרחיש מסומן מי משלם למי ומה סיכון המפיק.">
+  <defs>
+    <marker id="rl-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="var(--gold)"/>
+    </marker>
+  </defs>
+
+  <!-- scenario A -->
+  <text x="660" y="24" text-anchor="start" font-size="14.5" font-weight="700" fill="var(--gold-l)" direction="rtl">א׳ — אמן עצמאי</text>
+  <rect x="470" y="36" width="190" height="40" rx="9" fill="var(--panel)" stroke="var(--line)"/>
+  <text x="565" y="61" text-anchor="middle" font-size="14" fill="#dde6e0" direction="rtl">אמן</text>
+  <path d="M470 56 L392 56" stroke="var(--gold)" fill="none" marker-end="url(#rl-ar)"/>
+  <text x="431" y="48" text-anchor="middle" font-size="11.5" fill="var(--gold)" direction="rtl">משלם</text>
+  <rect x="200" y="36" width="190" height="40" rx="9" fill="#1f2a16" stroke="var(--gold-deep)"/>
+  <text x="295" y="61" text-anchor="middle" font-size="14" font-weight="700" fill="var(--gold-l)" direction="rtl">אתם</text>
+  <path d="M200 56 L122 56" stroke="var(--gold)" fill="none" marker-end="url(#rl-ar)"/>
+  <text x="161" y="48" text-anchor="middle" font-size="11.5" fill="var(--gold)" direction="rtl">משלמים</text>
+  <rect x="10" y="36" width="110" height="40" rx="9" fill="var(--panel2)" stroke="var(--line)"/>
+  <text x="65" y="61" text-anchor="middle" font-size="13" fill="var(--ink2)" direction="rtl">נגנים</text>
+  <text x="660" y="94" text-anchor="start" font-size="12" fill="var(--ink3)" direction="rtl">סיכון נמוך · אם לא תמחרתם את הנגנים, אתם ממנים את ההפקה מהכיס</text>
+
+  <line x1="10" y1="112" x2="690" y2="112" stroke="var(--line)"/>
+
+  <!-- scenario B -->
+  <text x="660" y="140" text-anchor="start" font-size="14.5" font-weight="700" fill="var(--gold-l)" direction="rtl">ב׳ — לייבל מממן</text>
+  <rect x="470" y="152" width="190" height="40" rx="9" fill="#16242c" stroke="#2a4150"/>
+  <text x="565" y="177" text-anchor="middle" font-size="14" fill="#8cc4ec" direction="rtl">לייבל</text>
+  <path d="M470 172 L392 172" stroke="var(--gold)" fill="none" marker-end="url(#rl-ar)"/>
+  <text x="431" y="164" text-anchor="middle" font-size="11.5" fill="var(--gold)" direction="rtl">מקדמה</text>
+  <rect x="200" y="152" width="190" height="40" rx="9" fill="#1f2a16" stroke="var(--gold-deep)"/>
+  <text x="295" y="177" text-anchor="middle" font-size="14" font-weight="700" fill="var(--gold-l)" direction="rtl">אתם</text>
+  <path d="M200 172 L122 172" stroke="var(--ink3)" fill="none" stroke-dasharray="4 4" marker-end="url(#rl-ar)"/>
+  <text x="161" y="164" text-anchor="middle" font-size="11.5" fill="var(--ink3)" direction="rtl">אחוזים</text>
+  <rect x="10" y="152" width="110" height="40" rx="9" fill="var(--panel2)" stroke="var(--line)"/>
+  <text x="65" y="171" text-anchor="middle" font-size="12" fill="var(--ink2)" direction="rtl">אחרי</text>
+  <text x="65" y="186" text-anchor="middle" font-size="12" fill="var(--ink2)">Recoupment</text>
+  <text x="660" y="210" text-anchor="start" font-size="12" fill="var(--ink3)" direction="rtl">סיכון בינוני · המקדמה ודאית, האחוזים מותנים ברשימת הקיזוזים</text>
+
+  <line x1="10" y1="228" x2="690" y2="228" stroke="var(--line)"/>
+
+  <!-- scenario C -->
+  <text x="660" y="256" text-anchor="start" font-size="14.5" font-weight="700" fill="var(--gold-l)" direction="rtl">ג׳ — שותפות</text>
+  <rect x="470" y="268" width="190" height="40" rx="9" fill="var(--panel)" stroke="var(--line)"/>
+  <text x="565" y="293" text-anchor="middle" font-size="14" fill="#dde6e0" direction="rtl">אמן</text>
+  <path d="M470 288 L392 288" stroke="#d07a5a" fill="none" stroke-dasharray="4 4"/>
+  <text x="431" y="280" text-anchor="middle" font-size="11.5" fill="#f0a585" direction="rtl">אפס</text>
+  <rect x="200" y="268" width="190" height="40" rx="9" fill="#1f2a16" stroke="var(--gold-deep)"/>
+  <text x="295" y="293" text-anchor="middle" font-size="14" font-weight="700" fill="var(--gold-l)" direction="rtl">אתם</text>
+  <path d="M200 288 L122 288" stroke="var(--ink3)" fill="none" stroke-dasharray="4 4" marker-end="url(#rl-ar)"/>
+  <text x="161" y="280" text-anchor="middle" font-size="11.5" fill="var(--ink3)" direction="rtl">אחוזים</text>
+  <rect x="10" y="268" width="110" height="40" rx="9" fill="#2a1a18" stroke="#4a2e28"/>
+  <text x="65" y="287" text-anchor="middle" font-size="12" fill="#f3c5b1" direction="rtl">רק אם</text>
+  <text x="65" y="302" text-anchor="middle" font-size="12" fill="#f3c5b1" direction="rtl">משווקים</text>
+  <text x="660" y="326" text-anchor="start" font-size="12" fill="var(--ink3)" direction="rtl">סיכון גבוה · אחוזים משיר שאף אחד לא דוחף הם אחוזים מאפס</text>
+
+  <rect x="10" y="344" width="680" height="46" rx="10" fill="var(--panel2)" stroke="var(--line)"/>
+  <text x="670" y="366" text-anchor="start" font-size="13.5" font-weight="700" fill="var(--gold-l)" direction="rtl">השאלה שקובעת בתרחיש ג׳</text>
+  <text x="670" y="383" text-anchor="start" font-size="12.5" fill="var(--ink2)" direction="rtl">האם יש מישהו שמשקיע בשיווק — ואם כן, מי, כמה, ומה כתוב על זה.</text>
+</svg>
+<figcaption>שלושה מבני מימון, ובכל אחד שרשרת תשלומים אחרת וסיכון אחר עליכם. החצים המקווקווים הם הכסף שאינו ודאי.</figcaption>
+</figure>
