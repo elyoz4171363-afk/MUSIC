@@ -456,6 +456,29 @@
   .dg-phase ul { margin:0 20px 0 0; font-size:15.5px; line-height:1.75; color:#dde6e0; }
   .dg-phase li { margin-bottom:5px; }
 
+  /* workbook */
+  .chk-clear { display:block; margin:12px 0 0 auto; background:none; border:1px solid var(--line);
+    color:var(--ink3); border-radius:8px; padding:5px 12px; font-size:13px;
+    font-family:'Assistant',sans-serif; cursor:pointer; transition:0.18s; }
+  .chk-clear:hover { border-color:#d07a5a; color:#f0a585; }
+  .bk-empty { background:var(--panel2); border:1px solid var(--line); border-radius:14px;
+    padding:28px 24px; text-align:center; color:var(--ink2); font-size:16.5px; line-height:1.8; }
+  .bk-card { background:var(--panel2); border:1px solid var(--line); border-radius:14px;
+    padding:20px 22px; margin-bottom:14px; }
+  .bk-h { display:flex; align-items:baseline; justify-content:space-between; gap:12px;
+    margin-bottom:12px; flex-wrap:wrap; }
+  .bk-h h3 { font-family:'Assistant',sans-serif; font-weight:700; font-size:19px; color:var(--gold-l); }
+  .bk-when { color:var(--ink3); font-size:13.5px; }
+  .bk-rate { font-family:'Assistant',sans-serif; font-weight:800; font-size:30px; color:var(--gold-l); }
+  .bk-rate span { font-size:15px; font-weight:400; color:var(--ink2); }
+  .bk-list { list-style:none; padding:0; margin:0; }
+  .bk-li { display:flex; align-items:flex-start; gap:10px; padding:8px 0;
+    border-bottom:1px solid rgba(34,70,58,0.45); font-size:15.5px; color:#dde6e0; line-height:1.6; }
+  .bk-li:last-child { border-bottom:none; }
+  .bk-li .tick { color:#5cd49a; flex:0 0 auto; }
+  .bk-src { color:var(--ink3); font-size:13px; white-space:nowrap; margin-right:auto; }
+  .bk-src:hover { color:var(--gold-l); }
+
   /* volume quiz card */
   .quiz-card {
     display:flex; align-items:center; gap:16px; width:100%;
@@ -520,6 +543,7 @@
 <div class="topbar">
   <div class="topbar-title">אמנות המקצוע <span class="sub">· המפיק בתעשיית המוזיקה</span></div>
   <div class="tb-actions">
+    <button class="tb-btn" id="bookBtn" onclick="openBook()" title="התיק שלי" aria-label="התיק שלי">◳</button>
     <button class="tb-btn" id="searchBtn" onclick="openSearch()" title="חיפוש בקורס" aria-label="חיפוש בקורס">⌕</button>
     <button class="tb-btn" id="fontBtn" onclick="cycleFont()" title="גודל טקסט" aria-label="גודל טקסט">א</button>
     <button class="back-btn" id="backBtn" onclick="goBack()">→ חזרה</button>
@@ -579,6 +603,11 @@
   <div class="chap-list" id="volList"></div>
 </div>
 
+<!-- ============ WORKBOOK ============ -->
+<div class="view" id="viewBook">
+  <div class="reader" id="bookBody"></div>
+</div>
+
 <!-- ============ READER ============ -->
 <div class="view" id="viewRead">
   <div class="reader" id="readerBody"></div>
@@ -600,6 +629,21 @@ const LAST_KEY = 'amanut-hamiktzoa-last-v1';
 const FONT_KEY = 'amanut-hamiktzoa-font-v1';
 function lsGet(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
 function lsSet(k, v){ try { localStorage.setItem(k, v); } catch(e){} }
+
+/* The workbook: everything the reader fills in, in one object.
+   Browser storage is per-device and can throw or come back empty, so every
+   read and write is guarded and the page renders correctly without it. */
+const BOOK_KEY = 'amanut-hamiktzoa-book-v1';
+let BOOK = {checks: {}, diag: null, rate: null};
+try {
+  const raw = lsGet(BOOK_KEY);
+  if(raw) BOOK = Object.assign(BOOK, JSON.parse(raw) || {});
+  if(!BOOK.checks || typeof BOOK.checks !== 'object') BOOK.checks = {};
+} catch(e) { BOOK = {checks: {}, diag: null, rate: null}; }
+function saveBook(){ lsSet(BOOK_KEY, JSON.stringify(BOOK)); }
+function bookCount(){
+  return Object.values(BOOK.checks).reduce((a, o) => a + Object.keys(o || {}).length, 0);
+}
 
 const FONT_STEPS = ['', 'fs-lg', 'fs-xl'];
 function applyFont(){
@@ -783,25 +827,52 @@ function show(id){
   window.scrollTo({top:0, behavior:'instant'});
 }
 function goBack(){
-  if(document.getElementById('viewRead').classList.contains('active')) { openVol(curVol); }
+  if(document.getElementById('viewRead').classList.contains('active') && curVol) { openVol(curVol); }
   else { renderHome(); show('viewHome'); }
 }
 
 /* ============ WIDGETS ============ */
 function initWidgets(){
   /* checklists */
-  document.querySelectorAll('.chk').forEach(chk => {
+  document.querySelectorAll('.chk').forEach((chk, ci) => {
     const rows = chk.querySelectorAll('.chk-row');
     const score = chk.querySelector('.chk-score');
+    // keyed by chapter + which checklist + which row, so a chapter can hold
+    // several lists and the keys survive content edits above them
+    const key = `${curCh}:${ci}`;
+    // Look the bucket up on every write rather than holding a reference:
+    // emptying a list deletes it from the store, which would detach a held
+    // reference and silently drop every tick made afterwards.
+    const bucket = () => (BOOK.checks[key] ||= {});
+
     const upd = () => {
       const on = chk.querySelectorAll('.chk-row.on').length;
-      if(score) score.textContent = `${on} מתוך ${rows.length} סומנו`;
+      if(score) score.textContent = on
+        ? `${on} מתוך ${rows.length} סומנו · נשמר`
+        : `${on} מתוך ${rows.length} סומנו`;
     };
-    rows.forEach(r => {
-      r.onclick = () => { r.classList.toggle('on'); upd(); };
+    rows.forEach((r, ri) => {
+      if((BOOK.checks[key] || {})[ri]) r.classList.add('on');
+      r.onclick = () => {
+        r.classList.toggle('on');
+        const st = bucket();
+        if(r.classList.contains('on')) st[ri] = 1; else delete st[ri];
+        if(!Object.keys(st).length) delete BOOK.checks[key];
+        saveBook(); upd();
+      };
       r.setAttribute('tabindex','0');
       r.onkeydown = e => { if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); r.click(); } };
     });
+    if(rows.length && !chk.querySelector('.chk-clear')){
+      const b = document.createElement('button');
+      b.className = 'chk-clear';
+      b.textContent = 'ניקוי הרשימה';
+      b.onclick = () => {
+        rows.forEach(r => r.classList.remove('on'));
+        delete BOOK.checks[key]; saveBook(); upd();
+      };
+      chk.appendChild(b);
+    }
     upd();
   });
   /* tool initialisers declared in content */
@@ -818,6 +889,129 @@ function initReveal(){
   const io = new IntersectionObserver(ent => ent.forEach(x => { if(x.isIntersecting){ x.target.classList.add('in'); io.unobserve(x.target); } }), {threshold:0.08});
   els.forEach(e => io.observe(e));
 }
+
+/* ============ WORKBOOK ============ */
+// Collects what the reader actually filled in, which otherwise lives scattered
+// across chapters and is invisible once they navigate away.
+function chapterOf(n){ return allChapters().find(c => c.n === n); }
+
+function tickedItems(){
+  // The checklist text lives in the chapter HTML, so read it back out of a
+  // detached node rather than storing a copy that could drift from the source.
+  const out = [];
+  Object.entries(BOOK.checks).forEach(([key, rows]) => {
+    const [chStr, ciStr] = key.split(':');
+    const n = +chStr, ci = +ciStr;
+    const body = CONTENT[n];
+    if(!body) return;
+    const holder = document.createElement('div');
+    holder.innerHTML = body;
+    const chk = holder.querySelectorAll('.chk')[ci];
+    if(!chk) return;
+    const title = chk.querySelector('.chk-title')?.textContent || '';
+    const all = chk.querySelectorAll('.chk-row');
+    const picked = Object.keys(rows).map(Number).sort((a, b) => a - b)
+      .map(ri => all[ri]?.querySelector('.chk-tx')?.textContent).filter(Boolean);
+    if(picked.length) out.push({n, title, picked, total: all.length});
+  });
+  return out.sort((a, b) => a.n - b.n);
+}
+
+function renderBook(){
+  const items = tickedItems();
+  const d = BOOK.diag, r = BOOK.rate;
+  const done = readSet.size, total = allChapters().length;
+
+  let html = `<div class="reader-hero">
+      <div class="eyebrow">התיק שלי</div>
+      <h1>מה שעשיתם עד כה</h1>
+      <p>הדף הזה נבנה ממה שמילאתם בקורס. הוא נשמר בדפדפן הזה בלבד — לא בענן, ולא עובר למכשיר אחר.</p>
+    </div>`;
+
+  if(!d && !r && !items.length && !done){
+    html += `<div class="bk-empty">עדיין אין כאן כלום.<br>
+      תתחילו מהאבחון בפרק 29, או תסמנו צ׳קליסט באחד הפרקים — והם יופיעו כאן.
+      <div class="btn-row" style="justify-content:center;margin-top:16px">
+        <button class="btn" onclick="openCh(29)">לאבחון ארבע היכולות</button>
+      </div></div>`;
+  } else {
+    html += `<div class="bk-card"><div class="bk-h"><h3>התקדמות</h3>
+      <span class="bk-when">${done} מתוך ${total} פרקים נקראו</span></div>
+      <div class="lp-track"><div class="lp-fill" style="width:${Math.round(done / total * 100)}%"></div></div></div>`;
+
+    if(r) html += `<div class="bk-card"><div class="bk-h"><h3>תעריף השעה שלכם</h3>
+      <span class="bk-when">חושב ב-${r.at}</span></div>
+      <div class="bk-rate">₪${new Intl.NumberFormat('he-IL').format(r.hourly)} <span>לשעה</span></div>
+      <p style="color:var(--ink2);font-size:15px;margin-top:8px">
+        מבוסס על ${new Intl.NumberFormat('he-IL').format(r.goal)} רצויים בחודש,
+        ${new Intl.NumberFormat('he-IL').format(r.fixed)} הוצאות קבועות, ו-${r.hours} שעות מחויבות.</p>
+      <button class="gl-ch" onclick="openCh(19)">פרק 19</button></div>`;
+
+    if(d){
+      const plan = PLANS[d.weakest];
+      html += `<div class="bk-card"><div class="bk-h"><h3>אבחון ארבע היכולות</h3>
+        <span class="bk-when">${d.at}</span></div>
+        <div class="dg-bars">${d.per.map(x => `
+          <div class="dg-bar"><span class="dg-bl">${x.short}</span>
+            <span class="dg-bt"><span class="dg-bf" style="width:${Math.round(x.got / x.max * 100)}%;background:${x.color}"></span></span>
+            <span class="dg-bv" style="color:${x.color}">${x.got}/${x.max}</span></div>`).join('')}</div>
+        <div class="dg-verdict" style="border-top:none;padding-top:4px"><b>${plan.t}</b></div>
+        <div class="dg-plan" style="border-top:none;padding-top:10px">
+          ${plan.p.map(([phase, steps]) => `<div class="dg-phase"><div class="dg-ph">${phase}</div>
+            <ul>${steps.map(x => `<li>${x}</li>`).join('')}</ul></div>`).join('')}</div>
+        <button class="gl-ch" onclick="openCh(29)">לאבחון מחדש</button></div>`;
+    }
+
+    if(items.length) html += `<div class="bk-card"><div class="bk-h"><h3>מה שסימנתם</h3>
+      <span class="bk-when">${bookCount()} פריטים</span></div>
+      ${items.map(it => `<div style="margin-bottom:14px">
+        <div style="color:var(--gold-l);font-size:15.5px;font-weight:600;margin-bottom:5px">
+          ${it.title} <span class="bk-src">${it.picked.length}/${it.total}</span></div>
+        <ul class="bk-list">${it.picked.map(x => `<li class="bk-li"><span class="tick">✓</span>${x}</li>`).join('')}</ul>
+        <button class="gl-ch" style="margin-top:7px" onclick="openCh(${it.n})">פרק ${it.n}</button>
+      </div>`).join('')}</div>`;
+
+    html += `<div class="btn-row">
+      <button class="btn" id="bkCopy">העתקת התיק כטקסט</button>
+      <button class="btn ghost" id="bkClear">מחיקת התיק</button>
+    </div>`;
+  }
+
+  document.getElementById('bookBody').innerHTML = html;
+
+  const copy = document.getElementById('bkCopy');
+  if(copy) copy.onclick = () => {
+    const L = ['התיק שלי — אמנות המקצוע', new Date().toLocaleDateString('he-IL'), ''];
+    L.push(`התקדמות: ${done} מתוך ${total} פרקים`, '');
+    if(r) L.push(`תעריף השעה: ₪${r.hourly} (חושב ב-${r.at})`, '');
+    if(d){
+      const plan = PLANS[d.weakest];
+      L.push(`אבחון (${d.at}): ` + d.per.map(x => `${x.short} ${x.got}/${x.max}`).join(' · '));
+      L.push(plan.t, '');
+      plan.p.forEach(([phase, steps]) => { L.push(phase); steps.forEach(x => L.push('  ☐ ' + x)); L.push(''); });
+    }
+    items.forEach(it => {
+      L.push(`${it.title} (פרק ${it.n}) — ${it.picked.length}/${it.total}`);
+      it.picked.forEach(x => L.push('  ✓ ' + x));
+      L.push('');
+    });
+    navigator.clipboard?.writeText(L.join('\n')).then(
+      () => { copy.textContent = '✓ הועתק'; setTimeout(() => copy.textContent = 'העתקת התיק כטקסט', 1800); },
+      () => {}
+    );
+  };
+  const clr = document.getElementById('bkClear');
+  if(clr) clr.onclick = () => {
+    if(clr.dataset.sure){
+      BOOK = {checks: {}, diag: null, rate: null}; saveBook(); renderBook();
+    } else {
+      clr.dataset.sure = '1';
+      clr.textContent = 'בטוחים? לחיצה נוספת מוחקת';
+    }
+  };
+}
+
+function openBook(){ renderBook(); show('viewBook'); }
 
 /* ============ SEARCH ============ */
 // Built once, lazily: chapter prose is stripped of tags so a match lands on

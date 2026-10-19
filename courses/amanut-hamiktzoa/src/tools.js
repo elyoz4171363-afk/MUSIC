@@ -128,6 +128,11 @@ TOOLS.pricing = function(el){
     const mult = +el.querySelector('#p-mult').value;
     const rate = (goal + fixed) / hours;
     const price = rate * proj * mult;
+    if(typeof BOOK === 'object'){
+      BOOK.rate = {at: new Date().toLocaleDateString('he-IL'),
+                   hourly: Math.round(rate), goal, fixed, hours};
+      saveBook();
+    }
     out.className = 'out ok';
     out.innerHTML = `
       תעריף השעה שלכם: <b>${money(rate)}</b> לשעה<br>
@@ -594,6 +599,16 @@ TOOLS.diagnostic = function(el){
     });
     const weakest = per.reduce((a, b) => b.got < a.got ? b : a);
     const plan = PLANS[weakest.c.id];
+
+    // keep the result so the workbook can show it without re-answering
+    if(typeof BOOK === 'object'){
+      BOOK.diag = {
+        at: new Date().toLocaleDateString('he-IL'),
+        per: per.map(x => ({short: x.c.short, got: x.got, max: x.max, color: x.c.color})),
+        weakest: weakest.c.id,
+      };
+      saveBook();
+    }
 
     outEl.className = 'out';
     outEl.innerHTML = `
