@@ -1,0 +1,82 @@
+<figure class="fig">
+<svg viewBox="0 0 700 430" role="img" aria-label="ציר הפקת שיר בשבע תחנות מימין לשמאל: קדם־הפקה, בסיס, הקלטות, הפקה מלאה, מיקס, מיקס סופי ומאסטרינג. לכל תחנה מצוין מה נשלח לאמן ועל מה הוא מתבקש להגיב. אחרי אישור המיקס הסופי העיבוד סגור.">
+  <defs>
+    <marker id="tl-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="var(--green)"/>
+    </marker>
+  </defs>
+
+  <!-- spine, right to left -->
+  <path d="M660 60 L40 60" stroke="var(--line)" stroke-width="2" fill="none" marker-end="url(#tl-ar)"/>
+
+  <!-- stations: cx, label, sends, asks -->
+  <g font-size="12.5">
+    <!-- 1 -->
+    <circle cx="645" cy="60" r="15" fill="var(--green)" stroke="var(--line)"/>
+    <text x="645" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="var(--gold-l)">1</text>
+    <text x="645" y="100" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--gold-l)" direction="rtl">קדם־הפקה</text>
+    <text x="645" y="120" text-anchor="middle" fill="var(--ink2)" direction="rtl">מבנה וסולם</text>
+    <text x="645" y="137" text-anchor="middle" fill="var(--ink3)" direction="rtl">מאשר</text>
+    <!-- 2 -->
+    <circle cx="545" cy="60" r="15" fill="var(--green)" stroke="var(--line)"/>
+    <text x="545" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="var(--gold-l)">2</text>
+    <text x="545" y="100" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--gold-l)" direction="rtl">בסיס</text>
+    <text x="545" y="120" text-anchor="middle" fill="var(--ink2)">Rough</text>
+    <text x="545" y="137" text-anchor="middle" fill="var(--ink3)" direction="rtl">כיוון בלבד</text>
+    <!-- 3 -->
+    <circle cx="445" cy="60" r="15" fill="var(--green)" stroke="var(--line)"/>
+    <text x="445" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="var(--gold-l)">3</text>
+    <text x="445" y="100" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--gold-l)" direction="rtl">הקלטות</text>
+    <text x="445" y="120" text-anchor="middle" fill="var(--ink2)">Comp ווקאל</text>
+    <text x="445" y="137" text-anchor="middle" fill="var(--ink3)" direction="rtl">בחירת ביצוע</text>
+    <!-- 4 -->
+    <circle cx="345" cy="60" r="15" fill="var(--green)" stroke="var(--line)"/>
+    <text x="345" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="var(--gold-l)">4</text>
+    <text x="345" y="100" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--gold-l)" direction="rtl">הפקה מלאה</text>
+    <text x="345" y="120" text-anchor="middle" fill="var(--ink2)">Pre-mix</text>
+    <text x="345" y="137" text-anchor="middle" fill="var(--ink3)" direction="rtl">עיבוד וכלים</text>
+    <!-- 5 -->
+    <circle cx="245" cy="60" r="15" fill="var(--green)" stroke="var(--line)"/>
+    <text x="245" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="var(--gold-l)">5</text>
+    <text x="245" y="100" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--gold-l)" direction="rtl">מיקס</text>
+    <text x="245" y="120" text-anchor="middle" fill="var(--ink2)" direction="rtl">מיקס ראשון</text>
+    <text x="245" y="137" text-anchor="middle" fill="var(--ink3)" direction="rtl">הערות מרוכזות</text>
+    <!-- 6 -->
+    <circle cx="145" cy="60" r="16" fill="var(--gold)" stroke="var(--gold-l)"/>
+    <text x="145" y="66" text-anchor="middle" font-size="13" font-weight="800" fill="#0a1813">6</text>
+    <text x="145" y="100" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--gold-l)" direction="rtl">מיקס סופי</text>
+    <text x="145" y="120" text-anchor="middle" fill="var(--ink2)" direction="rtl">גרסה מתוקנת</text>
+    <text x="145" y="137" text-anchor="middle" font-size="12.5" font-weight="700" fill="var(--gold-l)" direction="rtl">אישור בכתב</text>
+    <!-- 7 -->
+    <circle cx="45" cy="60" r="15" fill="var(--green)" stroke="var(--line)"/>
+    <text x="45" y="65" text-anchor="middle" font-size="13" font-weight="700" fill="var(--gold-l)">7</text>
+    <text x="45" y="100" text-anchor="middle" font-size="13.5" font-weight="700" fill="var(--gold-l)" direction="rtl">מאסטרינג</text>
+    <text x="45" y="120" text-anchor="middle" fill="var(--ink2)" direction="rtl">מאסטר</text>
+    <text x="45" y="137" text-anchor="middle" fill="var(--ink3)" direction="rtl">אישור בלבד</text>
+  </g>
+
+  <!-- the closing gate -->
+  <path d="M145 160 L145 196" stroke="var(--gold)" fill="none" stroke-dasharray="4 4"/>
+  <rect x="24" y="200" width="242" height="60" rx="10" fill="#1f2a16" stroke="var(--gold)"/>
+  <text x="145" y="223" text-anchor="middle" font-size="14.5" font-weight="700" fill="var(--gold-l)" direction="rtl">כאן העיבוד נסגר</text>
+  <text x="145" y="243" text-anchor="middle" font-size="12.5" fill="var(--ink2)" direction="rtl">בקשה להוסיף כלי אחרי זה</text>
+  <text x="145" y="255" text-anchor="middle" font-size="12.5" fill="var(--ink2)" direction="rtl">מחזירה לשלב 4</text>
+
+  <path d="M266 230 C 330 230, 330 175, 345 160" stroke="#d07a5a" fill="none" stroke-dasharray="5 4"/>
+  <text x="375" y="258" text-anchor="middle" font-size="12.5" fill="#f0a585" direction="rtl">מיקס ומאסטרינג מחדש</text>
+
+  <!-- client-side gate note -->
+  <rect x="360" y="290" width="320" height="76" rx="10" fill="var(--panel2)" stroke="var(--line)"/>
+  <text x="660" y="313" text-anchor="start" font-size="14" font-weight="700" fill="var(--gold-l)" direction="rtl">העמודה שמונעת ויכוחים</text>
+  <text x="660" y="334" text-anchor="start" font-size="12.5" fill="var(--ink2)" direction="rtl">לכל תחנה כתוב גם מה נדרש מהאמן.</text>
+  <text x="660" y="352" text-anchor="start" font-size="12.5" fill="var(--ink2)" direction="rtl">ככה עיכוב שלו נעשה נראה, ולא שלכם.</text>
+
+  <rect x="24" y="290" width="310" height="76" rx="10" fill="var(--panel2)" stroke="var(--line)"/>
+  <text x="314" y="313" text-anchor="start" font-size="14" font-weight="700" fill="var(--gold-l)" direction="rtl">מה שנסגר לא נפתח</text>
+  <text x="314" y="334" text-anchor="start" font-size="12.5" fill="var(--ink2)" direction="rtl">בכל תחנה נסגרת החלטה אחת.</text>
+  <text x="314" y="352" text-anchor="start" font-size="12.5" fill="var(--ink2)" direction="rtl">זה מה שמונע ריצה במעגלים.</text>
+
+  <text x="350" y="398" text-anchor="middle" font-size="13" fill="var(--ink3)" direction="rtl">אל תקליטו ווקאל סופי לפני שתחנה 1 נעולה — זה הטייק שלא חוזר</text>
+</svg>
+<figcaption>שבע תחנות, ובכל אחת שאלה אחת לאמן והחלטה אחת שנסגרת. החץ האדום הוא העלות האמיתית של שינוי עיבוד אחרי אישור המיקס.</figcaption>
+</figure>
