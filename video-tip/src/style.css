@@ -1,0 +1,674 @@
+@font-face {
+  font-family: 'Poster';
+  src: url('../vendor/fonts/noto-sans-hebrew-hebrew-standard-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: 'Poster';
+  src: url('../vendor/fonts/noto-sans-hebrew-latin-standard-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  font-stretch: 62.5% 100%;
+  unicode-range: U+0000-00FF, U+2000-206F;
+}
+@font-face {
+  font-family: 'Text';
+  src: url('../vendor/fonts/heebo-hebrew-wght-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  unicode-range: U+0590-05FF, U+200C-2010, U+20AA, U+25CC, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: 'Text';
+  src: url('../vendor/fonts/heebo-latin-wght-normal.woff2') format('woff2');
+  font-weight: 100 900;
+  unicode-range: U+0000-00FF, U+2000-206F;
+}
+@font-face {
+  font-family: 'Quote';
+  src: url('../vendor/fonts/frank-ruhl-libre-hebrew-900-normal.woff2') format('woff2');
+  font-weight: 900;
+}
+@font-face {
+  font-family: 'Quote';
+  src: url('../vendor/fonts/frank-ruhl-libre-hebrew-500-normal.woff2') format('woff2');
+  font-weight: 500;
+}
+
+:root {
+  --ink: #0c0a08;
+  --ink2: #16120e;
+  --cream: #f6ecd9;
+  --muted: #8f8573;
+  --line: rgba(246, 236, 217, 0.16);
+  --amber: #ffa32b;
+  --amber2: #ff6a1a;
+  --mint: #8dffc0;
+  --red: #ff4a3d;
+  --chrome: var(--cream);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+html,
+body {
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+}
+#fitbox {
+  position: fixed;
+  inset: 0;
+}
+/* בתצוגה מקדימה הבמה ממורכזת ומוקטנת לגודל החלון (main.js קובע את ה-scale) */
+#stage {
+  position: absolute;
+  left: 50%;
+  top: calc(50% - 24px);
+  margin: -960px 0 0 -540px;
+  width: 1080px;
+  height: 1920px;
+  overflow: hidden;
+  background: var(--ink);
+  color: var(--cream);
+  font-family: 'Text', sans-serif;
+  transform-origin: 50% 50%;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+body.render #stage {
+  left: 0;
+  top: 0;
+  margin: 0;
+}
+body.render #ui {
+  display: none;
+}
+
+/* ---------- רקע ---------- */
+#bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(120% 80% at 50% 40%, #1d150e 0%, #110d0a 48%, #080605 100%);
+}
+#glow {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  width: 1500px;
+  height: 1500px;
+  margin: -750px 0 0 -750px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 140, 40, 0.34) 0%, rgba(255, 110, 30, 0.12) 36%, rgba(255, 110, 30, 0) 68%);
+  opacity: 0.3;
+}
+#vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(115% 85% at 50% 48%, rgba(0, 0, 0, 0) 52%, rgba(0, 0, 0, 0.5) 100%);
+}
+#grain {
+  position: absolute;
+  inset: 0;
+  width: 1080px;
+  height: 1920px;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: 0.12;
+}
+
+/* ---------- סצנות ---------- */
+.scene {
+  position: absolute;
+  inset: 0;
+  visibility: hidden;
+  opacity: 0;
+}
+.full,
+.strings {
+  position: absolute;
+  inset: 0;
+  width: 1080px;
+  height: 1920px;
+}
+svg {
+  overflow: visible;
+}
+
+/* טיפוגרפיה */
+.display,
+.big {
+  font-family: 'Poster', sans-serif;
+  font-weight: 900;
+  font-stretch: 62.5%;
+  line-height: 0.96;
+  white-space: nowrap;
+}
+.big {
+  line-height: 0.9;
+  width: max-content;
+}
+.ink {
+  color: var(--ink);
+}
+.amber-text {
+  color: var(--amber);
+}
+.serif {
+  font-family: 'Quote', serif;
+  font-weight: 900;
+  white-space: nowrap;
+  line-height: 1.12;
+}
+.sentence {
+  font-family: 'Text', sans-serif;
+  font-weight: 500;
+  font-size: 62px;
+  line-height: 1.22;
+  white-space: nowrap;
+  color: var(--cream);
+}
+.sentence.strong {
+  font-weight: 900;
+  font-size: 76px;
+  color: var(--amber);
+}
+.sentence.center {
+  position: absolute;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+
+/* מילים שעולות מתוך מסכה */
+.w {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding: 0.14em 0.04em 0.2em;
+  margin: -0.14em -0.04em -0.2em;
+}
+.wi {
+  display: inline-block;
+  will-change: transform;
+}
+.ch {
+  display: inline-block;
+  will-change: transform;
+}
+
+/* פוסטר: שורות ענק ממורכזות */
+.poster {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 1780px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.poster.top {
+  justify-content: flex-start;
+  height: auto;
+  top: 470px;
+}
+.strike {
+  position: absolute;
+  left: 0;
+  width: 1080px;
+  height: 300px;
+}
+.strike path {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 30;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+}
+
+/* הפאנל הכתום */
+.amber {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(130% 90% at 50% 40%, #ffbe45 0%, #ff9a26 46%, #f7640f 100%);
+  clip-path: circle(0px at 540px 900px);
+}
+
+/* בועות התלונה */
+.bubble {
+  position: absolute;
+  font-size: 40px;
+  font-weight: 500;
+  color: #b9ae99;
+  padding: 18px 30px 20px;
+  border-radius: 34px;
+  background: #1f1a15;
+  border: 2px solid #3a332b;
+  white-space: nowrap;
+  opacity: 0;
+}
+/* הזנב של הבועה: ריבוע מסובב שרק חציו התחתון נראה */
+.bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -13px;
+  width: 24px;
+  height: 24px;
+  background: #1f1a15;
+  border-right: 2px solid #3a332b;
+  border-bottom: 2px solid #3a332b;
+  transform: rotate(45deg);
+  clip-path: polygon(100% 0, 100% 100%, 0 100%);
+  right: 44px;
+}
+.bubble.l::after {
+  right: auto;
+  left: 44px;
+}
+
+/* כותרות שלבים */
+.head {
+  position: absolute;
+  left: 80px;
+  right: 80px;
+  top: 318px;
+  text-align: right;
+}
+.head.alt {
+  top: 330px;
+}
+.step {
+  display: inline-block;
+  font-size: 34px;
+  font-weight: 500;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  padding: 10px 26px 12px;
+  border: 2px solid var(--line);
+  border-radius: 999px;
+  margin-bottom: 26px;
+}
+.step b {
+  color: var(--amber);
+  font-weight: 800;
+}
+.title {
+  font-size: 176px;
+}
+
+/* הודעות בסצנת הגיטרה */
+.msg {
+  position: absolute;
+  left: 80px;
+  right: 80px;
+  top: 330px;
+  text-align: right;
+}
+.msg .display {
+  width: max-content;
+  margin-inline-start: 0;
+}
+
+/* טיונר */
+#note {
+  position: absolute;
+  left: 240px;
+  top: 630px;
+  width: 600px;
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.note-num {
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: -6px;
+}
+.note-letter {
+  font-family: 'Poster';
+  font-weight: 900;
+  font-stretch: 78%;
+  font-size: 330px;
+  line-height: 0.92;
+}
+.note-heb {
+  font-size: 76px;
+  font-weight: 800;
+  line-height: 1;
+  margin-top: -8px;
+}
+.chips {
+  position: absolute;
+  left: 0;
+  top: 1322px;
+  width: 1080px;
+  height: 150px;
+}
+.chip {
+  position: absolute;
+  top: 0;
+  width: 128px;
+  height: 148px;
+  margin-left: -64px;
+  border-radius: 26px;
+  border: 2px solid var(--line);
+  background: #15110d;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+.chip b {
+  font-family: 'Poster';
+  font-weight: 900;
+  font-stretch: 80%;
+  font-size: 72px;
+  line-height: 0.95;
+}
+.chip span {
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+/* אקורדים */
+.chordrow {
+  position: absolute;
+  left: 101px;
+  top: 600px;
+  width: 878px;
+  display: flex;
+  gap: 26px;
+}
+.cc {
+  width: 200px;
+  height: 168px;
+  border-radius: 34px;
+  border: 2px solid var(--line);
+  display: grid;
+  place-items: center;
+  font-family: 'Poster';
+  font-weight: 900;
+  font-stretch: 78%;
+  font-size: 118px;
+  line-height: 1;
+  color: var(--muted);
+  position: relative;
+  overflow: hidden;
+}
+.cc i {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, #ffbe45, #ff7a1a);
+  opacity: 0;
+}
+.cc span {
+  position: relative;
+  padding-bottom: 8px;
+}
+
+/* טיימר */
+#clock {
+  position: absolute;
+  left: 0;
+  width: 1080px;
+  top: 806px;
+  text-align: center;
+  font-family: 'Poster';
+  font-weight: 900;
+  font-stretch: 70%;
+  font-size: 212px;
+  line-height: 1;
+  white-space: nowrap;
+}
+#clock .dg {
+  display: inline-block;
+  width: 0.5em;
+  text-align: center;
+}
+#clock i {
+  font-style: normal;
+  display: inline-block;
+  width: 50px;
+  position: relative;
+  top: -18px;
+}
+#clock-sub {
+  position: absolute;
+  left: 0;
+  width: 1080px;
+  top: 1034px;
+  text-align: center;
+  font-size: 38px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.week {
+  position: absolute;
+  left: 107px;
+  top: 1356px;
+  width: 866px;
+  display: flex;
+  gap: 31px;
+}
+.day {
+  width: 97px;
+  height: 97px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  display: grid;
+  place-items: center;
+  font-size: 44px;
+  font-weight: 800;
+  color: var(--muted);
+  position: relative;
+}
+.day i {
+  position: absolute;
+  inset: -2px;
+  border-radius: 50%;
+  background: linear-gradient(160deg, #ffbe45, #ff7a1a);
+  transform: scale(0);
+}
+.day span {
+  position: relative;
+}
+
+/* הקלטה */
+.recpill {
+  position: absolute;
+  top: 322px;
+  left: 80px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 10px 26px 12px 22px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 74, 61, 0.5);
+  color: var(--cream);
+  font-variant-numeric: tabular-nums;
+}
+.recpill .dot {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--red);
+  box-shadow: 0 0 22px rgba(255, 74, 61, 0.9);
+}
+#r3 {
+  top: 1010px;
+  font-weight: 800;
+  font-size: 72px;
+}
+
+/* השראה */
+.question {
+  position: absolute;
+  left: 0;
+  width: 1080px;
+  top: 560px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform-origin: 50% 50%;
+}
+#q1 {
+  font-size: 150px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+.quote {
+  position: absolute;
+  left: 80px;
+  right: 80px;
+  top: 560px;
+  text-align: right;
+}
+.qa .serif {
+  font-size: 122px;
+  color: var(--cream);
+}
+.qb {
+  margin-top: 70px;
+  position: relative;
+}
+.qb .serif {
+  font-size: 138px;
+  color: var(--amber);
+}
+#qb-hl {
+  position: relative;
+  display: inline-block;
+}
+#qb-line {
+  position: absolute;
+  height: 40px;
+  left: -3%;
+  width: 106%;
+  bottom: -0.14em;
+}
+#qb-line path {
+  fill: none;
+  stroke: var(--amber);
+  stroke-width: 9;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+/* הסיום */
+.share {
+  position: absolute;
+  left: 0;
+  width: 1080px;
+  top: 1330px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--ink);
+}
+.share-line {
+  font-size: 54px;
+  font-weight: 800;
+  line-height: 1.22;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* מעברים */
+#wipe {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(170deg, #ffbe45, #ff7a1a 70%, #f2540f);
+  visibility: hidden;
+}
+#flash {
+  position: absolute;
+  inset: 0;
+  background: #ffd9a0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* מסגרת קבועה */
+#chrome {
+  position: absolute;
+  left: 80px;
+  right: 80px;
+  top: 206px;
+  color: var(--chrome);
+}
+#chrome .tag {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  opacity: 0.86;
+}
+#chrome .tag i {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: currentColor;
+}
+#chrome .bar {
+  margin-top: 20px;
+  height: 4px;
+  border-radius: 4px;
+  background: color-mix(in srgb, currentColor 18%, transparent);
+  overflow: hidden;
+}
+#bar-fill {
+  height: 100%;
+  width: 100%;
+  background: currentColor;
+  transform-origin: 100% 50%;
+  transform: scaleX(0);
+}
+
+/* בקרי תצוגה מקדימה */
+#ui {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 16px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  font: 14px system-ui, sans-serif;
+  direction: ltr;
+}
+#ui button {
+  font: inherit;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: 0;
+  background: #ffa32b;
+  color: #111;
+  font-weight: 700;
+  cursor: pointer;
+}
+#ui input {
+  flex: 1;
+}

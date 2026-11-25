@@ -1,0 +1,12 @@
+{
+  "name": "video-tip",
+  "private": true,
+  "type": "module",
+  "description": "סרטון טיפ למוזיקאים שנבנה כולו בקוד: אנימציה (HTML + GSAP) ופסקול מסונתז",
+  "scripts": {
+    "audio": "node tools/audio.mjs",
+    "preview": "node tools/audio.mjs && node tools/serve.cjs",
+    "render": "node tools/audio.mjs && node tools/render.cjs --crf=17 --out=tip-video.mp4",
+    "stills": "node tools/still.cjs"
+  }
+}
