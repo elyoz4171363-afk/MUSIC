@@ -59,7 +59,7 @@ function splitChars(el) {
   return [...txt].map((c) => {
     const s = document.createElement('span');
     s.className = 'ch';
-    s.textContent = c === ' ' ? ' ' : c;
+    s.textContent = c === ' ' ? '\u00a0' : c;
     el.appendChild(s);
     return s;
   });

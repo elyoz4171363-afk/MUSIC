@@ -1,5 +1,5 @@
 // פריימים בודדים לבדיקה: node tools/still.cjs 0.5 2.3 10   ->  out/stills/sheet.jpg
-// עם ‎--full כל פריים נשמר גם בגודל מלא.
+// עם --full כל פריים נשמר גם בגודל מלא.
 const { chromium } = require('playwright');
 const fs = require('node:fs');
 const path = require('node:path');
