@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>במקום לשבור את הגיטרה – ארפג'יו באצבעות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#07090d;--fg:#f4f1ea;--accent:#ffd23f}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--fg);font-family:Heebo,'Liberation Sans','DejaVu Sans',Arial,sans-serif}
+  body{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:12px}
+  #stage{position:relative;height:calc(100vh - 96px);aspect-ratio:9/16;max-width:100%;border-radius:18px;overflow:hidden;box-shadow:0 10px 60px #000a}
+  canvas{width:100%;height:100%;display:block}
+  #big{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#0006;border:0;cursor:pointer;color:#fff;font:900 28px Heebo,sans-serif}
+  #big span{background:var(--accent);color:#111;padding:16px 28px;border-radius:999px;box-shadow:0 6px 30px #0008}
+  #bar{display:flex;align-items:center;gap:12px;width:min(560px,100%)}
+  #bar button{background:#1b2230;color:var(--fg);border:1px solid #ffffff22;border-radius:10px;padding:8px 14px;font:700 15px Heebo,sans-serif;cursor:pointer}
+  #bar button:focus-visible,#big:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+  #bar input{flex:1;accent-color:var(--accent)}
+  body.render #bar,body.render #big{display:none}
+  body.render{padding:0;gap:0}
+  body.render #stage{height:1920px;width:1080px;border-radius:0;box-shadow:none}
+  @media (prefers-reduced-motion:reduce){#big span{box-shadow:none}}
+</style>
+</head>
+<body>
+<div id="stage">
+  <canvas id="c" width="1080" height="1920" aria-label="סרטון טיפ לגיטרה: ארפג'יו באצבעות"></canvas>
+  <button id="big" aria-label="הפעל את הסרטון עם סאונד"><span>▶ הפעל עם סאונד</span></button>
+</div>
+<div id="bar">
+  <button id="pp">⏯ עצור / נגן</button>
+  <input id="seek" type="range" min="0" max="1000" value="0" aria-label="ציר זמן">
+  <button id="rs">↺ מההתחלה</button>
+</div>
+
+<script>
+/* =====================================================================
+   סרטון טיפ לגיטרה — הכול מצויר בקוד. renderFrame(t) היא פונקציה דטרמיניסטית
+   של הזמן, ולכן אפשר גם לנגן בדפדפן וגם לרנדר ל-MP4 (render.js).
+   ===================================================================== */
+const W = 1080, H = 1920, DUR = 25.4;
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const QS = new URLSearchParams(location.search);
+if (QS.has('render')) document.body.classList.add('render');
+
+/* ---------- ציר הזמן ---------- */
+const T_SLAM = 1.5;   // רגע הריסוק
+const T_X    = 2.9;   // ה-X האדום
+const T_TXT1 = 3.3;   // "במקום לשבור את הגיטרה"
+const T_TXT2 = 4.1;   // "בואו תעשו את זה"
+const T_SW   = 5.0;   // מעבר לסצנת הנגינה
+const T_PLAY = 5.5;   // התו הראשון
+const BEAT = 0.32, BAR = BEAT * 6, NBARS = 8;
+const T_END_PLAY = T_PLAY + BAR * NBARS;   // ≈ 20.86
+
+/* ---------- עזרים ---------- */
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const lerp = (a, b, k) => a + (b - a) * k;
+const eIn = k => k * k * k, eOut = k => 1 - Math.pow(1 - k, 3);
+const eIO = k => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+const eBack = k => { const c = 1.9; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); };
+const seg = (t, a, b) => clamp((t - a) / (b - a));
+function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const FONT = "Heebo,'Liberation Sans','DejaVu Sans',Arial,sans-serif";
+const C = { yellow: '#ffd23f', coral: '#ff6b4a', teal: '#2ec4b6', blue: '#7aa2ff', skin: '#efb88f', skinD: '#d79a72', shirt: '#e86a33', shirtD: '#c4501f', jeans: '#26334a', hair: '#1c1512' };
+const FINGER_COL = { p: C.coral, i: C.yellow, m: C.teal, a: C.blue };
+
+function text(s, x, y, size, o = {}) {
+  const heb = /[֐-׿]/.test(s);
+  ctx.save();
+  ctx.translate(x, y); if (o.rot) ctx.rotate(o.rot); if (o.scale != null) ctx.scale(o.scale, o.scale);
+  ctx.globalAlpha *= o.alpha ?? 1;
+  ctx.font = `${o.weight || 900} ${size}px ${FONT}`;
+  ctx.textAlign = o.align || 'center'; ctx.textBaseline = o.base || 'middle';
+  ctx.direction = heb ? 'rtl' : 'ltr';
+  if (o.shadow) { ctx.shadowColor = o.shadow; ctx.shadowBlur = o.shadowBlur ?? 24; }
+  if (o.stroke) { ctx.lineJoin = 'round'; ctx.lineWidth = o.strokeW || size * .14; ctx.strokeStyle = o.stroke; ctx.strokeText(s, 0, 0); }
+  ctx.fillStyle = o.color || '#fff'; ctx.fillText(s, 0, 0);
+  ctx.restore();
+}
+const popScale = (t, t0, d = .28) => t < t0 ? 0 : eBack(seg(t, t0, t0 + d));
+function limb(pts, w, col) { ctx.save(); ctx.lineCap = ctx.lineJoin = 'round'; ctx.lineWidth = w; ctx.strokeStyle = col; ctx.beginPath(); ctx.moveTo(...pts[0]); for (let i = 1; i < pts.length; i++) ctx.lineTo(...pts[i]); ctx.stroke(); ctx.restore(); }
+function circ(x, y, r, col) { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill(); }
+/* IK של שתי מפרקים: מחזיר [מרפק, כף יד] ; pv = כיוון מועדף למרפק */
+function ik(sx, sy, tx, ty, l1, l2, pv) {
+  let dx = tx - sx, dy = ty - sy, d = Math.hypot(dx, dy) || 1;
+  const maxD = (l1 + l2) * .999, minD = Math.abs(l1 - l2) + 2;
+  const dd = clamp(d, minD, maxD); const ux = dx / d, uy = dy / d;
+  const a = (l1 * l1 - l2 * l2 + dd * dd) / (2 * dd), h = Math.sqrt(Math.max(0, l1 * l1 - a * a));
+  const bx = sx + ux * a, by = sy + uy * a;
+  const c1 = [bx - uy * h, by + ux * h], c2 = [bx + uy * h, by - ux * h];
+  const sc = c => (c[0] - bx) * pv[0] + (c[1] - by) * pv[1];
+  const e = sc(c1) > sc(c2) ? c1 : c2;
+  return [e, [sx + ux * dd, sy + uy * dd]];
+}
+function arm(sh, target, pv, l1 = 195, l2 = 185) {
+  const [e, h] = ik(sh[0], sh[1], target[0], target[1], l1, l2, pv);
+  limb([sh, e], 62, C.shirt); limb([e, h], 46, C.skin); circ(sh[0], sh[1], 42, C.shirt);
+  return h;
+}
+
+/* ---------- גיטרה (קואורדינטות מקומיות: x לאורך הצוואר) ---------- */
+const NUT = 520, SCALE_L = 900, BRIDGE = -200;
+const fretX = n => NUT - SCALE_L * (1 - Math.pow(2, -n / 12));
+const spAt = x => lerp(16, 10, (x - BRIDGE) / (NUT - BRIDGE));
+const strY = (s, x) => (3.5 - s) * spAt(x);          // מיתר 1 (e דק) למטה, מיתר 6 (E בס) למעלה
+const gw = (P, lx, ly) => { const c = Math.cos(P.a), s = Math.sin(P.a); return [P.x + lx * c - ly * s, P.y + lx * s + ly * c]; };
+
+function bodyPath() {
+  const p = new Path2D();
+  p.ellipse(-125, 0, 130, 150, 0, 0, 7);
+  p.ellipse(55, 0, 80, 100, 0, 0, 7);
+  p.rect(-40, -78, 100, 156);
+  return p;
+}
+const BODY = bodyPath();
+function drawGuitar(vib) {
+  // צל
+  ctx.save(); ctx.shadowColor = '#0008'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
+  ctx.fillStyle = '#b8691f'; ctx.fill(BODY); ctx.restore();
+  const g = ctx.createRadialGradient(-110, -30, 20, -90, 0, 220);
+  g.addColorStop(0, '#f2a64f'); g.addColorStop(.6, '#d98b3a'); g.addColorStop(1, '#a8601c');
+  ctx.fillStyle = g; ctx.fill(BODY);
+  ctx.lineWidth = 9; ctx.strokeStyle = '#5a3210'; ctx.stroke(BODY);
+  ctx.lineWidth = 3; ctx.strokeStyle = '#f6d9a2'; ctx.save(); ctx.scale(.93, .93); ctx.stroke(BODY); ctx.restore();
+  // צוואר
+  ctx.fillStyle = '#7a4a22'; ctx.beginPath(); ctx.roundRect(90, -33, NUT - 85, 66, 6); ctx.fill();
+  ctx.fillStyle = '#2b1a10'; ctx.beginPath(); ctx.roundRect(95, -30, NUT - 95, 60, 4); ctx.fill();
+  // פרטים
+  for (const n of [3, 5, 7, 9]) circ((fretX(n) + fretX(n - 1)) / 2, 0, 5, '#e9dcc0');
+  ctx.strokeStyle = '#c9ccd2'; ctx.lineWidth = 3;
+  for (let n = 1; n <= 10; n++) { const x = fretX(n); ctx.beginPath(); ctx.moveTo(x, -30); ctx.lineTo(x, 30); ctx.stroke(); }
+  ctx.fillStyle = '#efe7d2'; ctx.fillRect(NUT - 3, -31, 7, 62);
+  // ראש
+  ctx.fillStyle = '#2b1a10'; ctx.beginPath(); ctx.roundRect(NUT + 4, -40, 95, 80, 12); ctx.fill();
+  for (let i = 0; i < 3; i++) for (const sy of [-1, 1]) { circ(NUT + 30 + i * 28, sy * 48, 10, '#d8d8d8'); }
+  // פתח תהודה + גשר
+  circ(-5, 0, 50, '#150d07'); ctx.lineWidth = 7; ctx.strokeStyle = '#f0c987'; ctx.beginPath(); ctx.arc(-5, 0, 56, 0, 7); ctx.stroke();
+  ctx.fillStyle = '#2b1a10'; ctx.beginPath(); ctx.roundRect(BRIDGE - 12, -62, 26, 124, 8); ctx.fill();
+  // מיתרים
+  for (let s = 1; s <= 6; s++) {
+    ctx.strokeStyle = s >= 4 ? '#d3b866' : '#e9ecf0'; ctx.lineWidth = 1.6 + (s - 1) * .55;
+    const A = vib && vib[s] ? vib[s] : null;
+    ctx.beginPath();
+    if (!A) { ctx.moveTo(BRIDGE, strY(s, BRIDGE)); ctx.lineTo(NUT, strY(s, NUT)); }
+    else for (let k = 0; k <= 40; k++) {
+      const x = lerp(BRIDGE, NUT, k / 40), off = A.amp * Math.sin(Math.PI * k / 40) * Math.cos(A.ph);
+      k ? ctx.lineTo(x, strY(s, x) + off) : ctx.moveTo(x, strY(s, x) + off);
+    }
+    ctx.stroke();
+  }
+}
+
+/* =====================================================================
+   סצנה 1 — ההוק
+   ===================================================================== */
+const FLOOR = 1450, HIP = [360, 1190], GR = 300;
+const GDEG = d => d * Math.PI / 180;
+function hookPose(t) {
+  let th, G, lean;
+  if (t < 0.9) { const tr = Math.sin(t * 60) * GDEG(1.3) * (0.4 + t); th = GDEG(90) + tr; G = [400 + Math.sin(t * 47) * 3, 560]; lean = 0; }
+  else if (t < 1.25) { const k = eIO(seg(t, .9, 1.25)); th = lerp(GDEG(90), GDEG(55), k); G = [lerp(400, 330, k), lerp(560, 520, k)]; lean = lerp(0, -.12, k); }
+  else { const k = Math.pow(seg(t, 1.25, T_SLAM), 2.2); th = lerp(GDEG(55), GDEG(215), k); G = [lerp(330, 470, k), lerp(520, 1085, k)]; lean = lerp(-.12, .35, k); }
+  const Pb = { a: th, x: G[0] - GR * Math.cos(th), y: G[1] - GR * Math.sin(th) };
+  return { th, G, lean, P: Pb };
+}
+const IMPACT = hookPose(T_SLAM);
+
+/* שברי הגיטרה: מחיצת ריבוע ל-18 תאים משוננים */
+const PIECES = (function () {
+  const r0 = rng(11);
+  const xs = [-260, -140, -30, 95, 250, 420, 625], ys = [-175, 0, 175], N = [];
+  for (let i = 0; i < xs.length; i++) { N[i] = []; for (let j = 0; j < 3; j++) N[i][j] = [xs[i] + ((i && i < 6) ? (r0() - .5) * 40 : 0), ys[j] + (j === 1 ? (r0() - .5) * 50 : 0)]; }
+  const hsh = (a, b) => { const [p, q] = (a[0] < b[0] || (a[0] === b[0] && a[1] < b[1])) ? [a, b] : [b, a]; const v = Math.sin(p[0] * 12.9898 + p[1] * 78.233 + q[0] * 37.719 + q[1] * 4.581) * 43758.5453; return v - Math.floor(v); };
+  const zig = (a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1], L = Math.hypot(dx, dy) || 1, o = (hsh(a, b) - .5) * 34; return [(a[0] + b[0]) / 2 - dy / L * o, (a[1] + b[1]) / 2 + dx / L * o]; };
+  const cells = [];
+  for (let i = 0; i < 6; i++) {
+    if (i < 3) { cells.push([N[i][0], N[i + 1][0], N[i + 1][1], N[i][1]]); cells.push([N[i][1], N[i + 1][1], N[i + 1][2], N[i][2]]); }
+    else cells.push([N[i][0], N[i + 1][0], N[i + 1][1], N[i + 1][2], N[i][2], N[i][1]]);
+  }
+  const r = rng(5), P0 = gw(IMPACT.P, -125 + 60, 130);
+  return cells.map((c, idx) => {
+    const poly = []; for (let k = 0; k < c.length; k++) { poly.push(c[k]); poly.push(zig(c[k], c[(k + 1) % c.length])); }
+    const cx = poly.reduce((s, p) => s + p[0], 0) / poly.length, cy = poly.reduce((s, p) => s + p[1], 0) / poly.length;
+    const [wx, wy] = gw(IMPACT.P, cx, cy);
+    let dx = wx - P0[0], dy = wy - P0[1]; const L = Math.hypot(dx, dy) || 1; dx /= L; dy /= L;
+    const sp = 280 + r() * 520;
+    return { poly, cx, cy, x0: wx, y0: wy, vx: dx * sp + (r() - .5) * 220, vy: -(520 + r() * 760) + dy * 120, w: (r() - .5) * 15, ph: 38 };
+  });
+})();
+const STRINGS_FLY = (function () {
+  const r = rng(99), o = []; const P0 = gw(IMPACT.P, -150, 0);
+  for (let i = 0; i < 6; i++) o.push({ x0: P0[0], y0: P0[1], vx: (r() - .35) * 1100, vy: -(500 + r() * 900), w: (r() - .5) * 14, a0: r() * 6, len: 140 + r() * 200, bend: (r() - .5) * 120, col: i > 2 ? '#e9ecf0' : '#d3b866' });
+  return o;
+})();
+const CHIPS = (function () {
+  const r = rng(3), o = []; const P0 = gw(IMPACT.P, -150, 120);
+  for (let i = 0; i < 46; i++) { const a = -Math.PI * (.05 + r() * .9); const sp = 350 + r() * 1300; o.push({ x0: P0[0] + (r() - .5) * 120, y0: P0[1] - r() * 30, vx: Math.cos(a) * sp * (r() < .5 ? 1 : 1.2), vy: Math.sin(a) * sp, w: (r() - .5) * 30, s: 6 + r() * 14, c: ['#d98b3a', '#a8601c', '#f2a64f', '#5a3210'][i % 4] }); }
+  return o;
+})();
+function simBodies(list, simT) {
+  const dt = 1 / 120, n = Math.floor(simT / dt);
+  return list.map(p => {
+    let x = p.x0, y = p.y0, vx = p.vx, vy = p.vy, a = p.a0 ?? IMPACT.th, w = p.w, ph = p.ph ?? 10;
+    for (let i = 0; i < n; i++) {
+      vy += 2600 * dt; x += vx * dt; y += vy * dt; a += w * dt;
+      if (y > FLOOR - ph) { y = FLOOR - ph; vy = Math.abs(vy) < 160 ? 0 : -vy * .36; vx *= .75; w *= .6; }
+      if (y >= FLOOR - ph - 1) vx *= .992;
+    }
+    return { x, y, a };
+  });
+}
+
+function drawStanding(t, pose, broke) {
+  const post = Math.max(0, t - T_SLAM);
+  const lean = broke ? lerp(.35, .5, eOut(seg(post, 0, .6))) : pose.lean;
+  const rot = (a, x, y) => [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)];
+  const heave = broke ? Math.sin(post * 14) * 5 * Math.exp(-post * 1.2) : 0;
+  const hip = HIP;
+  // רגליים
+  limb([[hip[0] - 40, hip[1]], [hip[0] - 70, 1330], [hip[0] - 62, 1450]], 78, C.jeans);
+  limb([[hip[0] + 40, hip[1]], [hip[0] + 78, 1330], [hip[0] + 92, 1450]], 78, C.jeans);
+  ctx.fillStyle = '#f2f2f2'; ctx.beginPath(); ctx.ellipse(hip[0] - 50, 1452, 62, 24, 0, 0, 7); ctx.ellipse(hip[0] + 112, 1452, 62, 24, 0, 0, 7); ctx.fill();
+  // גו
+  const sOff = rot(lean, 0, -300), S = [hip[0] + sOff[0], hip[1] + sOff[1] + heave];
+  ctx.save(); ctx.fillStyle = C.shirt; ctx.beginPath();
+  const bl = rot(lean, -105, -300), br = rot(lean, 105, -300);
+  ctx.moveTo(hip[0] - 100, hip[1]); ctx.lineTo(hip[0] + 100, hip[1]); ctx.lineTo(hip[0] + br[0], hip[1] + br[1] + heave); ctx.lineTo(hip[0] + bl[0], hip[1] + bl[1] + heave); ctx.closePath(); ctx.fill(); ctx.restore();
+  const Ls = [S[0] - Math.cos(lean) * 98, S[1] - Math.sin(lean) * 98 + 10], Rs = [S[0] + Math.cos(lean) * 98, S[1] + Math.sin(lean) * 98 + 10];
+  // ראש
+  const hOff = rot(lean * 1.3, 0, -112), Hd = [S[0] + hOff[0], S[1] + hOff[1]];
+  limb([S, [S[0] + hOff[0] * .5, S[1] + hOff[1] * .5]], 50, C.skinD);
+  circ(Hd[0], Hd[1], 80, C.skin);
+  ctx.fillStyle = C.hair; ctx.beginPath(); ctx.arc(Hd[0], Hd[1] - 6, 84, Math.PI * 1.02, Math.PI * 1.98); ctx.quadraticCurveTo(Hd[0] + 60, Hd[1] - 62, Hd[0] - 80, Hd[1] - 18); ctx.fill();
+  const yell = broke && post < .9;
+  ctx.strokeStyle = C.hair; ctx.lineWidth = 9; ctx.lineCap = 'round';
+  const hx = Hd[0], hy = Hd[1];
+  ctx.beginPath(); ctx.moveTo(hx - 52, hy - 22); ctx.lineTo(hx - 12, hy - 8); ctx.moveTo(hx + 52, hy - 22); ctx.lineTo(hx + 12, hy - 8); ctx.stroke(); // גבות כועסות
+  ctx.lineWidth = 8;
+  if (broke) { ctx.beginPath(); ctx.moveTo(hx - 40, hy + 4); ctx.lineTo(hx - 18, hy + 4); ctx.moveTo(hx + 40, hy + 4); ctx.lineTo(hx + 18, hy + 4); ctx.stroke(); }
+  else { circ(hx - 28, hy + 6, 7, C.hair); circ(hx + 28, hy + 6, 7, C.hair); }
+  if (yell) { ctx.fillStyle = '#3a0d0d'; ctx.beginPath(); ctx.ellipse(hx, hy + 44, 26, 22, 0, 0, 7); ctx.fill(); }
+  else { ctx.beginPath(); ctx.moveTo(hx - 24, hy + 44); ctx.quadraticCurveTo(hx, hy + 34, hx + 24, hy + 46); ctx.stroke(); }
+  // ידיים
+  let h1, h2;
+  if (!broke) { h1 = gw(pose.P, GR - 45, 0); h2 = gw(pose.P, GR + 45, 0); }
+  else { h1 = [IMPACT.G[0] - 20, IMPACT.G[1] - 45]; h2 = [IMPACT.G[0] + 10, IMPACT.G[1] + 45 - 20 * eOut(seg(post, 0, .5))]; }
+  const k1 = arm(Ls, h1, [-1, .6]), k2 = arm(Rs, h2, [1, .7]);
+  circ(k1[0], k1[1], 33, C.skin); circ(k2[0], k2[1], 33, C.skin);
+}
+
+function drawHook(t) {
+  const post = t - T_SLAM;
+  // רעידת מסך
+  let sx = 0, sy = 0;
+  if (post > 0) { const a = 38 * Math.exp(-post * 7); sx = Math.sin(post * 83) * a; sy = Math.cos(post * 71) * a * .7; }
+  const dx = t - T_X; if (dx > 0 && dx < .6) { const a = 18 * Math.exp(-dx * 9); sx += Math.sin(dx * 90) * a; sy += Math.cos(dx * 77) * a; }
+  const zoom = 1 + (post > 0 ? .07 * Math.exp(-post * 6) : 0);
+  ctx.save(); ctx.translate(W / 2 + sx, H / 2 + sy); ctx.scale(zoom, zoom); ctx.translate(-W / 2, -H / 2);
+  // רקע: במה כהה + זרקור
+  const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#0b0f1a'); bg.addColorStop(1, '#171122'); ctx.fillStyle = bg; ctx.fillRect(-100, -100, W + 200, H + 200);
+  const sp = ctx.createRadialGradient(430, 700, 40, 430, 900, 900); sp.addColorStop(0, 'rgba(255,214,150,.30)'); sp.addColorStop(1, 'rgba(255,214,150,0)'); ctx.fillStyle = sp; ctx.fillRect(-100, -100, W + 200, H + 200);
+  const fl = ctx.createLinearGradient(0, FLOOR, 0, H); fl.addColorStop(0, '#5b3a20'); fl.addColorStop(1, '#2a180c'); ctx.fillStyle = fl; ctx.fillRect(-100, FLOOR, W + 200, H);
+  ctx.strokeStyle = '#00000055'; ctx.lineWidth = 3; for (let i = 0; i < 9; i++) { ctx.beginPath(); ctx.moveTo(-100, FLOOR + 30 + i * i * 6 + i * 20); ctx.lineTo(W + 100, FLOOR + 30 + i * i * 6 + i * 20); ctx.stroke(); }
+  ctx.fillStyle = '#00000066'; ctx.fillRect(-100, FLOOR - 3, W + 200, 6);
+
+  const pose = hookPose(Math.min(t, T_SLAM));
+  const broke = t >= T_SLAM + .05;
+  drawStanding(t, pose, broke);
+
+  if (!broke) {
+    if (t > 1.25) for (let k = 3; k >= 1; k--) { const pp = hookPose(Math.max(0, t - k * .018)); ctx.save(); ctx.globalAlpha = .22 / k + .05; ctx.translate(pp.P.x, pp.P.y); ctx.rotate(pp.P.a); drawGuitar(); ctx.restore(); }
+    ctx.save(); ctx.translate(pose.P.x, pose.P.y); ctx.rotate(pose.P.a); drawGuitar(); ctx.restore();
+    // ידיים מעל הגיטרה
+    const a1 = gw(pose.P, GR - 45, 0), a2 = gw(pose.P, GR + 45, 0); circ(a1[0], a1[1], 33, C.skin); circ(a2[0], a2[1], 33, C.skin);
+  } else {
+    const simT = Math.max(0, post - .05) * .62;
+    const st = simBodies(PIECES, simT);
+    PIECES.forEach((p, i) => {
+      const s = st[i]; ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.a); ctx.translate(-p.cx, -p.cy);
+      ctx.beginPath(); p.poly.forEach((q, k) => k ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.closePath();
+      ctx.save(); ctx.clip(); drawGuitar(); ctx.restore();
+      ctx.lineWidth = 3; ctx.strokeStyle = '#f3dcae'; ctx.stroke(); ctx.restore();
+    });
+    const sf = simBodies(STRINGS_FLY, simT);
+    STRINGS_FLY.forEach((p, i) => { const s = sf[i]; ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.a); ctx.strokeStyle = p.col; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(-p.len / 2, 0); ctx.quadraticCurveTo(0, p.bend, p.len / 2, 0); ctx.stroke(); ctx.restore(); });
+    const sc = simBodies(CHIPS, simT);
+    CHIPS.forEach((p, i) => { const s = sc[i]; ctx.save(); ctx.translate(s.x, s.y); ctx.rotate(s.a); ctx.fillStyle = p.c; ctx.fillRect(-p.s / 2, -p.s / 4, p.s, p.s / 2); ctx.restore(); });
+    // אבק + ניצוצות
+    const dk = seg(post, .05, .9); if (dk > 0 && dk < 1) {
+      ctx.save(); ctx.globalAlpha = (1 - dk) * .5; ctx.strokeStyle = '#e9d8b8'; ctx.lineWidth = 14 * (1 - dk); ctx.beginPath(); ctx.ellipse(IMPACT.P.x + 130, FLOOR - 6, 60 + 520 * eOut(dk), 16 + 50 * eOut(dk), 0, 0, 7); ctx.stroke(); ctx.restore();
+      const r = rng(21); ctx.save(); ctx.strokeStyle = '#ffe9a0'; ctx.lineCap = 'round';
+      for (let i = 0; i < 18; i++) { const a = -Math.PI * r(), L = (80 + r() * 260) * eOut(Math.min(1, dk * 2.2)); ctx.globalAlpha = 1 - dk; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(IMPACT.P.x + 120 + Math.cos(a) * L * .4, FLOOR - 30 + Math.sin(a) * L * .4); ctx.lineTo(IMPACT.P.x + 120 + Math.cos(a) * L, FLOOR - 30 + Math.sin(a) * L); ctx.stroke(); }
+      ctx.restore();
+    }
+  }
+  ctx.restore();
+
+  // החשכה אחרי ה-X
+  const dim = .45 * seg(t, T_X, T_X + .3); if (dim) { ctx.fillStyle = `rgba(5,5,10,${dim})`; ctx.fillRect(0, 0, W, H); }
+
+  // X אדום
+  if (t >= T_X) {
+    const k1 = seg(t, T_X, T_X + .11), k2 = seg(t, T_X + .12, T_X + .24);
+    const sh = (t - T_X < .6) ? Math.sin((t - T_X) * 80) * 10 * Math.exp(-(t - T_X) * 8) : 0;
+    ctx.save(); ctx.translate(sh, -sh * .6); ctx.lineCap = 'round';
+    const A = [215, 560], B = [865, 1210], A2 = [865, 560], B2 = [215, 1210];
+    for (const [pass, col, w] of [[0, '#00000099', 150], [1, '#ff2a2a', 112], [2, '#ff8a80', 40]]) {
+      ctx.strokeStyle = col; ctx.lineWidth = w; if (pass === 1) { ctx.shadowColor = '#ff2a2a'; ctx.shadowBlur = 50; } else ctx.shadowBlur = 0;
+      ctx.beginPath(); ctx.moveTo(...A); ctx.lineTo(lerp(A[0], B[0], k1), lerp(A[1], B[1], k1)); ctx.stroke();
+      if (k2 > 0) { ctx.beginPath(); ctx.moveTo(...A2); ctx.lineTo(lerp(A2[0], B2[0], k2), lerp(A2[1], B2[1], k2)); ctx.stroke(); }
+    }
+    ctx.restore();
+  }
+  // טקסטים
+  if (t >= T_TXT1) {
+    const s = popScale(t, T_TXT1);
+    text('במקום לשבור', W / 2, 270, 150, { color: '#fff', stroke: '#000', strokeW: 26, scale: s, shadow: '#000a' });
+    text('את הגיטרה', W / 2, 430, 150, { color: '#fff', stroke: '#000', strokeW: 26, scale: popScale(t, T_TXT1 + .12), shadow: '#000a' });
+  }
+  if (t >= T_TXT2) {
+    ctx.save(); ctx.globalAlpha = seg(t, T_TXT2, T_TXT2 + .1); ctx.fillStyle = '#000b'; ctx.fillRect(0, 1560, W, 230); ctx.restore();
+    text('בואו תעשו את זה', W / 2, 1675, 112, { color: C.yellow, stroke: '#000', strokeW: 24, scale: popScale(t, T_TXT2), shadow: '#000' });
+  }
+  // הבזק
+  const fl2 = t >= T_SLAM ? Math.max(0, 1 - (t - T_SLAM) / .22) : 0; if (fl2 > 0) { ctx.fillStyle = `rgba(255,255,255,${.9 * fl2})`; ctx.fillRect(0, 0, W, H); }
+  // וינייטה
+  const vg = ctx.createRadialGradient(W / 2, H / 2, 600, W / 2, H / 2, 1250); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.55)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+}
+
+/* =====================================================================
+   סצנה 2 — הטיפ: ארפג'יו באצבעות
+   ===================================================================== */
+const OPEN = [0, 64, 59, 55, 50, 45, 40];  // MIDI למיתר 1..6
+const CHORDS = [
+  { name: 'Am', bass: 5, frets: { 6: null, 5: 0, 4: 2, 3: 2, 2: 1, 1: 0 }, dots: [[4, 2, 2], [3, 2, 3], [2, 1, 1]], pick: { 3: 2, 2: 1, 1: 0 } },
+  { name: 'C',  bass: 5, frets: { 6: null, 5: 3, 4: 2, 3: 0, 2: 1, 1: 0 }, dots: [[5, 3, 3], [4, 2, 2], [2, 1, 1]], pick: { 3: 0, 2: 1, 1: 0 } },
+  { name: 'G',  bass: 6, frets: { 6: 3, 5: 2, 4: 0, 3: 0, 2: 0, 1: 3 },     dots: [[6, 3, 2], [5, 2, 1], [1, 3, 3]], pick: { 3: 0, 2: 0, 1: 3 } },
+  { name: 'Em', bass: 6, frets: { 6: 0, 5: 2, 4: 2, 3: 0, 2: 0, 1: 0 },     dots: [[5, 2, 2], [4, 2, 3]], pick: { 3: 0, 2: 0, 1: 0 } },
+];
+const PAT = [['p', 'b'], ['i', 3], ['m', 2], ['a', 1], ['m', 2], ['i', 3]];
+const EV = [];
+for (let b = 0; b < NBARS; b++) for (let c = 0; c < 6; c++) {
+  const ch = CHORDS[b % 4], [f, sv] = PAT[c], s = sv === 'b' ? ch.bass : sv, fret = ch.frets[s];
+  EV.push({ t: T_PLAY + b * BAR + c * BEAT, bar: b, col: c, finger: f, s, fret, midi: OPEN[s] + fret });
+}
+function lastEv(t) { let k = -1; for (let i = 0; i < EV.length; i++) { if (EV[i].t <= t) k = i; else break; } return k; }
+function envOf(t, i) { return i < 0 ? 0 : Math.exp(-(t - EV[i].t) * 7); }
+
+function drawFace(x, y, r, tilt, happy) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(tilt);
+  circ(0, 0, r, C.skin);
+  circ(-r - 2, 6, 17, C.skinD); circ(r + 2, 6, 17, C.skinD);
+  ctx.fillStyle = C.hair; ctx.beginPath(); ctx.arc(0, -6, r + 4, Math.PI * 1.03, Math.PI * 1.97); ctx.quadraticCurveTo(r * .8, -r * .72, -r - 4, -r * .22); ctx.fill();
+  ctx.fillStyle = C.hair; ctx.beginPath(); ctx.ellipse(-r * .55, -r * .55, 40, 26, -.5, 0, 7); ctx.fill();
+  ctx.strokeStyle = C.hair; ctx.lineWidth = 8; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(-30, 6, 14, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke(); ctx.beginPath(); ctx.arc(30, 6, 14, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
+  ctx.strokeStyle = '#a5483a'; ctx.lineWidth = 8; ctx.beginPath(); ctx.arc(0, 28, happy ? 30 : 22, .15 * Math.PI, .85 * Math.PI); ctx.stroke();
+  circ(-48, 34, 14, 'rgba(255,107,74,.35)'); circ(48, 34, 14, 'rgba(255,107,74,.35)');
+  ctx.restore();
+}
+
+function drawPlay(t) {
+  const p = t - T_PLAY, ei = lastEv(t), env = envOf(t, ei);
+  const playing = t >= T_PLAY - .3 && t < T_END_PLAY + .5;
+  const barIdx = clamp(Math.floor(p / BAR), 0, NBARS - 1), ch = CHORDS[barIdx % 4];
+  const beatPh = playing ? (p / BEAT) : 0;
+  const bob = playing ? Math.sin(beatPh * Math.PI * 2 / 3) * 5 : Math.sin(t * 2) * 3;
+  const sway = playing ? Math.sin(p * 2.1) * .05 : 0;
+
+  // רקע חם
+  const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#12343c'); bg.addColorStop(1, '#0b1f26'); ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+  const glow = ctx.createRadialGradient(540, 700, 40, 540, 760, 700); glow.addColorStop(0, 'rgba(255,196,120,.38)'); glow.addColorStop(1, 'rgba(255,196,120,0)'); ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
+  // חלון
+  ctx.fillStyle = '#ffd98a22'; ctx.beginPath(); ctx.roundRect(70, 200, 230, 330, 22); ctx.fill(); ctx.strokeStyle = '#ffffff20'; ctx.lineWidth = 6; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(185, 200); ctx.lineTo(185, 530); ctx.moveTo(70, 365); ctx.lineTo(300, 365); ctx.stroke();
+  // תווים צפים
+  const rn = rng(8); for (let i = 0; i < 9; i++) { const bx = rn() * W, spd = 25 + rn() * 35, ph = rn() * 9; const yy = 1250 - ((t * spd + ph * 130) % 1100); ctx.globalAlpha = .12 + .1 * Math.sin(t + i); ctx.fillStyle = '#fff'; ctx.font = `700 ${46 + i % 3 * 14}px ${FONT}`; ctx.textAlign = 'center'; ctx.direction = 'ltr'; ctx.fillText(i % 2 ? '♪' : '♫', bx, yy); } ctx.globalAlpha = 1;
+
+  // רגליים
+  const HP = [520, 1010 + bob];
+  limb([[HP[0] - 90, HP[1] + 5], [395, 1095], [385, 1330]], 100, C.jeans); limb([[HP[0] + 90, HP[1] + 5], [650, 1095], [665, 1330]], 100, C.jeans);
+  // גו
+  const S = [520 + sway * 300, 735 + bob];
+  ctx.fillStyle = C.shirt; ctx.beginPath(); ctx.moveTo(S[0] - 140, S[1]); ctx.lineTo(S[0] + 140, S[1]); ctx.lineTo(HP[0] + 118, HP[1]); ctx.lineTo(HP[0] - 118, HP[1]); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = C.shirtD; ctx.fillRect(S[0] - 8, S[1] + 30, 16, 260);
+  limb([S, [S[0], S[1] - 80]], 62, C.skinD);
+  const Hd = [S[0] + sway * 260, S[1] - 160 + Math.sin(beatPh * 1.0) * 2];
+  drawFace(Hd[0], Hd[1], 84, sway * 1.4, t > T_END_PLAY);
+
+  // גיטרה
+  const G = { x: 470, y: 1000 + bob, a: -0.42 };
+  const vib = {}; if (ei >= 0) { const e = EV[ei]; if (env > .04) vib[e.s] = { amp: 7 * env, ph: (t - e.t) * 95 }; }
+  ctx.save(); ctx.translate(G.x, G.y); ctx.rotate(G.a); drawGuitar(vib);
+  // אצבעות יד שמאל — מחזיקות את האקורד על הצוואר
+  const palmL = [405, 98];
+  ctx.lineCap = 'round';
+  for (const [s, f, fing] of ch.dots) {
+    const dx = (fretX(f) + fretX(f - 1)) / 2, dy = strY(s, dx);
+    limb([[palmL[0] + (fing - 2) * 14, palmL[1]], [dx, dy]], 21, C.skin);
+    circ(dx, dy, 17, C.skin); circ(dx, dy, 9, '#ffffff66');
+  }
+  // יד ימין — אגודל + שלוש אצבעות מעל המיתרים
+  const palmR = [-62, -128]; const tipX = -22;
+  const FM = { p: ch.bass, i: 3, m: 2, a: 1 };
+  circ(palmR[0], palmR[1], 40, C.skin);
+  for (const f of ['p', 'i', 'm', 'a']) {
+    const s = FM[f]; let pull = 0;
+    if (ei >= 0 && EV[ei].finger === f && EV[ei].s === s) pull = 14 * Math.exp(-(t - EV[ei].t) * 18);
+    const ty = strY(s, tipX) - pull * (f === 'p' ? 1 : 1) - 2;
+    const sx0 = palmR[0] + (f === 'p' ? 20 : 8 + ['i', 'm', 'a'].indexOf(f) * 16), sy0 = palmR[1] + 24;
+    limb([[sx0, sy0], [tipX - (f === 'p' ? 12 : 0), ty]], 19, C.skin);
+    circ(tipX - (f === 'p' ? 12 : 0), ty, 11, FINGER_COL[f]);
+  }
+  ctx.restore();
+
+  // זרועות
+  const palmLW = gw(G, palmL[0], palmL[1] - 20), palmRW = gw(G, palmR[0], palmR[1]);
+  const rs = [S[0] - 128, S[1] + 18], ls = [S[0] + 128, S[1] + 18];
+  const hr = arm(rs, palmRW, [-1, 1]), hl = arm(ls, palmLW, [.2, 1]);
+  circ(hr[0], hr[1], 36, C.skin); circ(hl[0], hl[1], 34, C.skin);
+
+  // לוח תחתון: אקורדים + טאב
+  const slide = 1 - eOut(seg(t, T_SW + .5, T_SW + 1.0)); const py = 1245 + slide * 700;
+  ctx.save(); ctx.translate(0, py - 1245);
+  ctx.fillStyle = 'rgba(6,16,20,.9)'; ctx.beginPath(); ctx.roundRect(50, 1245, 980, 590, 46); ctx.fill(); ctx.strokeStyle = '#ffffff18'; ctx.lineWidth = 3; ctx.stroke();
+  // רצף אקורדים
+  for (let i = 0; i < 4; i++) {
+    const cx = 540 + (i - 1.5) * 205, on = (barIdx % 4) === i && playing;
+    ctx.fillStyle = on ? C.yellow : '#ffffff14'; ctx.beginPath(); ctx.roundRect(cx - 80, 1275, 160, 86, 22); ctx.fill();
+    text(CHORDS[i].name, cx, 1320, 56, { color: on ? '#111' : '#ffffff88' });
+  }
+  // טאב
+  const lineY = i => 1440 + (i - 1) * 50, colX = c => 255 + c * 110;
+  ctx.strokeStyle = '#ffffff40'; ctx.lineWidth = 3;
+  for (let i = 1; i <= 6; i++) { ctx.beginPath(); ctx.moveTo(185, lineY(i)); ctx.lineTo(900, lineY(i)); ctx.stroke(); }
+  ctx.strokeStyle = '#ffffff70'; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(185, lineY(1)); ctx.lineTo(185, lineY(6)); ctx.moveTo(900, lineY(1)); ctx.lineTo(900, lineY(6)); ctx.stroke();
+  ['T', 'A', 'B'].forEach((l, i) => text(l, 130, lineY(2) + i * 48, 44, { color: '#ffffff88' }));
+  // ראש הנגינה
+  let ph = 0; if (playing) { ph = clamp((p - barIdx * BAR) / BEAT, 0, 6); }
+  const headX = lerp(colX(0), colX(5), clamp(ph / 5)) + (ph > 5 ? (ph - 5) * 110 : 0);
+  if (playing) { const g = ctx.createLinearGradient(headX - 40, 0, headX + 40, 0); g.addColorStop(0, '#ffd23f00'); g.addColorStop(.5, '#ffd23f55'); g.addColorStop(1, '#ffd23f00'); ctx.fillStyle = g; ctx.fillRect(headX - 40, lineY(1) - 28, 80, 5 * 50 + 56); }
+  const curBarEv = EV.filter(e => e.bar === barIdx);
+  for (const e of curBarEv) {
+    const played = playing && e.t <= t, cur = ei >= 0 && EV[ei] === e && (t - e.t) < BEAT;
+    const x = colX(e.col), y = lineY(e.s), col = FINGER_COL[e.finger];
+    ctx.save(); ctx.globalAlpha = played ? 1 : .55;
+    if (cur) { ctx.shadowColor = col; ctx.shadowBlur = 36; }
+    const rr = cur ? 31 : 26; circ(x, y, rr, played ? col : '#0e1c22'); ctx.lineWidth = 4; ctx.strokeStyle = col; ctx.beginPath(); ctx.arc(x, y, rr, 0, 7); ctx.stroke();
+    ctx.restore(); text(String(e.fret), x, y + 2, 34, { color: played ? '#111' : col, weight: 900 });
+    text(e.finger, x, 1750, cur ? 72 : 50, { color: cur ? col : col + '99', weight: 900 });
+  }
+  text('מצב האצבעות', 540, 1800, 1, { alpha: 0 });
+  ctx.restore();
+
+  // כותרות עליונות
+  const capA = (a, b) => seg(t, a, a + .3) * (1 - seg(t, b - .3, b));
+  const tt = t;
+  if (capA(T_SW + .5, 8.7) > 0) {
+    const a = capA(T_SW + .5, 8.7), s = popScale(tt, T_SW + .55);
+    ctx.save(); ctx.globalAlpha = a;
+    ctx.fillStyle = C.coral; ctx.beginPath(); ctx.roundRect(W / 2 - 170, 150, 340, 78, 39); ctx.fill(); text('טיפ לגיטרה', W / 2, 190, 48, { color: '#fff' });
+    text("ארפג'יו", W / 2, 330, 190, { color: '#fff', stroke: '#000', strokeW: 30, scale: s, shadow: '#000a' });
+    text('באצבעות', W / 2, 500, 150, { color: C.yellow, stroke: '#000', strokeW: 26, scale: popScale(tt, T_SW + .7), shadow: '#000a' });
+    ctx.restore();
+  }
+  const steps = [
+    [8.7, 12.7, '1', 'האגודל מנגן את הבס', 'p', 'p'],
+    [12.7, 16.7, '2', 'שלוש אצבעות על המיתרים הדקים', 'i   m   a', 'i'],
+    [16.7, 21.0, '3', 'והדפוס חוזר על עצמו', 'p  i  m  a  m  i', 'm'],
+  ];
+  for (const [a, b, n, line, lat, fk] of steps) {
+    const k = capA(a, b); if (k <= 0) continue;
+    ctx.save(); ctx.globalAlpha = k; const s = popScale(tt, a, .3);
+    circ(W / 2, 205, 66 * s, C.yellow); text(n, W / 2, 210, 90 * s, { color: '#111' });
+    text(line, W / 2, 360, 64, { color: '#fff', stroke: '#000', strokeW: 18, scale: s, shadow: '#000a' });
+    ctx.restore();
+    ctx.save(); ctx.globalAlpha = k; ctx.font = `900 96px ${FONT}`;
+    const parts = lat.split(/\s+/); const totalW = parts.length * 110; parts.forEach((ch2, i) => { const x = W / 2 - totalW / 2 + 55 + i * 110; const act = ei >= 0 && EV[ei].finger === ch2 && (t - EV[ei].t) < BEAT; text(ch2, x, 475, act ? 118 : 92, { color: FINGER_COL[ch2], stroke: '#000', strokeW: 18 }); });
+    ctx.restore();
+  }
+  if (t >= 21.0) {
+    const s = popScale(t, 21.0);
+    text('תתחילו לאט', W / 2, 270, 130, { color: '#fff', stroke: '#000', strokeW: 24, scale: s, shadow: '#000a' });
+    text('ותעלו מהירות', W / 2, 430, 130, { color: C.yellow, stroke: '#000', strokeW: 24, scale: popScale(t, 21.15), shadow: '#000a' });
+    const k = popScale(t, 22.0); ctx.save(); ctx.translate(W / 2, 1172); ctx.scale(k, k);
+    ctx.fillStyle = C.coral; ctx.beginPath(); ctx.roundRect(-300, -120, 600, 100, 50); ctx.fill();
+    text('שמרו לתרגול ♥', 0, -68, 58, { color: '#fff' }); ctx.restore();
+  }
+}
+
+/* =====================================================================
+   מסגרת ראשית
+   ===================================================================== */
+function renderFrame(t) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.clearRect(0, 0, W, H);
+  if (t < T_SW + .6) drawHook(t);
+  if (t >= T_SW) {
+    const k = eIO(seg(t, T_SW, T_SW + .5)), R = k * 1500;
+    ctx.save(); ctx.beginPath(); ctx.arc(W / 2, H / 2, R, 0, 7); ctx.clip(); drawPlay(t); ctx.restore();
+    if (k > 0 && k < 1) { ctx.save(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 14 * (1 - k); ctx.globalAlpha = 1 - k * .6; ctx.beginPath(); ctx.arc(W / 2, H / 2, R, 0, 7); ctx.stroke(); ctx.restore(); }
+  }
+}
+
+/* =====================================================================
+   סאונד — סינתזה בקוד (Karplus-Strong לגיטרה + אפקטים)
+   ===================================================================== */
+function mixAudio(sr = 44100) {
+  const n = Math.ceil(DUR * sr), out = new Float32Array(n), gtr = new Float32Array(n), r = rng(1234);
+  const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+  const put = (dst, buf, t, g) => { const s = Math.floor(t * sr); for (let i = 0; i < buf.length && s + i < n; i++) dst[s + i] += buf[i] * g; };
+  const noise = (len, decay, lp, g = 1) => { const b = new Float32Array(len * sr | 0); let y = 0; for (let i = 0; i < b.length; i++) { y += lp * ((r() * 2 - 1) - y); b[i] = y * Math.exp(-i / sr * decay) * g; } return b; };
+  const sine = (len, f0, f1, decay, g = 1) => { const b = new Float32Array(len * sr | 0); let ph = 0; for (let i = 0; i < b.length; i++) { const tt = i / sr, f = f0 * Math.pow(f1 / f0, Math.min(1, tt / len)); ph += 2 * Math.PI * f / sr; b[i] = Math.sin(ph) * Math.exp(-tt * decay) * g; } return b; };
+  const ks = (f, len, damp = .9965, mellow = .5) => {
+    const N = Math.max(2, Math.round(sr / f)), buf = new Float32Array(N); let y = 0;
+    for (let i = 0; i < N; i++) { y += mellow * ((r() * 2 - 1) - y); buf[i] = y; }
+    const o = new Float32Array(len * sr | 0); let idx = 0, prev = 0;
+    for (let i = 0; i < o.length; i++) { const nx = (idx + 1) % N, v = (buf[idx] + buf[nx]) * .5 * damp; o[i] = buf[idx]; buf[idx] = v; idx = nx; }
+    const fade = Math.min(400, o.length); for (let i = 0; i < fade; i++) o[o.length - 1 - i] *= i / fade;
+    return o;
+  };
+  // מתח לפני הריסוק
+  { const b = new Float32Array(1.5 * sr | 0); for (let i = 0; i < b.length; i++) { const tt = i / sr, a = Math.pow(tt / 1.5, 1.6) * .22; b[i] = (Math.sin(2 * Math.PI * 55 * tt) + .6 * Math.sin(2 * Math.PI * 82.4 * tt + Math.sin(tt * 9))) * a + (r() * 2 - 1) * a * .18; } put(out, b, 0, 1); }
+  { const L = .4, b = new Float32Array(L * sr | 0); let y = 0; for (let i = 0; i < b.length; i++) { const k = i / b.length; y += (.02 + .5 * k * k) * ((r() * 2 - 1) - y); b[i] = y * Math.sin(Math.PI * Math.min(1, k * 1.15)) * .9; } put(out, b, T_SLAM - .4, 1); }
+  // ריסוק
+  put(out, sine(.9, 120, 38, 5.5, 1.1), T_SLAM, 1); put(out, noise(.6, 9, .55, 1.1), T_SLAM, 1); put(out, noise(.08, 55, .95, 1.2), T_SLAM, 1); put(out, noise(.3, 14, .12, 1), T_SLAM, .9);
+  [40, 45, 50, 55, 59, 64].forEach((m, i) => { put(out, ks(mtof(m + (i % 2 ? .43 : -.37)) , 1.6, .9985, .9), T_SLAM + i * .006, .33); });
+  [.30, .42, .58, .70, .90, 1.05, 1.28, 1.5].forEach((d, i) => { put(out, noise(.07, 60, .5, 1), T_SLAM + d, .45 / (1 + i * .25)); put(out, sine(.12, 210 - i * 12, 120, 40, .4), T_SLAM + d, .5 / (1 + i * .25)); });
+  // X
+  put(out, sine(.6, 100, 40, 7, 1), T_X, .9); put(out, noise(.1, 40, .5, 1), T_X, .7); put(out, sine(.4, 90, 45, 9, 1), T_X + .12, .6); put(out, noise(.08, 50, .5, 1), T_X + .12, .5);
+  const pop = tt => { put(out, sine(.1, 520, 940, 30, 1), tt, .35); put(out, noise(.05, 80, .7, 1), tt, .15); };
+  pop(T_TXT1); pop(T_TXT1 + .12); pop(T_TXT2);
+  { const L = .55, b = new Float32Array(L * sr | 0); let y = 0; for (let i = 0; i < b.length; i++) { const k = i / b.length; y += (.03 + .35 * k) * ((r() * 2 - 1) - y); b[i] = y * Math.sin(Math.PI * k) * 1.1; } put(out, b, T_SW - .05, .9); }
+  // הנגינה
+  for (const e of EV) put(gtr, ks(mtof(e.midi), 2.4, .9972 + (e.midi < 50 ? .0008 : 0), .55), e.t, e.finger === 'p' ? .5 : .42);
+  // ריוורב קל על הגיטרה
+  const rev = new Float32Array(n); [[.029, .35], [.037, .32], [.043, .3], [.053, .27]].forEach(([d, fb]) => { const D = d * sr | 0; for (let i = D; i < n; i++) rev[i] += (gtr[i - D] + fb * rev[i - D]) * .25; });
+  for (let i = 0; i < n; i++) out[i] += gtr[i] + rev[i] * .8;
+  // צלצול סיום
+  put(out, sine(1.4, 880, 880, 3.2, 1), 21.0, .12); put(out, sine(1.4, 1320, 1320, 3.6, 1), 21.08, .09); put(out, sine(1.0, 1760, 1760, 4, 1), 22.0, .08);
+  let pk = 0; for (let i = 0; i < n; i++) { out[i] = Math.tanh(out[i] * .9); pk = Math.max(pk, Math.abs(out[i])); }
+  const g = .92 / (pk || 1); for (let i = 0; i < n; i++) out[i] *= g;
+  return out;
+}
+function wavBase64(f32, sr = 44100) {
+  const buf = new ArrayBuffer(44 + f32.length * 2), v = new DataView(buf), w = (o, s) => { for (let i = 0; i < s.length; i++) v.setUint8(o + i, s.charCodeAt(i)); };
+  w(0, 'RIFF'); v.setUint32(4, 36 + f32.length * 2, true); w(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, sr, true); v.setUint32(28, sr * 2, true); v.setUint16(32, 2, true); v.setUint16(34, 16, true); w(36, 'data'); v.setUint32(40, f32.length * 2, true);
+  for (let i = 0; i < f32.length; i++) v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, f32[i])) * 32767, true);
+  const u = new Uint8Array(buf); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s);
+}
+window.renderFrame = renderFrame; window.exportWav = () => wavBase64(mixAudio());
+window.DUR = DUR;
+
+/* =====================================================================
+   נגן (בדפדפן)
+   ===================================================================== */
+let actx = null, abuf = null, src = null, t0 = 0, playing = false, tPaused = 0;
+const $ = id => document.getElementById(id);
+function getAudio() { if (!actx) { actx = new (window.AudioContext || window.webkitAudioContext)(); const d = mixAudio(actx.sampleRate); abuf = actx.createBuffer(1, d.length, actx.sampleRate); abuf.copyToChannel(d, 0); } return actx; }
+function startAt(t) {
+  const a = getAudio(); if (a.state === 'suspended') a.resume();
+  if (src) { try { src.stop(); } catch (e) { } }
+  src = a.createBufferSource(); src.buffer = abuf; src.connect(a.destination); src.start(0, t); t0 = a.currentTime - t; playing = true;
+  src.onended = () => { if (playing && cur() >= DUR - .05) { playing = false; tPaused = DUR; } };
+  $('big').style.display = 'none';
+}
+const cur = () => playing ? Math.min(DUR, actx.currentTime - t0) : tPaused;
+function pause() { if (!playing) return; tPaused = cur(); playing = false; try { src.stop(); } catch (e) { } }
+function loop() { const t = cur(); renderFrame(t); $('seek').value = Math.round(t / DUR * 1000); requestAnimationFrame(loop); }
+if (!QS.has('render')) {
+  $('big').onclick = () => startAt(0);
+  $('pp').onclick = () => playing ? pause() : (tPaused >= DUR - .05 ? startAt(0) : startAt(tPaused));
+  $('rs').onclick = () => startAt(0);
+  $('seek').oninput = e => { pause(); tPaused = e.target.value / 1000 * DUR; $('big').style.display = 'none'; };
+  (document.fonts && document.fonts.load ? Promise.race([document.fonts.load("900 40px Heebo"), new Promise(r => setTimeout(r, 1500))]) : Promise.resolve()).then(loop);
+}
+window.fontsReady = () => (document.fonts && document.fonts.load ? Promise.race([document.fonts.load("900 40px Heebo"), new Promise(r => setTimeout(r, 2500))]) : Promise.resolve());
+</script>
+</body>
+</html>
