@@ -117,6 +117,12 @@ function bodyPath() {
   return p;
 }
 const BODY = bodyPath();
+function mkTex(w, h, fn) { const c = document.createElement('canvas'); c.width = w; c.height = h; fn(c.getContext('2d'), w, h); return c; }
+const WOODTEX = mkTex(512, 512, (g, w, h) => { const r = rng(2); g.fillStyle = '#d98b3a'; g.fillRect(0, 0, w, h);
+  for (let i = 0; i < 320; i++) { const y = r() * h; g.strokeStyle = `rgba(${r() < .5 ? '90,45,10' : '255,214,150'},${.05 + r() * .18})`; g.lineWidth = .6 + r() * 2.6; g.beginPath(); g.moveTo(0, y); for (let x = 0; x <= w; x += 32) g.lineTo(x, y + Math.sin(x * .02 + i) * 3 + (r() - .5) * 1.4); g.stroke(); } });
+const NECKTEX = mkTex(512, 64, (g, w, h) => { const r = rng(6); g.fillStyle = '#2b1a10'; g.fillRect(0, 0, w, h); for (let i = 0; i < 70; i++) { const y = r() * h; g.strokeStyle = `rgba(${r() < .5 ? '10,4,0' : '120,70,40'},${.1 + r() * .25})`; g.lineWidth = .5 + r() * 1.5; g.beginPath(); g.moveTo(0, y); g.lineTo(w, y + (r() - .5) * 4); g.stroke(); } });
+const GRAIN = mkTex(256, 256, (g, w, h) => { const d = g.createImageData(w, h), r = rng(4); for (let i = 0; i < w * h; i++) { const v = r() * 255; d.data[i * 4] = d.data[i * 4 + 1] = d.data[i * 4 + 2] = v; d.data[i * 4 + 3] = 255; } g.putImageData(d, 0, 0); });
+const WOODPAT = ctx.createPattern(WOODTEX, 'repeat'), NECKPAT = ctx.createPattern(NECKTEX, 'repeat'), GRAINPAT = ctx.createPattern(GRAIN, 'repeat');
 function drawGuitar(vib) {
   // צל
   ctx.save(); ctx.shadowColor = '#0008'; ctx.shadowBlur = 30; ctx.shadowOffsetY = 10;
@@ -124,12 +130,20 @@ function drawGuitar(vib) {
   const g = ctx.createRadialGradient(-110, -30, 20, -90, 0, 220);
   g.addColorStop(0, '#f2a64f'); g.addColorStop(.6, '#d98b3a'); g.addColorStop(1, '#a8601c');
   ctx.fillStyle = g; ctx.fill(BODY);
+  ctx.save(); ctx.clip(BODY);
+  ctx.globalCompositeOperation = 'multiply'; ctx.globalAlpha = .6; ctx.fillStyle = WOODPAT; ctx.fillRect(-300, -200, 520, 400);
+  ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  const hl = ctx.createLinearGradient(-250, -150, 60, 150); hl.addColorStop(0, 'rgba(255,255,255,0)'); hl.addColorStop(.22, 'rgba(255,246,225,.42)'); hl.addColorStop(.36, 'rgba(255,246,225,0)'); hl.addColorStop(1, 'rgba(0,0,0,.34)');
+  ctx.fillStyle = hl; ctx.fillRect(-300, -200, 520, 400);
+  ctx.lineWidth = 30; ctx.strokeStyle = 'rgba(60,25,5,.5)'; ctx.stroke(BODY);
+  ctx.restore();
   ctx.lineWidth = 9; ctx.strokeStyle = '#5a3210'; ctx.stroke(BODY);
   ctx.lineWidth = 3; ctx.strokeStyle = '#f6d9a2'; ctx.save(); ctx.scale(.93, .93); ctx.stroke(BODY); ctx.restore();
   // צוואר
   ctx.fillStyle = '#7a4a22'; ctx.beginPath(); ctx.roundRect(90, -33, NUT - 85, 66, 6); ctx.fill();
   ctx.fillStyle = '#2b1a10'; ctx.beginPath(); ctx.roundRect(95, -30, NUT - 95, 60, 4); ctx.fill();
-  // פרטים
+  ctx.save(); ctx.beginPath(); ctx.roundRect(95, -30, NUT - 95, 60, 4); ctx.clip(); ctx.globalAlpha = .9; ctx.fillStyle = NECKPAT; ctx.fillRect(95, -30, NUT, 60);
+  const ng = ctx.createLinearGradient(0, -30, 0, 30); ng.addColorStop(0, 'rgba(255,255,255,.16)'); ng.addColorStop(.5, 'rgba(255,255,255,0)'); ng.addColorStop(1, 'rgba(0,0,0,.4)'); ctx.globalAlpha = 1; ctx.fillStyle = ng; ctx.fillRect(95, -30, NUT, 60); ctx.restore();
   for (const n of [3, 5, 7, 9]) circ((fretX(n) + fretX(n - 1)) / 2, 0, 5, '#e9dcc0');
   ctx.strokeStyle = '#c9ccd2'; ctx.lineWidth = 3;
   for (let n = 1; n <= 10; n++) { const x = fretX(n); ctx.beginPath(); ctx.moveTo(x, -30); ctx.lineTo(x, 30); ctx.stroke(); }
@@ -138,7 +152,7 @@ function drawGuitar(vib) {
   ctx.fillStyle = '#2b1a10'; ctx.beginPath(); ctx.roundRect(NUT + 4, -40, 95, 80, 12); ctx.fill();
   for (let i = 0; i < 3; i++) for (const sy of [-1, 1]) { circ(NUT + 30 + i * 28, sy * 48, 10, '#d8d8d8'); }
   // פתח תהודה + גשר
-  circ(-5, 0, 50, '#150d07'); ctx.lineWidth = 7; ctx.strokeStyle = '#f0c987'; ctx.beginPath(); ctx.arc(-5, 0, 56, 0, 7); ctx.stroke();
+  { const sg = ctx.createRadialGradient(-5, 10, 4, -5, 0, 52); sg.addColorStop(0, '#000'); sg.addColorStop(1, '#2a1608'); ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(-5, 0, 50, 0, 7); ctx.fill(); } ctx.lineWidth = 7; ctx.strokeStyle = '#f0c987'; ctx.beginPath(); ctx.arc(-5, 0, 56, 0, 7); ctx.stroke();
   ctx.fillStyle = '#2b1a10'; ctx.beginPath(); ctx.roundRect(BRIDGE - 12, -62, 26, 124, 8); ctx.fill();
   // מיתרים
   for (let s = 1; s <= 6; s++) {
@@ -220,10 +234,11 @@ function drawStanding(t, pose, broke) {
   const rot = (a, x, y) => [x * Math.cos(a) - y * Math.sin(a), x * Math.sin(a) + y * Math.cos(a)];
   const heave = broke ? Math.sin(post * 14) * 5 * Math.exp(-post * 1.2) : 0;
   const hip = HIP;
+  { const sh = ctx.createRadialGradient(hip[0] + 30, 1458, 10, hip[0] + 30, 1458, 230); sh.addColorStop(0, 'rgba(0,0,0,.6)'); sh.addColorStop(1, 'rgba(0,0,0,0)'); ctx.save(); ctx.translate(0, 1458); ctx.scale(1, .16); ctx.translate(0, -1458); ctx.fillStyle = sh; ctx.fillRect(hip[0] - 220, 1458 - 230, 500, 460); ctx.restore(); }
   // רגליים
   limb([[hip[0] - 40, hip[1]], [hip[0] - 70, 1330], [hip[0] - 62, 1450]], 78, C.jeans);
   limb([[hip[0] + 40, hip[1]], [hip[0] + 78, 1330], [hip[0] + 92, 1450]], 78, C.jeans);
-  ctx.fillStyle = '#f2f2f2'; ctx.beginPath(); ctx.ellipse(hip[0] - 50, 1452, 62, 24, 0, 0, 7); ctx.ellipse(hip[0] + 112, 1452, 62, 24, 0, 0, 7); ctx.fill();
+  ctx.fillStyle = '#c9c9cf'; ctx.beginPath(); ctx.ellipse(hip[0] - 50, 1452, 62, 24, 0, 0, 7); ctx.ellipse(hip[0] + 112, 1452, 62, 24, 0, 0, 7); ctx.fill();
   // גו
   const sOff = rot(lean, 0, -300), S = [hip[0] + sOff[0], hip[1] + sOff[1] + heave];
   ctx.save(); ctx.fillStyle = C.shirt; ctx.beginPath();
@@ -258,12 +273,16 @@ function drawHook(t) {
   let sx = 0, sy = 0;
   if (post > 0) { const a = 38 * Math.exp(-post * 7); sx = Math.sin(post * 83) * a; sy = Math.cos(post * 71) * a * .7; }
   const dx = t - T_X; if (dx > 0 && dx < .6) { const a = 18 * Math.exp(-dx * 9); sx += Math.sin(dx * 90) * a; sy += Math.cos(dx * 77) * a; }
-  const zoom = 1 + (post > 0 ? .07 * Math.exp(-post * 6) : 0);
+  const zoom = 1 + (t < T_SLAM ? .05 * eIO(t / T_SLAM) : .05 * Math.exp(-post * 3) + .05 * Math.exp(-post * 7));
   ctx.save(); ctx.translate(W / 2 + sx, H / 2 + sy); ctx.scale(zoom, zoom); ctx.translate(-W / 2, -H / 2);
   // רקע: במה כהה + זרקור
   const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#0b0f1a'); bg.addColorStop(1, '#171122'); ctx.fillStyle = bg; ctx.fillRect(-100, -100, W + 200, H + 200);
   const sp = ctx.createRadialGradient(430, 700, 40, 430, 900, 900); sp.addColorStop(0, 'rgba(255,214,150,.30)'); sp.addColorStop(1, 'rgba(255,214,150,0)'); ctx.fillStyle = sp; ctx.fillRect(-100, -100, W + 200, H + 200);
+  { ctx.save(); ctx.globalCompositeOperation = 'screen'; const cone = ctx.createLinearGradient(0, -50, 0, FLOOR); cone.addColorStop(0, 'rgba(255,225,170,.20)'); cone.addColorStop(1, 'rgba(255,225,170,.05)'); ctx.fillStyle = cone; ctx.beginPath(); ctx.moveTo(380, -80); ctx.lineTo(480, -80); ctx.lineTo(850, FLOOR); ctx.lineTo(60, FLOOR); ctx.closePath(); ctx.filter = 'blur(14px)'; ctx.fill(); ctx.filter = 'none';
+    const rm = rng(77); for (let i = 0; i < 46; i++) { const px = 120 + rm() * 700, py = ((rm() * 1400 + t * (14 + rm() * 22)) % 1400), rr = 1.5 + rm() * 3.5; ctx.fillStyle = `rgba(255,236,200,${.2 + .3 * rm()})`; ctx.beginPath(); ctx.arc(px + Math.sin(t + i) * 12, py, rr, 0, 7); ctx.fill(); } ctx.restore(); }
   const fl = ctx.createLinearGradient(0, FLOOR, 0, H); fl.addColorStop(0, '#5b3a20'); fl.addColorStop(1, '#2a180c'); ctx.fillStyle = fl; ctx.fillRect(-100, FLOOR, W + 200, H);
+  ctx.save(); ctx.globalAlpha = .4; ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = WOODPAT; ctx.fillRect(-100, FLOOR, W + 200, H); ctx.restore();
+  { const rf = ctx.createRadialGradient(440, FLOOR + 90, 10, 440, FLOOR + 90, 520); rf.addColorStop(0, 'rgba(255,214,150,.38)'); rf.addColorStop(1, 'rgba(255,214,150,0)'); ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.fillStyle = rf; ctx.fillRect(-100, FLOOR, W + 200, H); ctx.restore(); }
   ctx.strokeStyle = '#00000055'; ctx.lineWidth = 3; for (let i = 0; i < 9; i++) { ctx.beginPath(); ctx.moveTo(-100, FLOOR + 30 + i * i * 6 + i * 20); ctx.lineTo(W + 100, FLOOR + 30 + i * i * 6 + i * 20); ctx.stroke(); }
   ctx.fillStyle = '#00000066'; ctx.fillRect(-100, FLOOR - 3, W + 200, 6);
 
@@ -326,7 +345,7 @@ function drawHook(t) {
     text('בואו תעשו את זה', W / 2, 1675, 112, { color: C.yellow, stroke: '#000', strokeW: 24, scale: popScale(t, T_TXT2), shadow: '#000' });
   }
   // הבזק
-  const fl2 = t >= T_SLAM ? Math.max(0, 1 - (t - T_SLAM) / .22) : 0; if (fl2 > 0) { ctx.fillStyle = `rgba(255,255,255,${.9 * fl2})`; ctx.fillRect(0, 0, W, H); }
+  const fl2 = t >= T_SLAM ? Math.max(0, 1 - (t - T_SLAM) / .22) : 0; if (fl2 > 0) { ctx.fillStyle = `rgba(255,255,255,${.62 * fl2})`; ctx.fillRect(0, 0, W, H); }
   // וינייטה
   const vg = ctx.createRadialGradient(W / 2, H / 2, 600, W / 2, H / 2, 1250); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.55)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
 }
@@ -353,6 +372,8 @@ function envOf(t, i) { return i < 0 ? 0 : Math.exp(-(t - EV[i].t) * 7); }
 function drawFace(x, y, r, tilt, happy) {
   ctx.save(); ctx.translate(x, y); ctx.rotate(tilt);
   circ(0, 0, r, C.skin);
+  { const fg = ctx.createRadialGradient(-30, -26, 8, 0, 0, r); fg.addColorStop(0, 'rgba(255,255,255,.18)'); fg.addColorStop(.6, 'rgba(255,255,255,0)'); fg.addColorStop(1, 'rgba(120,50,20,.32)'); ctx.fillStyle = fg; ctx.beginPath(); ctx.arc(0, 0, r, 0, 7); ctx.fill(); }
+  ctx.strokeStyle = 'rgba(150,80,50,.55)'; ctx.lineWidth = 6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(5, 4); ctx.quadraticCurveTo(17, 24, 3, 30); ctx.stroke();
   circ(-r - 2, 6, 17, C.skinD); circ(r + 2, 6, 17, C.skinD);
   ctx.fillStyle = C.hair; ctx.beginPath(); ctx.arc(0, -6, r + 4, Math.PI * 1.03, Math.PI * 1.97); ctx.quadraticCurveTo(r * .8, -r * .72, -r - 4, -r * .22); ctx.fill();
   ctx.fillStyle = C.hair; ctx.beginPath(); ctx.ellipse(-r * .55, -r * .55, 40, 26, -.5, 0, 7); ctx.fill();
@@ -372,20 +393,25 @@ function drawPlay(t) {
   const sway = playing ? Math.sin(p * 2.1) * .05 : 0;
 
   // רקע חם
+  ctx.save(); { const dz = 1.03 + .04 * seg(t, T_SW, T_END_PLAY + 2); ctx.translate(540 + Math.sin(t * .6) * 7, 900 + Math.cos(t * .45) * 5); ctx.scale(dz, dz); ctx.translate(-540, -900); }
   const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, '#12343c'); bg.addColorStop(1, '#0b1f26'); ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
   const glow = ctx.createRadialGradient(540, 700, 40, 540, 760, 700); glow.addColorStop(0, 'rgba(255,196,120,.38)'); glow.addColorStop(1, 'rgba(255,196,120,0)'); ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
-  // חלון
+  ctx.filter = 'blur(9px)';
+  { ctx.save(); ctx.globalCompositeOperation = 'screen'; const lr = ctx.createLinearGradient(180, 300, 700, 1200); lr.addColorStop(0, 'rgba(255,214,150,.22)'); lr.addColorStop(1, 'rgba(255,214,150,0)'); ctx.fillStyle = lr; ctx.beginPath(); ctx.moveTo(70, 200); ctx.lineTo(300, 200); ctx.lineTo(900, 1250); ctx.lineTo(300, 1250); ctx.closePath(); ctx.fill(); ctx.restore(); }
+  { const rb = rng(31); for (let i = 0; i < 16; i++) { const bx = 60 + rb() * 960, by = 120 + rb() * 700, br = 24 + rb() * 60; ctx.fillStyle = `rgba(255,${190 + rb() * 50 | 0},${110 + rb() * 60 | 0},${.08 + .08 * Math.sin(t * .8 + i)})`; ctx.beginPath(); ctx.arc(bx, by, br, 0, 7); ctx.fill(); } }
+  ctx.fillStyle = '#0a1c22'; ctx.fillRect(760, 480, 320, 24); ctx.fillStyle = '#143a38'; ctx.beginPath(); ctx.ellipse(900, 440, 60, 50, 0, 0, 7); ctx.fill(); ctx.fillStyle = '#e7d3a1'; ctx.fillRect(790, 400, 26, 80); ctx.fillStyle = '#c94f3a'; ctx.fillRect(830, 410, 22, 70);
   ctx.fillStyle = '#ffd98a22'; ctx.beginPath(); ctx.roundRect(70, 200, 230, 330, 22); ctx.fill(); ctx.strokeStyle = '#ffffff20'; ctx.lineWidth = 6; ctx.stroke();
   ctx.beginPath(); ctx.moveTo(185, 200); ctx.lineTo(185, 530); ctx.moveTo(70, 365); ctx.lineTo(300, 365); ctx.stroke();
   // תווים צפים
   const rn = rng(8); for (let i = 0; i < 9; i++) { const bx = rn() * W, spd = 25 + rn() * 35, ph = rn() * 9; const yy = 1250 - ((t * spd + ph * 130) % 1100); ctx.globalAlpha = .12 + .1 * Math.sin(t + i); ctx.fillStyle = '#fff'; ctx.font = `700 ${46 + i % 3 * 14}px ${FONT}`; ctx.textAlign = 'center'; ctx.direction = 'ltr'; ctx.fillText(i % 2 ? '♪' : '♫', bx, yy); } ctx.globalAlpha = 1;
 
+  ctx.filter = 'none';
   // רגליים
   const HP = [520, 1010 + bob];
   limb([[HP[0] - 90, HP[1] + 5], [395, 1095], [385, 1330]], 100, C.jeans); limb([[HP[0] + 90, HP[1] + 5], [650, 1095], [665, 1330]], 100, C.jeans);
   // גו
   const S = [520 + sway * 300, 735 + bob];
-  ctx.fillStyle = C.shirt; ctx.beginPath(); ctx.moveTo(S[0] - 140, S[1]); ctx.lineTo(S[0] + 140, S[1]); ctx.lineTo(HP[0] + 118, HP[1]); ctx.lineTo(HP[0] - 118, HP[1]); ctx.closePath(); ctx.fill();
+  { const sgr = ctx.createLinearGradient(S[0] - 140, 0, S[0] + 140, 0); sgr.addColorStop(0, '#f5834a'); sgr.addColorStop(.55, C.shirt); sgr.addColorStop(1, '#a94416'); ctx.fillStyle = sgr; } ctx.beginPath(); ctx.moveTo(S[0] - 140, S[1]); ctx.lineTo(S[0] + 140, S[1]); ctx.lineTo(HP[0] + 118, HP[1]); ctx.lineTo(HP[0] - 118, HP[1]); ctx.closePath(); ctx.fill();
   ctx.fillStyle = C.shirtD; ctx.fillRect(S[0] - 8, S[1] + 30, 16, 260);
   limb([S, [S[0], S[1] - 80]], 62, C.skinD);
   const Hd = [S[0] + sway * 260, S[1] - 160 + Math.sin(beatPh * 1.0) * 2];
@@ -423,6 +449,7 @@ function drawPlay(t) {
   const hr = arm(rs, palmRW, [-1, 1]), hl = arm(ls, palmLW, [.2, 1]);
   circ(hr[0], hr[1], 36, C.skin); circ(hl[0], hl[1], 34, C.skin);
 
+  ctx.restore();
   // לוח תחתון: אקורדים + טאב
   const slide = 1 - eOut(seg(t, T_SW + .5, T_SW + 1.0)); const py = 1245 + slide * 700;
   ctx.save(); ctx.translate(0, py - 1245);
@@ -495,7 +522,7 @@ function drawPlay(t) {
 /* =====================================================================
    מסגרת ראשית
    ===================================================================== */
-function renderFrame(t) {
+function renderScene(t) {
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.clearRect(0, 0, W, H);
   if (t < T_SW + .6) drawHook(t);
   if (t >= T_SW) {
@@ -503,6 +530,29 @@ function renderFrame(t) {
     ctx.save(); ctx.beginPath(); ctx.arc(W / 2, H / 2, R, 0, 7); ctx.clip(); drawPlay(t); ctx.restore();
     if (k > 0 && k < 1) { ctx.save(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 14 * (1 - k); ctx.globalAlpha = 1 - k * .6; ctx.beginPath(); ctx.arc(W / 2, H / 2, R, 0, 7); ctx.stroke(); ctx.restore(); }
   }
+}
+
+const ACC = mkTex(W, H, () => { }), accx = ACC.getContext('2d');
+const BL1 = mkTex(W / 6, H / 6, () => { }), bl1 = BL1.getContext('2d'), BL2 = mkTex(W / 14, H / 14, () => { }), bl2 = BL2.getContext('2d');
+function post(t) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.filter = 'none';
+  // זוהר (bloom) משני קני מידה
+  bl1.clearRect(0, 0, W / 6, H / 6); bl1.filter = 'brightness(.72) contrast(1.9) blur(2px)'; bl1.drawImage(cv, 0, 0, W / 6, H / 6); bl1.filter = 'none';
+  bl2.clearRect(0, 0, W / 14, H / 14); bl2.filter = 'brightness(.72) contrast(1.9)'; bl2.drawImage(cv, 0, 0, W / 14, H / 14); bl2.filter = 'none';
+  ctx.save(); ctx.globalCompositeOperation = 'screen'; ctx.imageSmoothingQuality = 'high'; ctx.globalAlpha = .5; ctx.drawImage(BL1, 0, 0, W, H); ctx.globalAlpha = .55; ctx.drawImage(BL2, 0, 0, W, H); ctx.restore();
+  // צבע קולנועי: חם בהיילייטס, קריר בצללים
+  ctx.save(); ctx.globalCompositeOperation = 'soft-light'; const lg = ctx.createLinearGradient(0, 0, W, H); lg.addColorStop(0, 'rgba(255,170,90,.38)'); lg.addColorStop(1, 'rgba(40,110,160,.38)'); ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H);
+  ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = .18; ctx.fillStyle = lg; ctx.fillRect(0, 0, W, H); ctx.restore();
+  // וינייטה עדינה
+  const vg = ctx.createRadialGradient(W / 2, H / 2, 650, W / 2, H / 2, 1300); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.38)'); ctx.fillStyle = vg; ctx.fillRect(0, 0, W, H);
+  // גרעיניות פילם
+  const rr = rng(Math.floor(t * 30) * 7 + 1); ctx.save(); ctx.globalCompositeOperation = 'overlay'; ctx.globalAlpha = .17; ctx.translate(Math.floor(rr() * 256), Math.floor(rr() * 256)); ctx.fillStyle = GRAINPAT; ctx.fillRect(-256, -256, W + 512, H + 512); ctx.restore();
+}
+function renderFrame(t) { renderScene(t); post(t); }
+function renderFrameHQ(t, N = 7) {                // שבע תתי-פריימים = טשטוש תנועה אמיתי (shutter 180°)
+  const sh = 1 / 30 * .5; accx.setTransform(1, 0, 0, 1, 0, 0); accx.clearRect(0, 0, W, H);
+  for (let k = 0; k < N; k++) { renderScene(Math.max(0, t + (k / (N - 1) - .5) * sh)); accx.globalAlpha = 1 / (k + 1); accx.drawImage(cv, 0, 0); }
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.clearRect(0, 0, W, H); ctx.drawImage(ACC, 0, 0); post(t);
 }
 
 /* =====================================================================
@@ -551,7 +601,7 @@ function wavBase64(f32, sr = 44100) {
   for (let i = 0; i < f32.length; i++) v.setInt16(44 + i * 2, Math.max(-1, Math.min(1, f32[i])) * 32767, true);
   const u = new Uint8Array(buf); let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s);
 }
-window.renderFrame = renderFrame; window.exportWav = () => wavBase64(mixAudio());
+window.renderFrame = renderFrame; window.renderFrameHQ = renderFrameHQ; window.exportWav = () => wavBase64(mixAudio());
 window.DUR = DUR;
 
 /* =====================================================================

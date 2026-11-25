@@ -21,7 +21,7 @@ const FPS = 30;
   if (fi >= 0) {                                   // תמונות בדיקה בלבד
     const dir = path.resolve(__dirname, '.frames'); fs.mkdirSync(dir, { recursive: true });
     for (const t of args[fi + 1].split(',').map(Number)) {
-      await page.evaluate(t => window.renderFrame(t), t);
+      await page.evaluate(t => window.renderFrameHQ(t), t);
       await canvas.screenshot({ path: path.join(dir, `f_${t.toFixed(2)}.png`) });
     }
     await browser.close(); return;
@@ -34,7 +34,7 @@ const FPS = 30;
     '-i', wav, '-c:v', 'libx264', '-preset', 'medium', '-crf', '17', '-pix_fmt', 'yuv420p', '-c:a', 'aac', '-b:a', '192k', '-shortest', '-movflags', '+faststart', out], { stdio: ['pipe', 'inherit', 'inherit'] });
   const n = Math.round(DUR * FPS);
   for (let i = 0; i < n; i++) {
-    await page.evaluate(t => window.renderFrame(t), i / FPS);
+    await page.evaluate(t => window.renderFrameHQ(t), i / FPS);
     const buf = await canvas.screenshot({ type: 'jpeg', quality: 95 });
     if (!ff.stdin.write(buf)) await new Promise(r => ff.stdin.once('drain', r));
     if (i % 60 === 0) process.stdout.write(`\r${i}/${n}`);
